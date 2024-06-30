@@ -9,7 +9,7 @@ import (
 
 func SendMetrics(s metricstorage.Storage) {
 	fmt.Println("Sending metrics")
-	const baseURL = "http://127.0.0.1:8080/update/"
+	const baseURL = "http://localhost:8080/update/"
 	for _, key := range s.ListCounters() {
 		url := fmt.Sprintf(`%s%s/%s/%d`, baseURL, constants.CounterStr, key, s.GetCounter(key))
 		resp, err := http.Post(url, "text/plain", nil)
