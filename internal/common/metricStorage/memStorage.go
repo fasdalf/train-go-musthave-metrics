@@ -1,11 +1,5 @@
-package server
+package metricStorage
 
-type Storage interface {
-	UpdateCounter(key string, value int)
-	UpdateGauge(key string, value float64)
-	GetCounter(key string) int
-	GetGauge(key string) float64
-}
 type MemStorage struct {
 	counters map[string]int
 	gauges   map[string]float64
@@ -28,4 +22,18 @@ func (s *MemStorage) GetCounter(key string) int {
 }
 func (s *MemStorage) GetGauge(key string) float64 {
 	return s.gauges[key]
+}
+func (s *MemStorage) ListGauges() []string {
+	keys := make([]string, 0, len(s.gauges))
+	for k := range s.gauges {
+		keys = append(keys, k)
+	}
+	return keys
+}
+func (s *MemStorage) ListCounters() []string {
+	keys := make([]string, 0, len(s.counters))
+	for k := range s.counters {
+		keys = append(keys, k)
+	}
+	return keys
 }
