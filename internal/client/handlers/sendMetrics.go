@@ -14,7 +14,7 @@ func SendMetrics(s metricstorage.Storage) {
 		url := fmt.Sprintf(`%s%s/%s/%d`, baseURL, constants.CounterStr, key, s.GetCounter(key))
 		resp, err := http.Post(url, "text/plain", nil)
 		if err != nil {
-			fmt.Println("Error sending metrics: ", url, err)
+			fmt.Println("Error sending metrics: ", err)
 		}
 		if resp != nil && resp.Body != nil {
 			resp.Body.Close()
@@ -24,7 +24,7 @@ func SendMetrics(s metricstorage.Storage) {
 		url := fmt.Sprintf(`%s%s/%s/%f`, baseURL, constants.GaugeStr, key, s.GetGauge(key))
 		resp, err := http.Post(url, "text/plain", nil)
 		if err != nil {
-			fmt.Println("Error sending metrics: ", url, err)
+			fmt.Println("Error sending metrics: ", err)
 		}
 		if resp != nil && resp.Body != nil {
 			resp.Body.Close()
