@@ -9,19 +9,25 @@ import (
 
 func SendMetrics(s metricstorage.Storage) {
 	fmt.Println("Sending metrics")
-	const baseUrl = "http://127.0.0.1:8080/update/"
+	const baseURL = "http://127.0.0.1:8080/update/"
 	for _, key := range s.ListCounters() {
-		url := fmt.Sprintf(`%s%s/%s/%d`, baseUrl, constants.CounterStr, key, s.GetCounter(key))
-		_, err := http.Post(url, "text/plain", nil)
+		url := fmt.Sprintf(`%s%s/%s/%d`, baseURL, constants.CounterStr, key, s.GetCounter(key))
+		resp, err := http.Post(url, "text/plain", nil)
 		if err != nil {
 			fmt.Println("Error sending metrics: ", url, err)
 		}
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
+		}
 	}
 	for _, key := range s.ListGauges() {
-		url := fmt.Sprintf(`%s%s/%s/%f`, baseUrl, constants.GaugeStr, key, s.GetGauge(key))
-		_, err := http.Post(url, "text/plain", nil)
+		url := fmt.Sprintf(`%s%s/%s/%f`, baseURL, constants.GaugeStr, key, s.GetGauge(key))
+		resp, err := http.Post(url, "text/plain", nil)
 		if err != nil {
 			fmt.Println("Error sending metrics: ", url, err)
+		}
+		if resp != nil && resp.Body != nil {
+			resp.Body.Close()
 		}
 	}
 }
