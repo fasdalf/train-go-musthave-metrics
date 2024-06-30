@@ -1,4 +1,4 @@
-package metricStorage
+package metricstorage
 
 type MemStorage struct {
 	counters map[string]int

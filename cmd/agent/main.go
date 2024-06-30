@@ -3,14 +3,14 @@ package main
 import (
 	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/client/handlers"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricStorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"time"
 )
 
 func main() {
 	const collectInterval = 2 * time.Second
 	const sendInterval = 10 * time.Second
-	memStorage := metricStorage.NewMemStorage()
+	memStorage := metricstorage.NewMemStorage()
 
 	collectTimeout := time.Duration(0)
 	sendTimeout := time.Duration(0)

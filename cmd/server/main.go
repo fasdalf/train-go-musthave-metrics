@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricStorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"net/http"
 )
 
 func main() {
-	memStorage := metricStorage.NewMemStorage()
+	memStorage := metricstorage.NewMemStorage()
 	mux := http.NewServeMux()
 	//mux.HandleFunc(`/`, mainPage)
 	mux.Handle("/update/", http.StripPrefix("/update/", handlers.UpdateMetricHandler(memStorage)))

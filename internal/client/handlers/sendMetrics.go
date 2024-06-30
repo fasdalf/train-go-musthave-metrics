@@ -2,12 +2,12 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricStorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/constants"
 	"net/http"
 )
 
-func SendMetrics(s metricStorage.Storage) {
+func SendMetrics(s metricstorage.Storage) {
 	fmt.Println("Sending metrics")
 	const baseUrl = "http://127.0.0.1:8080/update/"
 	for _, key := range s.ListCounters() {
