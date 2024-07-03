@@ -22,6 +22,7 @@ func SendMetrics(s metricstorage.Storage) {
 		resp, err := client.R().Post(url)
 		if err != nil {
 			fmt.Println("Error sending metrics: ", err)
+			continue
 		}
 		if resp != nil && resp.RawResponse.Body != nil {
 			_ = resp.RawResponse.Body.Close()
