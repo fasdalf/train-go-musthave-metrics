@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func NewHttpServer(ms metricstorage.Storage) *gin.Engine {
+func NewHTTPServer(ms metricstorage.Storage) *gin.Engine {
 	ginCore := gin.New()
 	ginCore.Use(ginlogrus.Logger(logrus.New()))
 	ginCore.Use(gin.Recovery())
