@@ -9,8 +9,8 @@ import (
 )
 
 func main() {
-	collectInterval := config.GetConfig().PollInterval * time.Second
-	sendInterval := config.GetConfig().ReportInterval * time.Second
+	collectInterval := time.Duration(config.GetConfig().PollInterval) * time.Second
+	sendInterval := time.Duration(config.GetConfig().ReportInterval) * time.Second
 	address := config.GetConfig().Addr
 	memStorage := metricstorage.NewMemStorage()
 

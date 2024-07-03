@@ -4,7 +4,6 @@ import (
 	goflag "flag"
 	"fmt"
 	flag "github.com/spf13/pflag"
-	"time"
 )
 
 const (
@@ -15,7 +14,7 @@ const (
 
 type Config struct {
 	Addr                         string
-	PollInterval, ReportInterval time.Duration
+	PollInterval, ReportInterval int
 }
 
 var config *Config
@@ -27,8 +26,8 @@ func init() {
 	config = &Config{}
 	// Flags
 	flag.StringVarP(&config.Addr, "address", "a", defaultAddress, fmt.Sprintf("The address to listen on for HTTP requests. Default is \"%s\"", defaultAddress))
-	flag.DurationVarP(&config.PollInterval, "pollinterval", "p", defaultPollInterval, fmt.Sprintf("Metrics poll interval in seconds. Default is \"%d\"", defaultPollInterval))
-	flag.DurationVarP(&config.ReportInterval, "reportInterval", "r", defaultPollInterval, fmt.Sprintf("Report to server interval in seconds. Default is \"%d\"", defaultReportInterval))
+	flag.IntVarP(&config.PollInterval, "pollinterval", "p", defaultPollInterval, fmt.Sprintf("Metrics poll interval in seconds. Default is \"%d\"", defaultPollInterval))
+	flag.IntVarP(&config.ReportInterval, "reportInterval", "r", defaultPollInterval, fmt.Sprintf("Report to server interval in seconds. Default is \"%d\"", defaultReportInterval))
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	flag.Parse()
 }
