@@ -2,14 +2,14 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/constants"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
-func UpdateMetricHandler(s metricstorage.Storage) http.HandlerFunc {
+func NewUpdateMetricHandler(s metricstorage.Storage) http.HandlerFunc {
 	const indexType = 0
 	const indexName = 1
 	const indexValue = 2

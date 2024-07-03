@@ -52,7 +52,7 @@ func TestUpdateMetricHandler(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			r := httptest.NewRequest(http.MethodPost, tt.url, nil)
 			w := httptest.NewRecorder()
-			handler := UpdateMetricHandler(tt.args.s)
+			handler := NewUpdateMetricHandler(tt.args.s)
 			handler.ServeHTTP(w, r)
 			assert.Equal(t, tt.want.statusCode, w.Code, "Код ответа не совпадает с ожидаемым")
 			assert.Equal(t, tt.want.gauges, len(tt.args.s.ListGauges()))

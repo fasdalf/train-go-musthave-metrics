@@ -23,6 +23,14 @@ func (s *MemStorage) GetCounter(key string) int {
 func (s *MemStorage) GetGauge(key string) float64 {
 	return s.gauges[key]
 }
+func (s *MemStorage) HasCounter(key string) bool {
+	_, ok := s.counters[key]
+	return ok
+}
+func (s *MemStorage) HasGauge(key string) bool {
+	_, ok := s.gauges[key]
+	return ok
+}
 func (s *MemStorage) ListGauges() []string {
 	keys := make([]string, 0, len(s.gauges))
 	for k := range s.gauges {

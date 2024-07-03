@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/client/handlers"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"time"
 )
