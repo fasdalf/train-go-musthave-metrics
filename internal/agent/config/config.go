@@ -3,6 +3,7 @@ package config
 import (
 	goflag "flag"
 	"fmt"
+	"github.com/caarlos0/env/v6"
 	flag "github.com/spf13/pflag"
 )
 
@@ -13,8 +14,9 @@ const (
 )
 
 type Config struct {
-	Addr                         string
-	PollInterval, ReportInterval int
+	Addr           string `env:"ADDRESS"`
+	PollInterval   int    `env:"POLL_INTERVAL"`
+	ReportInterval int    `env:"REPORT_INTERVAL"`
 }
 
 var config *Config
@@ -30,4 +32,9 @@ func init() {
 	flag.IntVarP(&config.ReportInterval, "reportInterval", "r", defaultPollInterval, fmt.Sprintf("Report to server interval in seconds. Default is \"%d\"", defaultReportInterval))
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	flag.Parse()
+
+	// Env. variables. This should take over the command line. Bad practice as I know.
+	if err := env.Parse(config); err != nil {
+		fmt.Printf("%+v\n", err)
+	}
 }

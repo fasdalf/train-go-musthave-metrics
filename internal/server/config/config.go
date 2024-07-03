@@ -3,6 +3,7 @@ package config
 import (
 	goflag "flag"
 	"fmt"
+	env "github.com/caarlos0/env/v6"
 	flag "github.com/spf13/pflag"
 )
 
@@ -11,7 +12,7 @@ const (
 )
 
 type Config struct {
-	Addr string
+	Addr string `env:"ADDRESS"`
 }
 
 var config *Config
@@ -25,4 +26,9 @@ func init() {
 	flag.StringVarP(&config.Addr, "address", "a", defaultAddress, fmt.Sprintf("The address to listen on for HTTP requests. Default is \"%s\"", defaultAddress))
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	flag.Parse()
+
+	// Env. variables. This should take over the command line. Bad practice as I know.
+	if err := env.Parse(config); err != nil {
+		fmt.Printf("%+v\n", err)
+	}
 }
