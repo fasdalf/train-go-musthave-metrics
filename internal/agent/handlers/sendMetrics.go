@@ -7,16 +7,20 @@ import (
 	resty "github.com/go-resty/resty/v2"
 )
 
-func SendMetrics(s metricstorage.Storage) {
+const URLTemplate = "http://%s/update/"
+
+var address = ``
+
+func SendMetrics(s metricstorage.Storage, address string) {
 	fmt.Println("Sending metrics")
-	const baseURL = "http://localhost:8080/update/"
+	address = fmt.Sprintf(URLTemplate, address)
 	client := resty.New()
 	urls := make([]string, 0)
 	for _, key := range s.ListCounters() {
-		urls = append(urls, fmt.Sprintf(`%s%s/%s/%d`, baseURL, constants.CounterStr, key, s.GetCounter(key)))
+		urls = append(urls, fmt.Sprintf(`%s%s/%s/%d`, address, constants.CounterStr, key, s.GetCounter(key)))
 	}
 	for _, key := range s.ListGauges() {
-		urls = append(urls, fmt.Sprintf(`%s%s/%s/%f`, baseURL, constants.GaugeStr, key, s.GetGauge(key)))
+		urls = append(urls, fmt.Sprintf(`%s%s/%s/%f`, address, constants.GaugeStr, key, s.GetGauge(key)))
 	}
 	for _, url := range urls {
 		resp, err := client.R().Post(url)
