@@ -9,14 +9,14 @@ import (
 	"net/http"
 )
 
-func NewHTTPServer(ms metricstorage.Storage) *gin.Engine {
+func NewHTTPEngine(ms metricstorage.Storage) *gin.Engine {
 	ginCore := gin.New()
 	ginCore.Use(ginlogrus.Logger(logrus.New()))
 	ginCore.Use(gin.Recovery())
 
 	// check with and w/o trailing slash
 	ginCore.GET("/", gin.WrapF(handlers.NewIndexHandler(ms)))
-	ginCore.GET("/value/:type/:name/", handlers.NewViewStatsHandler(ms))
-	ginCore.POST("/update/:type/:name/:value/", gin.WrapH(http.StripPrefix("/update/", handlers.NewUpdateMetricHandler(ms))))
+	ginCore.GET("/value/:type/:name", handlers.NewViewStatsHandler(ms))
+	ginCore.POST("/update/:type/:name/:value", gin.WrapH(http.StripPrefix("/update/", handlers.NewUpdateMetricHandler(ms))))
 	return ginCore
 }

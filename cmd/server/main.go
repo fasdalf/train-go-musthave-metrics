@@ -7,7 +7,7 @@ import (
 
 func main() {
 	memStorage := metricstorage.NewMemStorage()
-	httpServer := server.NewHTTPServer(memStorage)
+	httpServer := server.NewHTTPEngine(memStorage)
 	err := httpServer.Run(`:8080`)
 	if err != nil {
 		panic(err)
