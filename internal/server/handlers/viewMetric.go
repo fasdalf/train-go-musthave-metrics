@@ -6,6 +6,7 @@ import (
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/gin-gonic/gin"
 	"html"
+	"log/slog"
 	"net/http"
 )
 
@@ -28,7 +29,7 @@ func NewViewStatsHandler(ms metricstorage.Storage) func(c *gin.Context) {
 			}
 			mValue = fmt.Sprint(ms.GetCounter(mName))
 		default:
-			fmt.Println("Invalid type", mType)
+			slog.Error("Invalid type", "type", mType)
 			http.Error(c.Writer, fmt.Sprintf(
 				"Invalid type, only %s and %s supported",
 				constants.GaugeStr,
@@ -39,6 +40,6 @@ func NewViewStatsHandler(ms metricstorage.Storage) func(c *gin.Context) {
 
 		c.Header(`Content-Type`, `text/plain`)
 		_, _ = c.Writer.Write([]byte(mValue))
-		fmt.Println("got value", mValue)
+		slog.Info("got value", "type", mType, "name", mName, "value", mValue)
 	}
 }

@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"log/slog"
 	"net/http"
 )
 
@@ -25,11 +26,11 @@ func NewIndexHandler(ms metricstorage.Storage) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
-			fmt.Println("GET requests only")
-			http.Error(w, "GET requests only", http.StatusBadRequest)
+			slog.Error("GET requests only", `requested`, r.Method)
+			http.Error(w, "GET requests only", http.StatusMethodNotAllowed)
 			return
 		}
-		fmt.Println("showing index")
+		slog.Info("showing index")
 
 		gauges := ""
 		for _, key := range ms.ListGauges() {
@@ -43,6 +44,6 @@ func NewIndexHandler(ms metricstorage.Storage) http.HandlerFunc {
 		w.Header().Set("Content-Type", "text/html")
 		_, _ = w.Write([]byte(fmt.Sprintf(pageTemplate, gauges, counters)))
 
-		fmt.Println("Processed OK")
+		slog.Info("Processed OK")
 	}
 }

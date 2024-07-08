@@ -5,6 +5,7 @@ import (
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	resty "github.com/go-resty/resty/v2"
+	"log/slog"
 )
 
 const URLTemplate = "http://%s/update/"
@@ -12,7 +13,7 @@ const URLTemplate = "http://%s/update/"
 var address = ``
 
 func SendMetrics(s metricstorage.Storage, address string) {
-	fmt.Println("Sending metrics")
+	slog.Info("Sending metrics")
 	address = fmt.Sprintf(URLTemplate, address)
 	client := resty.New()
 	urls := make([]string, 0)
@@ -25,7 +26,7 @@ func SendMetrics(s metricstorage.Storage, address string) {
 	for _, url := range urls {
 		resp, err := client.R().Post(url)
 		if err != nil {
-			fmt.Println("Error sending metrics: ", err)
+			slog.Error(`Sending metrics failed`, `error`, err)
 			continue
 		}
 		if resp != nil && resp.RawResponse.Body != nil {

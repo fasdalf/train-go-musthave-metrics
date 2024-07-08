@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"log/slog"
 	"math/rand"
 	"runtime"
 )
 
 func CollectMetrics(s metricstorage.Storage) {
-	fmt.Println("Collecting metrics")
+	slog.Info("Collecting metrics")
 	s.UpdateCounter("PollCount", s.GetCounter("PollCount")+1)
 	s.UpdateGauge("RandomValue", rand.Float64())
 

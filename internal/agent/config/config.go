@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/caarlos0/env/v6"
 	flag "github.com/spf13/pflag"
+	"log/slog"
+	"os"
 )
 
 const (
@@ -37,4 +39,6 @@ func init() {
 	if err := env.Parse(config); err != nil {
 		fmt.Printf("%+v\n", err)
 	}
+
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{AddSource: true})))
 }

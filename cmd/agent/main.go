@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/config"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"log/slog"
 	"time"
 )
 
@@ -29,7 +29,7 @@ func main() {
 		sleepTime := min(collectTimeout, sendTimeout)
 		collectTimeout -= sleepTime
 		sendTimeout -= sleepTime
-		fmt.Println("sleeping for", sleepTime)
+		slog.Info(`Sleeping`, `delay`, sleepTime)
 		time.Sleep(sleepTime)
 	}
 }

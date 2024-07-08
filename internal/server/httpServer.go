@@ -4,14 +4,14 @@ import (
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
-	ginlogrus "github.com/toorop/gin-logrus"
+	slogGin "github.com/samber/slog-gin"
+	"log/slog"
 	"net/http"
 )
 
 func NewHTTPEngine(ms metricstorage.Storage) *gin.Engine {
 	ginCore := gin.New()
-	ginCore.Use(ginlogrus.Logger(logrus.New()))
+	ginCore.Use(slogGin.New(slog.Default()))
 	ginCore.Use(gin.Recovery())
 
 	// check with and w/o trailing slash
