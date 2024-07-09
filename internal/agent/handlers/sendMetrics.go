@@ -3,16 +3,14 @@ package handlers
 import (
 	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	resty "github.com/go-resty/resty/v2"
 	"log/slog"
 )
 
 const URLTemplate = "http://%s/update/"
 
-var address = ``
-
-func SendMetrics(s metricstorage.Storage, address string) {
+// SendMetrics sends pre collected metrics to server
+func SendMetrics(s Storage, address string) {
 	slog.Info("Sending metrics")
 	address = fmt.Sprintf(URLTemplate, address)
 	client := resty.New()

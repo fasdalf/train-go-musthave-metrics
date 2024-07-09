@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"log/slog"
 	"math/rand"
 	"runtime"
 )
 
-func CollectMetrics(s metricstorage.Storage) {
+// CollectMetrics collects various metrics to given storage
+func CollectMetrics(s Storage) {
 	slog.Info("Collecting metrics")
 	s.UpdateCounter("PollCount", s.GetCounter("PollCount")+1)
 	s.UpdateGauge("RandomValue", rand.Float64())
@@ -45,7 +45,6 @@ func CollectMetrics(s metricstorage.Storage) {
 }
 
 /*
-
 // Can use smth. like this when all counters are in same object
 //    p := Point{3, 5, "Z"}
 //    pX := getAttr(&p, "X")

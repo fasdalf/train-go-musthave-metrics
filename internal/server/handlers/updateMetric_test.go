@@ -11,7 +11,7 @@ import (
 
 func TestUpdateMetricHandler(t *testing.T) {
 	type args struct {
-		s metricstorage.Storage
+		s Storage
 	}
 	type want struct {
 		statusCode int

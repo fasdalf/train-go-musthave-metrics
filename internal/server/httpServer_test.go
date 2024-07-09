@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -10,7 +11,7 @@ import (
 
 func TestUpdateMetricIntegrational(t *testing.T) {
 	type args struct {
-		s metricstorage.Storage
+		s handlers.Storage
 	}
 	type want struct {
 		statusCode int

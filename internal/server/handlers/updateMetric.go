@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/gin-gonic/gin"
 	"html"
 	"log/slog"
@@ -12,7 +11,8 @@ import (
 	"strconv"
 )
 
-func NewUpdateMetricHandler(s metricstorage.Storage) func(c *gin.Context) {
+// NewUpdateMetricHandler update single metric value
+func NewUpdateMetricHandler(s Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		mType := c.Param(`type`)
 		mName := c.Param(`name`)

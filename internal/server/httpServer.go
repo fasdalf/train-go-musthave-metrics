@@ -1,14 +1,13 @@
 package server
 
 import (
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"github.com/gin-gonic/gin"
 	slogGin "github.com/samber/slog-gin"
 	"log/slog"
 )
 
-func NewHTTPEngine(ms metricstorage.Storage) *gin.Engine {
+func NewHTTPEngine(ms handlers.Storage) *gin.Engine {
 	ginCore := gin.New()
 	ginCore.Use(slogGin.New(slog.Default()))
 	ginCore.Use(gin.Recovery())

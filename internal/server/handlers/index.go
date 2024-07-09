@@ -2,12 +2,12 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"log/slog"
 	"net/http"
 )
 
-func NewIndexHandler(ms metricstorage.Storage) http.HandlerFunc {
+// NewIndexHandler list all stored metrics
+func NewIndexHandler(ms Storage) http.HandlerFunc {
 	const (
 		pageTemplate = `<html><body>
 <table>

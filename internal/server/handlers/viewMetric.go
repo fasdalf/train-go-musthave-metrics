@@ -3,14 +3,14 @@ package handlers
 import (
 	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/gin-gonic/gin"
 	"html"
 	"log/slog"
 	"net/http"
 )
 
-func NewViewStatsHandler(ms metricstorage.Storage) func(c *gin.Context) {
+// NewViewStatsHandler view single stored metric
+func NewViewStatsHandler(ms Storage) func(c *gin.Context) {
 	// In our project we have a tradition to add single middleware to put metricstorage.Storage pointer in context.
 	// Let's use handler constructors for now
 	return func(c *gin.Context) {

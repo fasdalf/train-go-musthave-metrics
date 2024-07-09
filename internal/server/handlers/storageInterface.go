@@ -1,4 +1,4 @@
-package metricstorage
+package handlers
 
 type Storage interface {
 	UpdateCounter(key string, value int)

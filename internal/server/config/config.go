@@ -22,6 +22,7 @@ var config *Config
 func GetConfig() Config {
 	return *config
 }
+
 func init() {
 	config = &Config{}
 	// Flags
