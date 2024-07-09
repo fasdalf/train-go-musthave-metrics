@@ -9,18 +9,14 @@ import (
 
 func NewIndexHandler(ms metricstorage.Storage) http.HandlerFunc {
 	const (
-		pageTemplate = `
-<html><body>
+		pageTemplate = `<html><body>
 <table>
 <tr><td colspan=2>Gauges</td></tr>
-%s
-<tr><td colspan=2>counters</td></tr>
-%s
-</table>
+%s<tr><td colspan=2>counters</td></tr>
+%s</table>
 </body></html>
 `
-		rowTemplate = `
-<tr><td>%s</td><td>%s</td></tr>
+		rowTemplate = `<tr><td>%s</td><td>%s</td></tr>
 `
 	)
 

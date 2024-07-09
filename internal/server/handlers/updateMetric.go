@@ -1,80 +1,61 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"github.com/gin-gonic/gin"
+	"html"
 	"log/slog"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
-func NewUpdateMetricHandler(s metricstorage.Storage) http.HandlerFunc {
-	const indexType = 0
-	const indexName = 1
-	const indexValue = 2
-	return func(w http.ResponseWriter, r *http.Request) {
-		slog.Info("Processing update", "method", r.Method, "path", r.URL.Path)
-		if r.Method != http.MethodPost {
-			// job for gin
-			http.Error(w, "POST requests only", http.StatusBadRequest)
+func NewUpdateMetricHandler(s metricstorage.Storage) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		mType := c.Param(`type`)
+		mName := c.Param(`name`)
+		mValue := c.Param(`value`)
+		slog.Info("Processing update", "type", mType, "name", mName, "value", mValue)
+
+		if mName == "" {
+			slog.Error("Metric not found")
+			_ = c.AbortWithError(http.StatusNotFound, errors.New("Metric not found"))
 			return
 		}
 
-		// job for gin
-		path := strings.Split(r.URL.Path, "/")
-		fmt.Println("path is", len(path), path)
-		if len(path) > 0 && path[0] == "" {
-			path = path[1:]
-		}
-
-		// job for gin
-		if len(path) < 3 {
-			slog.Error("GET requests only", `requested`, r.Method)
-			fmt.Println("Invalid path")
-			http.Error(w, "Invalid path", http.StatusNotFound)
-			return
-		}
-
-		// job for gin
-		if path[indexName] == "" {
-			fmt.Println("Metric not found")
-			http.Error(w, "Metric not found", http.StatusNotFound)
-			return
-		}
-
-		switch path[indexType] {
+		switch mType {
 		case constants.GaugeStr:
-			floatValue, err := strconv.ParseFloat(path[indexValue], 64)
+			floatValue, err := strconv.ParseFloat(mValue, 64)
 			if err != nil {
-				slog.Error("Invalid metric value, float64 required", `value`, path[indexValue])
-				fmt.Println("Invalid metric value")
-				http.Error(w, "", http.StatusBadRequest)
+				slog.Error("Invalid metric value, float64 required", `value`, html.EscapeString(mType))
+				_ = c.AbortWithError(http.StatusBadRequest, errors.New("Invalid metric value"))
 				return
 			}
-			s.UpdateGauge(path[indexName], floatValue)
-			slog.Info("value set", "new", s.GetGauge(path[indexName]))
+			s.UpdateGauge(mName, floatValue)
+			slog.Info("value set", "new", s.GetGauge(mName))
 		case constants.CounterStr:
-			intValue, err := strconv.Atoi(path[indexValue])
+			intValue, err := strconv.Atoi(mValue)
 			if err != nil {
-				slog.Error("Invalid metric value, integer required", `value`, path[indexValue])
-				http.Error(w, "Invalid metric value, integer required", http.StatusBadRequest)
+				slog.Error("Invalid metric value, integer required", `value`, html.EscapeString(mType))
+				_ = c.AbortWithError(http.StatusBadRequest, errors.New("Invalid metric value"))
 				return
 			}
-			s.UpdateCounter(path[indexName], intValue)
-			slog.Info("value set", "new", s.GetGauge(path[indexName]))
+			s.UpdateCounter(mName, intValue)
+			slog.Info("value set", "new", s.GetGauge(mName))
 		default:
-			slog.Error("Type is invalid", "type", path[indexValue])
-			http.Error(w, fmt.Sprintf(
-				"Invalid type, only %s and %s supported",
+			slog.Error("Type is invalid", "type", html.EscapeString(mType))
+			_ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf(
+				`Invalid type "%s", only "%s" and "%s" are supported`,
+				html.EscapeString(mType),
 				constants.GaugeStr,
 				constants.CounterStr,
-			), http.StatusBadRequest)
+			))
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
-		fmt.Println("Processed OK")
+		c.Next()
+		slog.Info("Processed OK")
 	}
 }

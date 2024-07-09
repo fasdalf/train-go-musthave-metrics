@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	slogGin "github.com/samber/slog-gin"
 	"log/slog"
-	"net/http"
 )
 
 func NewHTTPEngine(ms metricstorage.Storage) *gin.Engine {
@@ -17,6 +16,6 @@ func NewHTTPEngine(ms metricstorage.Storage) *gin.Engine {
 	// check with and w/o trailing slash
 	ginCore.GET("/", gin.WrapF(handlers.NewIndexHandler(ms)))
 	ginCore.GET("/value/:type/:name", handlers.NewViewStatsHandler(ms))
-	ginCore.POST("/update/:type/:name/:value", gin.WrapH(http.StripPrefix("/update/", handlers.NewUpdateMetricHandler(ms))))
+	ginCore.POST("/update/:type/:name/:value", handlers.NewUpdateMetricHandler(ms))
 	return ginCore
 }
