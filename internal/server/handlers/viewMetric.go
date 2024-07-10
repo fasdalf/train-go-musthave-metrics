@@ -14,9 +14,9 @@ func NewViewStatsHandler(ms Storage) func(c *gin.Context) {
 	// In our project we have a tradition to add single middleware to put metricstorage.Storage pointer in context.
 	// Let's use handler constructors for now
 	return func(c *gin.Context) {
-		mType := c.Param(`type`)
-		mName := c.Param(`name`)
-		mValue := ``
+		mType := c.Param(URLParamType)
+		mName := c.Param(URLParamName)
+		mValue := ""
 		switch mType {
 		case constants.GaugeStr:
 			if !ms.HasGauge(mName) {

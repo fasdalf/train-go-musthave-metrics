@@ -11,12 +11,18 @@ import (
 	"strconv"
 )
 
+const (
+	URLParamType  = "type"
+	URLParamName  = "name"
+	URLParamValue = "value"
+)
+
 // NewUpdateMetricHandler update single metric value
 func NewUpdateMetricHandler(s Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		mType := c.Param(`type`)
-		mName := c.Param(`name`)
-		mValue := c.Param(`value`)
+		mType := c.Param(URLParamType)
+		mName := c.Param(URLParamName)
+		mValue := c.Param(URLParamValue)
 		slog.Info("Processing update", "type", mType, "name", mName, "value", mValue)
 
 		if mName == "" {
