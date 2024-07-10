@@ -20,12 +20,14 @@ func NewViewStatsHandler(ms Storage) func(c *gin.Context) {
 		switch mType {
 		case constants.GaugeStr:
 			if !ms.HasGauge(mName) {
-				_ = c.AbortWithError(http.StatusNotFound, fmt.Errorf(`metric "%s" not found`, html.EscapeString(mName)))
+				http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(mName)), http.StatusNotFound)
+				return
 			}
 			mValue = fmt.Sprint(ms.GetGauge(mName))
 		case constants.CounterStr:
 			if !ms.HasCounter(mName) {
-				_ = c.AbortWithError(http.StatusNotFound, fmt.Errorf(`metric "%s" not found`, html.EscapeString(mName)))
+				http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(mName)), http.StatusNotFound)
+				return
 			}
 			mValue = fmt.Sprint(ms.GetCounter(mName))
 		default:
