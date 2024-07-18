@@ -16,6 +16,8 @@ cmd/agent/main
 cmd/agent/agent
 cmd/server/main
 cmd/server/server
+/agent
+/server
 
 # Dependency directories (remove the comment below to include it)
 vendor/
@@ -23,3 +25,9 @@ vendor/
 # IDEs directories
 .idea
 .vscode
+
+# docker
+/deploy/docker/.env
+/deploy/docker/docker-compose.override.yml
+/docker-compose.override.yml
+/.env
