@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"github.com/gin-gonic/gin"
 	slogGin "github.com/samber/slog-gin"
@@ -14,9 +15,9 @@ func NewHTTPEngine(ms handlers.Storage) *gin.Engine {
 
 	// check with and w/o trailing slash
 	ginCore.GET("/", gin.WrapF(handlers.NewIndexHandler(ms)))
-	//ginCore.GET(fmt.Sprintf("/value/:%s/:%s", handlers.URLParamType, handlers.URLParamName), handlers.NewViewStatsHandler(ms))
+	ginCore.GET(fmt.Sprintf("/value/:%s/:%s", handlers.URLParamType, handlers.URLParamName), handlers.NewViewStatsHandler(ms))
 	ginCore.POST("/value/", handlers.CheckMetricExistenceHandler(ms), handlers.MetricValueResponseHandler(ms))
-	//ginCore.POST(fmt.Sprintf("/update/:%s/:%s/:%s", handlers.URLParamType, handlers.URLParamName, handlers.URLParamValue), handlers.NewUpdateMetricHandler(ms))
+	ginCore.POST(fmt.Sprintf("/update/:%s/:%s/:%s", handlers.URLParamType, handlers.URLParamName, handlers.URLParamValue), handlers.NewUpdateMetricHandler(ms))
 	ginCore.POST("/update/", handlers.SaveMetricHandler(ms), handlers.MetricValueResponseHandler(ms))
 	return ginCore
 }

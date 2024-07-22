@@ -19,7 +19,7 @@ const (
 
 // NewUpdateMetricHandler update single metric value
 //
-// Deprecated: for old lesson
+// #Deprecated: for old lesson
 func NewUpdateMetricHandler(s Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		mType := c.Param(URLParamType)
