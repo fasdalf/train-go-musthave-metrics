@@ -55,6 +55,5 @@ func CheckMetricExistenceHandler(s Storage) func(c *gin.Context) {
 
 		c.Set(contextMetricResponseKey, metric)
 		c.Next()
-		return
 	}
 }
