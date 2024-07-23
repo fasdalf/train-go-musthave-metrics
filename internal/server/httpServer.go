@@ -16,6 +16,7 @@ func NewHTTPEngine(ms handlers.Storage) *gin.Engine {
 	ginCore.Use(gin.Recovery())
 	// import "github.com/gin-contrib/gzip"
 	//ginCore.Use(gzip.Gzip(gzip.DefaultCompression))
+	// uses internal/server/handlers/gzip.go + internal/server/handlers/gzipCompressionHandler.go
 	ginCore.Use(handlers.GzipCompressionHandler)
 
 	// check with and w/o trailing slash
