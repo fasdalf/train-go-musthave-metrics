@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -38,13 +40,22 @@ func SendMetrics(s Storage, address string) {
 		})
 	}
 	for _, update := range metricUpdates {
-		body, err := json.Marshal(update)
+		content, err := json.Marshal(update)
 		if err != nil {
 			slog.Error("error encoding request", "error", err)
 			return
 		}
+		body := bytes.NewBuffer(nil)
+		zb := gzip.NewWriter(body)
+		_, err = zb.Write(content)
+		if err != nil {
+			slog.Error("error compressing request", "error", err)
+			return
+		}
 
 		req := client.R()
+		req.SetHeader("Content-Encoding", "gzip")
+		req.SetHeader("Accept-Encoding", "gzip")
 		req.SetHeader("Content-Type", "application/json")
 		req.SetBody(body)
 		//resp, err := req.Post(address)

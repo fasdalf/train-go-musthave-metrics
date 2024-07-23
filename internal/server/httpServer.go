@@ -2,16 +2,21 @@ package server
 
 import (
 	"fmt"
+	"log/slog"
+
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
+
 	"github.com/gin-gonic/gin"
 	slogGin "github.com/samber/slog-gin"
-	"log/slog"
 )
 
 func NewHTTPEngine(ms handlers.Storage) *gin.Engine {
 	ginCore := gin.New()
 	ginCore.Use(slogGin.New(slog.Default()))
 	ginCore.Use(gin.Recovery())
+	// import "github.com/gin-contrib/gzip"
+	//ginCore.Use(gzip.Gzip(gzip.DefaultCompression))
+	ginCore.Use(handlers.GzipCompressionHandler)
 
 	// check with and w/o trailing slash
 	ginCore.GET("/", gin.WrapF(handlers.NewIndexHandler(ms)))
