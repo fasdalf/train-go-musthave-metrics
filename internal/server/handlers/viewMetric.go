@@ -10,6 +10,8 @@ import (
 )
 
 // NewViewStatsHandler view single stored metric
+//
+// #Deprecated: for old lesson
 func NewViewStatsHandler(ms Storage) func(c *gin.Context) {
 	// In our project we have a tradition to add single middleware to put metricstorage.Storage pointer in context.
 	// Let's use handler constructors for now
