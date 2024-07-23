@@ -45,13 +45,14 @@ func SendMetrics(s Storage, address string) {
 			slog.Error("error encoding request", "error", err)
 			return
 		}
-		body := bytes.NewBuffer(nil)
+		body := new(bytes.Buffer)
 		zb := gzip.NewWriter(body)
 		_, err = zb.Write(content)
 		if err != nil {
 			slog.Error("error compressing request", "error", err)
 			return
 		}
+		_ = zb.Close()
 
 		req := client.R()
 		req.SetHeader("Content-Encoding", "gzip")
