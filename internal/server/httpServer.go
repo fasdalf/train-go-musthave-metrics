@@ -10,7 +10,7 @@ import (
 	slogGin "github.com/samber/slog-gin"
 )
 
-func NewHTTPEngine(ms handlers.Storage) *gin.Engine {
+func NewHTTPEngine(ms handlers.Storage, fs handlers.FileStorage) *gin.Engine {
 	ginCore := gin.New()
 	ginCore.Use(slogGin.New(slog.Default()))
 	ginCore.Use(gin.Recovery())
@@ -24,6 +24,6 @@ func NewHTTPEngine(ms handlers.Storage) *gin.Engine {
 	ginCore.GET(fmt.Sprintf("/value/:%s/:%s", handlers.URLParamType, handlers.URLParamName), handlers.NewViewStatsHandler(ms))
 	ginCore.POST("/value/", handlers.CheckMetricExistenceHandler(ms), handlers.MetricValueResponseHandler(ms))
 	ginCore.POST(fmt.Sprintf("/update/:%s/:%s/:%s", handlers.URLParamType, handlers.URLParamName, handlers.URLParamValue), handlers.NewUpdateMetricHandler(ms))
-	ginCore.POST("/update/", handlers.SaveMetricHandler(ms), handlers.MetricValueResponseHandler(ms))
+	ginCore.POST("/update/", handlers.SaveMetricHandler(ms), handlers.MetricValueResponseHandler(ms), handlers.NewSaveToFileHandler(fs))
 	return ginCore
 }
