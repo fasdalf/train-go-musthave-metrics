@@ -51,7 +51,7 @@ func TestViewMetricHandler(t *testing.T) {
 			want: want{statusCode: http.StatusNotFound, body: "metric \"other\" not found\n"},
 		},
 	}
-	ms := metricstorage.NewMemStorage()
+	ms := metricstorage.NewMemStorageWithSave()
 	ms.UpdateGauge("median", 10.001)
 	ms.UpdateCounter("amount", 10)
 	for _, tt := range tests {

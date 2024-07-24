@@ -35,7 +35,7 @@ func init() {
 	flag.StringVarP(&config.Addr, "address", "a", defaultAddress, fmt.Sprintf("The address to listen on for HTTP requests. Default is \"%s\"", defaultAddress))
 	flag.StringVarP(&config.StorageFileName, "filestoragepath", "f", defaultStorageFileName, fmt.Sprintf("A path and file name to store data. Default is \"%s\"", defaultStorageFileName))
 	flag.IntVarP(&config.StorageFileStoreInterval, "storeinterval", "i", defaultStorageFileStoreInterval, fmt.Sprintf("Metrics store interval in seconds. \"0\" is on every change. Default is \"%d\"", defaultStorageFileStoreInterval))
-	flag.BoolVarP(&config.StorageFileRestore, "restore", "r", defaultStorageFileRestore, fmt.Sprintf("Metrics restore from file on startup. Default is \"%s\"", defaultStorageFileRestore))
+	flag.BoolVarP(&config.StorageFileRestore, "restore", "r", defaultStorageFileRestore, fmt.Sprintf("Metrics restore from file on startup. Default is \"%v\"", defaultStorageFileRestore))
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	flag.Parse()
 
