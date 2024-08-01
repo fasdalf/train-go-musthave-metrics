@@ -11,4 +11,4 @@ echo "starting metricstest ..." && \
     -source-path=. \
     -server-port=46011 \
     -file-storage-path=other.json \
-    -database-dsn='postgres://postgresP@$:postgres@train-go-musthave-metrics_db:5432/postgres_metrics?sslmode=disable' \
+    -database-dsn='postgres://postgres:postgresP@$@train-go-musthave-metrics_db:5432/postgres_metrics?sslmode=disable' \
