@@ -16,3 +16,28 @@ services:
       - "${DELVE_EXTERNAL_PORT}:40000"
     volumes:
       - ./../../:/go/src/app
+    depends_on:
+      - db
+  db:
+    build: db
+    container_name: "${COMPOSE_PROJECT_NAME}_db"
+    command: postgres -c logging_collector=on -c log_directory=/var/lib/pg_log -c log_filename=postgresql.log -c log_statement=all
+    ports:
+#      - "${DB_EXTERNAL_PORT}:${APP_DB_PORT}"
+      - "5400:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+#      - ./db/postgresql.conf:/etc/postgresql.conf
+      - ./../data/logs:/var/lib/pg_log
+#      - ./db/pg_hba.conf:/etc/pg_hba.conf
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres_metrics
+#      POSTGRES_PASSWORD: ${APP_DB_USER}
+#      POSTGRES_USER: ${APP_DB_USER}
+#      POSTGRES_DB: ${APP_DB_NAME}
+
+volumes:
+  pgdata:
+    driver: local
