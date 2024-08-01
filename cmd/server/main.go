@@ -1,10 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/config"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"log/slog"
 	"net/http"
@@ -29,8 +31,19 @@ func main() {
 		fileStorage = fileStorageService
 	}
 
+	db := (*sql.DB)(nil)
+	if c.StorageDBDSN != "" {
+		err := error(nil)
+		db, err = sql.Open("pgx", c.StorageDBDSN)
+		if err != nil {
+			panic(err)
+		}
+
+		defer db.Close()
+	}
+
 	slog.Debug("initializing http router")
-	engine := server.NewRoutingEngine(memStorage, fileStorage)
+	engine := server.NewRoutingEngine(memStorage, fileStorage, db)
 	srv := &http.Server{
 		Addr:    c.Addr,
 		Handler: engine,

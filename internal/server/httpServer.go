@@ -1,12 +1,13 @@
 package server
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"github.com/gin-gonic/gin"
 )
 
-func NewRoutingEngine(ms handlers.Storage, fs handlers.FileStorage) *gin.Engine {
+func NewRoutingEngine(ms handlers.Storage, fs handlers.FileStorage, db *sql.DB) *gin.Engine {
 	ginCore := gin.New()
 	ginCore.Use(gin.Recovery())
 	// IRL just use ginCore.Use(slogGin.New(slog.Default())) from slogGin "github.com/samber/slog-gin"
@@ -17,6 +18,7 @@ func NewRoutingEngine(ms handlers.Storage, fs handlers.FileStorage) *gin.Engine 
 	ginCore.Use(handlers.GzipCompressionHandler)
 
 	ginCore.GET("/", gin.WrapF(handlers.NewIndexHandler(ms)))
+	ginCore.GET("/ping", handlers.NewPingDBHandler(db))
 	ginCore.GET(fmt.Sprintf("/value/:%s/:%s", handlers.URLParamType, handlers.URLParamName), handlers.NewViewStatsHandler(ms))
 	ginCore.POST("/value", handlers.CheckMetricExistenceHandler(ms), handlers.MetricValueResponseHandler(ms))
 	ginCore.POST(fmt.Sprintf("/update/:%s/:%s/:%s", handlers.URLParamType, handlers.URLParamName, handlers.URLParamValue), handlers.NewUpdateMetricHandler(ms))
