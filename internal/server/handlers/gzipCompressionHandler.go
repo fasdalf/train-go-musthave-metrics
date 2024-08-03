@@ -18,11 +18,11 @@ func GzipCompressionHandler(c *gin.Context) {
 	if supportsGzip {
 		// оборачиваем оригинальный http.ResponseWriter новым с поддержкой сжатия
 		cw := newCompressWriter(c.Writer)
-		// меняем оригинальный http.ResponseWriter на новый
-		ow = cw
 		cw.Header().Set("Content-Encoding", "gzip")
 		// не забываем отправить клиенту все сжатые данные после завершения middleware
 		defer cw.Close()
+		// меняем оригинальный http.ResponseWriter на новый
+		ow = cw
 	}
 
 	c.Writer = ow
@@ -37,9 +37,9 @@ func GzipCompressionHandler(c *gin.Context) {
 			c.Writer.WriteHeader(http.StatusInternalServerError)
 			return
 		}
+		defer cr.Close()
 		// меняем тело запроса на новое
 		c.Request.Body = cr
-		defer cr.Close()
 	}
 
 	// передаём управление хендлеру

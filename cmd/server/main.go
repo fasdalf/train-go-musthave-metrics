@@ -14,12 +14,12 @@ import (
 
 func main() {
 	c := config.GetConfig()
-	slog.Debug("initializing mem storage")
+	slog.Info("initializing mem storage")
 	memStorage := metricstorage.NewMemStorageWithSave()
 
 	fileStorage := (handlers.FileStorage)(nil)
 	if c.StorageFileName != "" {
-		slog.Debug("initializing file storage")
+		slog.Info("initializing file storage")
 		fileStorageService := jsonofflinestorage.NewJSONFileStorage(memStorage, c.StorageFileName, c.StorageFileRestore, c.StorageFileStoreInterval)
 		if err := fileStorageService.Restore(); err != nil {
 			slog.Error("can not read file storage", "error", err)

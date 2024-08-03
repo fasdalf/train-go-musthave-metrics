@@ -44,6 +44,8 @@ func MetricValueResponseHandler(s Storage) func(c *gin.Context) {
 			return
 		}
 
+		// HAve to set headers *before* writing to body
+		c.Header("Content-Type", "application/json")
 		// IRL just use c.IndentedJSON(200, metric)
 		// Use encoder manually
 		enc := json.NewEncoder(c.Writer)
@@ -51,7 +53,6 @@ func MetricValueResponseHandler(s Storage) func(c *gin.Context) {
 		if err := enc.Encode(metric); err != nil {
 			slog.Error(err.Error())
 		}
-		c.Header("Content-Type", "application/json")
 
 		c.Next()
 		slog.Info("Processed OK")
