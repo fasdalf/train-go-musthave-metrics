@@ -11,7 +11,6 @@ import (
 
 const (
 	defaultAddress                  = ":8080"
-	defaultStorageFileName          = "data.json"
 	defaultStorageFileStoreInterval = 300
 	defaultStorageFileRestore       = true
 )
@@ -32,12 +31,13 @@ func GetConfig() Config {
 func init() {
 	config = &Config{}
 	// Flags
-	flag.StringVarP(&config.Addr, "address", "a", defaultAddress, fmt.Sprintf("The address to listen on for HTTP requests. Default is \"%s\"", defaultAddress))
-	flag.StringVarP(&config.StorageFileName, "filestoragepath", "f", defaultStorageFileName, fmt.Sprintf("A path and file name to store data. Default is \"%s\"", defaultStorageFileName))
-	flag.IntVarP(&config.StorageFileStoreInterval, "storeinterval", "i", defaultStorageFileStoreInterval, fmt.Sprintf("Metrics store interval in seconds. \"0\" is on every change. Default is \"%d\"", defaultStorageFileStoreInterval))
-	flag.BoolVarP(&config.StorageFileRestore, "restore", "r", defaultStorageFileRestore, fmt.Sprintf("Metrics restore from file on startup. Default is \"%v\"", defaultStorageFileRestore))
+	flag.StringVarP(&config.Addr, "address", "a", defaultAddress, "The address to listen on for HTTP requests")
+	flag.StringVarP(&config.StorageFileName, "filestoragepath", "f", "", "A path and file name to store JSON data. Leave empty to disable file storage.")
+	flag.IntVarP(&config.StorageFileStoreInterval, "storeinterval", "i", defaultStorageFileStoreInterval, "Interval in seconds to dump metrics to JSON file. \"0\" is on every change.")
+	flag.BoolVarP(&config.StorageFileRestore, "restore", "r", defaultStorageFileRestore, "Metrics restore from file on startup.")
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	flag.Parse()
+	// pflag handles --help itself.
 
 	// Env. variables. This should take over the command line. Bad practice as I know.
 	if err := env.Parse(config); err != nil {

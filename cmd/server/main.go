@@ -5,6 +5,7 @@ import (
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/config"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"log/slog"
 	"net/http"
 	"os"
@@ -13,13 +14,23 @@ import (
 
 func main() {
 	c := config.GetConfig()
+	slog.Debug("initializing mem storage")
 	memStorage := metricstorage.NewMemStorageWithSave()
-	fileStorage := jsonofflinestorage.NewJSONFileStorage(memStorage, c.StorageFileName, c.StorageFileRestore, c.StorageFileStoreInterval)
-	if err := fileStorage.Restore(); err != nil {
-		panic(err)
+
+	fileStorage := (handlers.FileStorage)(nil)
+	if c.StorageFileName != "" {
+		slog.Debug("initializing file storage")
+		fileStorageService := jsonofflinestorage.NewJSONFileStorage(memStorage, c.StorageFileName, c.StorageFileRestore, c.StorageFileStoreInterval)
+		if err := fileStorageService.Restore(); err != nil {
+			slog.Error("can not read file storage", "error", err)
+			panic(err)
+		}
+		defer fileStorageService.Save()
+		fileStorage = fileStorageService
 	}
 
-	engine := server.NewHTTPEngine(memStorage, fileStorage)
+	slog.Debug("initializing http router")
+	engine := server.NewRoutingEngine(memStorage, fileStorage)
 	srv := &http.Server{
 		Addr:    c.Addr,
 		Handler: engine,
@@ -30,19 +41,20 @@ func main() {
 
 	go func() {
 		<-quit
-		slog.Info("receive interrupt signal")
+		slog.Info("interrupt signal received")
+		signal.Stop(quit)
 		if err := srv.Close(); err != nil {
-			slog.Error("Server Close:", err)
+			slog.Error("Server close error:", "error", err)
 		}
 	}()
 
+	slog.Info("starting http server", "address", c.Addr)
 	if err := srv.ListenAndServe(); err != nil {
 		if err == http.ErrServerClosed {
-			slog.Info("Server closed under request")
+			slog.Info("Server closed by interrupt signal")
 		} else {
+			slog.Error("server not started or stopped with error", "error", err)
 			panic(err)
 		}
 	}
-
-	fileStorage.Save()
 }

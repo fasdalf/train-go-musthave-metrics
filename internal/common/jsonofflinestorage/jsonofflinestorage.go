@@ -6,6 +6,7 @@ import (
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"io"
+	"io/fs"
 	"log/slog"
 	"os"
 	"time"
@@ -87,7 +88,7 @@ func (l *JSONFileStorage) SaveWithInterval() error {
 }
 
 func (l *JSONFileStorage) Save() error {
-	file, err := os.OpenFile(l.fileName, os.O_WRONLY|os.O_CREATE, 0666)
+	file, err := os.OpenFile(l.fileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		slog.Error("Can't open file", "error", err)
 		return err
@@ -132,8 +133,12 @@ func (l *JSONFileStorage) Restore() error {
 	if !l.restore {
 		return nil
 	}
-	file, err := os.OpenFile(l.fileName, os.O_RDONLY|os.O_CREATE, 0666)
+	file, err := os.OpenFile(l.fileName, os.O_RDONLY, 0666)
 	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			slog.Warn("file does not exist, skipping JSON load", "error", err, "filename", l.fileName)
+			return nil
+		}
 		slog.Error("Can't open file", "error", err)
 		return err
 	}

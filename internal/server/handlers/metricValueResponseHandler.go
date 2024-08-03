@@ -44,22 +44,14 @@ func MetricValueResponseHandler(s Storage) func(c *gin.Context) {
 			return
 		}
 
-		// Use encoder
-		c.Header("Content-Type", "application/json")
-
+		// IRL just use c.IndentedJSON(200, metric)
+		// Use encoder manually
 		enc := json.NewEncoder(c.Writer)
 		enc.SetIndent("", "  ")
 		if err := enc.Encode(metric); err != nil {
 			slog.Error(err.Error())
 		}
-		//response, err := json.MarshalIndent(metric, "", "    ")
-		//if err != nil {
-		//	slog.Error(err.Error())
-		//}
-		//_, _ = c.Writer.Write([]byte(mValue))
-
-		// or just
-		//c.IndentedJSON(200, metric)
+		c.Header("Content-Type", "application/json")
 
 		c.Next()
 		slog.Info("Processed OK")

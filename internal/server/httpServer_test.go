@@ -84,7 +84,7 @@ func TestUpdateMetricIntegrational(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			router := NewHTTPEngine(tt.args.s, &fileStorageMock{})
+			router := NewRoutingEngine(tt.args.s, &fileStorageMock{})
 
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(http.MethodPost, tt.url, bytes.NewBuffer(tt.body))

@@ -14,6 +14,7 @@ func SaveMetricHandler(s Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		metric := &apimodels.Metrics{}
 
+		// IRL just use err := c.BindJSON(&metric); and c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
 		// use json and http on our own
 		dec := json.NewDecoder(c.Request.Body)
 		if err := dec.Decode(metric); err != nil {
@@ -21,13 +22,6 @@ func SaveMetricHandler(s Storage) func(c *gin.Context) {
 			http.Error(c.Writer, "Invalid JSON", http.StatusBadRequest)
 			return
 		}
-
-		// or just
-		//if err := c.BindJSON(&metric); err != nil {
-		//	slog.Error("can't parse JSON", "error", err)
-		//	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		//	return
-		//}
 
 		err := s.SaveCommonModel(metric)
 		if err != nil {

@@ -4,7 +4,6 @@ go 1.22.4
 
 require (
 	github.com/caarlos0/env/v6 v6.10.1
-	github.com/gin-contrib/gzip v1.0.1
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-resty/resty/v2 v2.13.1
 	github.com/samber/slog-gin v1.13.3
