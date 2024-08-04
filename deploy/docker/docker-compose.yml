@@ -19,7 +19,7 @@ services:
     depends_on:
       - db
   db:
-    image: postgres:12.1
+    image: postgres:16
     container_name: "${COMPOSE_PROJECT_NAME}_db"
     command: postgres -c logging_collector=on -c log_directory=/var/lib/pg_log -c log_filename=postgresql.log -c log_statement=all
     ports:
