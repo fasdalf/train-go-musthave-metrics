@@ -96,3 +96,151 @@ func TestUpdateMetricIntegrational(t *testing.T) {
 		})
 	}
 }
+func TestViewMetricIntegrational(t *testing.T) {
+	type want struct {
+		statusCode int
+		json       string
+		plain      string
+	}
+	tests := []struct {
+		name   string
+		method string
+		url    string
+		body   []byte
+		want   want
+	}{
+		{
+			name:   "not found GET",
+			method: http.MethodGet,
+			url:    "/value/",
+			body:   []byte("body"),
+			want:   want{statusCode: http.StatusNotFound},
+		},
+		{
+			name:   "old gauge",
+			method: http.MethodGet,
+			url:    "/value/gauge/Floating",
+			body:   []byte{},
+			want:   want{statusCode: http.StatusOK, plain: "100.001"},
+		},
+		{
+			name:   "old counter",
+			method: http.MethodGet,
+			url:    "/value/counter/Integral",
+			body:   []byte{},
+			want:   want{statusCode: http.StatusOK, plain: "10"},
+		},
+		{
+			name:   "old invalid type",
+			method: http.MethodGet,
+			url:    "/value/missing/ignored",
+			body:   []byte{},
+			want:   want{statusCode: http.StatusBadRequest},
+		},
+		{
+			name:   "old gauge not found",
+			method: http.MethodGet,
+			url:    "/value/gauge/notFloating",
+			body:   []byte{},
+			want:   want{statusCode: http.StatusNotFound},
+		},
+		{
+			name:   "old counter not found",
+			method: http.MethodGet,
+			url:    "/view/counter/notIntegral",
+			body:   []byte{},
+			want:   want{statusCode: http.StatusNotFound},
+		},
+
+		{
+			name:   "invalid POST body",
+			method: http.MethodPost,
+			url:    "/value",
+			body:   []byte("body"),
+			want:   want{statusCode: http.StatusBadRequest},
+		},
+		{
+			name:   "gauge v2",
+			method: http.MethodPost,
+			url:    "/value",
+			body:   []byte(`{"type":"gauge","id":"Floating"}`),
+			want:   want{statusCode: http.StatusOK, json: `{"type":"gauge","id":"Floating","value":100.001}`},
+		},
+		{
+			name:   "counter v2",
+			method: http.MethodPost,
+			url:    "/value",
+			body:   []byte(`{"type":"counter","id":"Integral"}`),
+			want:   want{statusCode: http.StatusOK, json: `{"type":"counter","id":"Integral","delta":10}`},
+		},
+		{
+			name:   "old invalid type",
+			method: http.MethodPost,
+			url:    "/value",
+			body:   []byte(`{"type":"invalid","id":"useless"}`),
+			want:   want{statusCode: http.StatusBadRequest},
+		},
+		{
+			name:   "old gauge not found",
+			method: http.MethodPost,
+			url:    "/value",
+			body:   []byte(`{"type":"gauge","id":"notFloating"}`),
+			want:   want{statusCode: http.StatusNotFound},
+		},
+		{
+			name:   "old counter not found",
+			method: http.MethodPost,
+			url:    "/value",
+			body:   []byte(`{"type":"counter","id":"notIntegral"}`),
+			want:   want{statusCode: http.StatusNotFound},
+		},
+		//{
+		//	name: "old NaN",
+		//	url:  "/update/counter/some-metric/NaN",
+		//	body: []byte{},
+		//	want: want{statusCode: http.StatusBadRequest, counters: 0, gauges: 0},
+		//},
+		//{
+		//	name: "gauge",
+		//	url:  "/update/",
+		//	body: []byte(`{"id": "some-metric","type": "gauge", "value": 10.001}`),
+		//	want: want{statusCode: http.StatusOK, counters: 0, gauges: 1},
+		//},
+		//{
+		//	name: "counter",
+		//	url:  "/update/",
+		//	body: []byte(`{"id": "some-metric","type": "counter", "delta": 10}`),
+		//	want: want{statusCode: http.StatusOK, counters: 1, gauges: 0},
+		//},
+		//{
+		//	name: "NaN",
+		//	url:  "/update/",
+		//	body: []byte(`{"id": "some-metric","type": "gauge", "delta": "NaN"}`),
+		//	want: want{statusCode: http.StatusBadRequest, counters: 0, gauges: 0},
+		//},
+		//{},
+	}
+
+	ms := metricstorage.NewMemStorageWithSave()
+	ms.UpdateGauge("Floating", 100.001)
+	ms.UpdateCounter("Integral", 10)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			router := NewRoutingEngine(ms, &fileStorageMock{})
+
+			w := httptest.NewRecorder()
+			req, _ := http.NewRequest(tt.method, tt.url, bytes.NewBuffer(tt.body))
+			router.ServeHTTP(w, req)
+
+			if tt.want.json != "" {
+				assert.JSONEq(t, tt.want.json, w.Body.String())
+			}
+			if tt.want.json != "" {
+				assert.JSONEq(t, tt.want.json, w.Body.String())
+			}
+
+			assert.Equal(t, tt.want.statusCode, w.Code, "Код ответа не совпадает с ожидаемым")
+		})
+	}
+}
