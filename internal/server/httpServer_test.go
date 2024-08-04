@@ -96,6 +96,7 @@ func TestUpdateMetricIntegrational(t *testing.T) {
 		})
 	}
 }
+
 func TestViewMetricIntegrational(t *testing.T) {
 	type want struct {
 		statusCode int
@@ -194,31 +195,6 @@ func TestViewMetricIntegrational(t *testing.T) {
 			body:   []byte(`{"type":"counter","id":"notIntegral"}`),
 			want:   want{statusCode: http.StatusNotFound},
 		},
-		//{
-		//	name: "old NaN",
-		//	url:  "/update/counter/some-metric/NaN",
-		//	body: []byte{},
-		//	want: want{statusCode: http.StatusBadRequest, counters: 0, gauges: 0},
-		//},
-		//{
-		//	name: "gauge",
-		//	url:  "/update/",
-		//	body: []byte(`{"id": "some-metric","type": "gauge", "value": 10.001}`),
-		//	want: want{statusCode: http.StatusOK, counters: 0, gauges: 1},
-		//},
-		//{
-		//	name: "counter",
-		//	url:  "/update/",
-		//	body: []byte(`{"id": "some-metric","type": "counter", "delta": 10}`),
-		//	want: want{statusCode: http.StatusOK, counters: 1, gauges: 0},
-		//},
-		//{
-		//	name: "NaN",
-		//	url:  "/update/",
-		//	body: []byte(`{"id": "some-metric","type": "gauge", "delta": "NaN"}`),
-		//	want: want{statusCode: http.StatusBadRequest, counters: 0, gauges: 0},
-		//},
-		//{},
 	}
 
 	ms := metricstorage.NewMemStorageWithSave()
