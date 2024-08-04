@@ -203,7 +203,7 @@ func TestViewMetricIntegrational(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			router := NewRoutingEngine(ms, &fileStorageMock{})
+			router := NewRoutingEngine(ms, &fileStorageMock{}, nil)
 
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(tt.method, tt.url, bytes.NewBuffer(tt.body))
