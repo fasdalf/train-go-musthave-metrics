@@ -9,4 +9,6 @@ echo "starting metricstest ..." && \
     -agent-binary-path=cmd/agent/agent \
     -binary-path=cmd/server/server \
     -source-path=. \
-    -server-port=46011
+    -server-port=46011 \
+    -file-storage-path=other.json \
+    -database-dsn='postgres://postgres:postgresP@$@train-go-musthave-metrics_db:5432/postgres_metrics?sslmode=disable' \
