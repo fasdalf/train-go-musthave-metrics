@@ -16,10 +16,9 @@ func NewRoutingEngine(ms handlers.Storage, fs handlers.FileStorage) *gin.Engine 
 	// "We have it at home" compression. Uses .../compressWriter.go and .../gzipCompressionHandler.go
 	ginCore.Use(handlers.GzipCompressionHandler)
 
-	// check with and w/o trailing slash
 	ginCore.GET("/", gin.WrapF(handlers.NewIndexHandler(ms)))
 	ginCore.GET(fmt.Sprintf("/value/:%s/:%s", handlers.URLParamType, handlers.URLParamName), handlers.NewViewStatsHandler(ms))
-	ginCore.POST("/value/", handlers.CheckMetricExistenceHandler(ms), handlers.MetricValueResponseHandler(ms))
+	ginCore.POST("/value", handlers.CheckMetricExistenceHandler(ms), handlers.MetricValueResponseHandler(ms))
 	ginCore.POST(fmt.Sprintf("/update/:%s/:%s/:%s", handlers.URLParamType, handlers.URLParamName, handlers.URLParamValue), handlers.NewUpdateMetricHandler(ms))
 	updatePipeline := []gin.HandlerFunc{handlers.SaveMetricHandler(ms), handlers.MetricValueResponseHandler(ms)}
 	if fs != nil {
