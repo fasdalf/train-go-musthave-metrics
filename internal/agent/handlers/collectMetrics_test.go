@@ -7,7 +7,7 @@ import (
 )
 
 func TestCollectMetrics(t *testing.T) {
-	s := metricstorage.NewMemStorageWithSave()
+	s := metricstorage.NewMemStorage()
 	CollectMetrics(s)
 	assert.Equal(t, len(s.ListCounters()), 1)
 	assert.Equal(t, len(s.ListGauges()), 28)

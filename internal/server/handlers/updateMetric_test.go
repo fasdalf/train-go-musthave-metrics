@@ -27,25 +27,25 @@ func TestUpdateMetricHandler(t *testing.T) {
 		{
 			name:  "empty",
 			vType: "", vName: "", vValue: "",
-			args: args{metricstorage.NewMemStorageWithSave()},
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
 			want: want{statusCode: http.StatusNotFound, counters: 0, gauges: 0},
 		},
 		{
 			name:  "valid gauge",
 			vType: "gauge", vName: "some-metric", vValue: "10.001",
-			args: args{metricstorage.NewMemStorageWithSave()},
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
 			want: want{statusCode: http.StatusOK, counters: 0, gauges: 1},
 		},
 		{
 			name:  "valid counter",
 			vType: "counter", vName: "some-metric", vValue: "10",
-			args: args{metricstorage.NewMemStorageWithSave()},
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
 			want: want{statusCode: http.StatusOK, counters: 1, gauges: 0},
 		},
 		{
 			name:  "NaN counter",
 			vType: "counter", vName: "some-metric", vValue: "NaN",
-			args: args{metricstorage.NewMemStorageWithSave()},
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
 			want: want{statusCode: http.StatusBadRequest, counters: 0, gauges: 0},
 		},
 	}

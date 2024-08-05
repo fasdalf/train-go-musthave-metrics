@@ -1,13 +1,14 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/config"
-	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"log/slog"
 	"net/http"
 	"os"
@@ -17,12 +18,38 @@ import (
 func main() {
 	c := config.GetConfig()
 	slog.Info("initializing mem storage")
-	memStorage := metricstorage.NewMemStorageWithSave()
+
+	metricStorage := (*metricstorage.SavableModelStorage)(nil)
+
+	db := (*sql.DB)(nil)
+	if c.StorageDBDSN != "" {
+		slog.Info("initializing database connection", "DATABASE_DSN", c.StorageDBDSN)
+		err := error(nil)
+		db, err = sql.Open("pgx", c.StorageDBDSN)
+		if err != nil {
+			slog.Error("can not connect to DB", "error", err)
+
+			panic(err)
+		}
+
+		defer db.Close()
+
+		dbStorage, err := metricstorage.NewDBStorage(db, context.Background())
+		if err != nil {
+			slog.Error("can not init DB", "error", err)
+			panic(err)
+		}
+		metricStorage = metricstorage.NewSavableModelStorage(dbStorage)
+	}
+
+	if metricStorage == nil {
+		metricStorage = metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())
+	}
 
 	fileStorage := (handlers.FileStorage)(nil)
-	if c.StorageFileName != "" {
+	if c.StorageFileName != "" && db == nil {
 		slog.Info("initializing file storage")
-		fileStorageService := jsonofflinestorage.NewJSONFileStorage(memStorage, c.StorageFileName, c.StorageFileRestore, c.StorageFileStoreInterval)
+		fileStorageService := jsonofflinestorage.NewJSONFileStorage(metricStorage, c.StorageFileName, c.StorageFileRestore, c.StorageFileStoreInterval)
 		if err := fileStorageService.Restore(); err != nil {
 			slog.Error("can not read file storage", "error", err)
 			panic(err)
@@ -31,19 +58,8 @@ func main() {
 		fileStorage = fileStorageService
 	}
 
-	db := (*sql.DB)(nil)
-	if c.StorageDBDSN != "" {
-		err := error(nil)
-		db, err = sql.Open("pgx", c.StorageDBDSN)
-		if err != nil {
-			panic(err)
-		}
-
-		defer db.Close()
-	}
-
 	slog.Debug("initializing http router")
-	engine := server.NewRoutingEngine(memStorage, fileStorage, db)
+	engine := server.NewRoutingEngine(metricStorage, fileStorage, db)
 	srv := &http.Server{
 		Addr:    c.Addr,
 		Handler: engine,
