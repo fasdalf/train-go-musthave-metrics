@@ -27,5 +27,10 @@ func NewRoutingEngine(ms handlers.Storage, fs handlers.FileStorage, db *sql.DB) 
 		updatePipeline = append(updatePipeline, handlers.NewSaveToFileHandler(fs))
 	}
 	ginCore.POST("/update/", updatePipeline...)
+	updatesPipeline := []gin.HandlerFunc{handlers.SaveMetricsHandler(ms)}
+	if fs != nil {
+		updatesPipeline = append(updatesPipeline, handlers.NewSaveToFileHandler(fs))
+	}
+	ginCore.POST("/updates/", updatesPipeline...)
 	return ginCore
 }

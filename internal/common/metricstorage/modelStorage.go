@@ -58,3 +58,15 @@ func (s *SavableModelStorage) SaveCommonModel(metric *apimodels.Metrics) error {
 
 	return nil
 }
+
+// SaveCommonModels save slice of standard models or throw error
+func (s *SavableModelStorage) SaveCommonModels(metrics []apimodels.Metrics) error {
+	// TODO: add OnStart, OnFail, OnSuccess callbacks in storages and use a context.
+	for _, m := range metrics {
+		if err := s.SaveCommonModel(&m); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}

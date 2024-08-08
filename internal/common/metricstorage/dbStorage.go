@@ -75,7 +75,7 @@ func (s *DBStorage) UpdateGauge(key string, value float64) {
 	_, err := s.db.Exec(`
         INSERT INTO gauge (name, value)
 		VALUES (@name, @value)
-		ON CONFLICT (name) DO UPDATE SET gauge.value = EXCLUDED.value;
+		ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value;
     `, pgx.NamedArgs{"name": key, "value": value})
 	if err != nil {
 		slog.Error("UpdateGauge failed", "error", err)

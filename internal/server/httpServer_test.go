@@ -81,6 +81,13 @@ func TestUpdateMetricIntegrational(t *testing.T) {
 			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
 			want: want{statusCode: http.StatusBadRequest, counters: 0, gauges: 0},
 		},
+		{
+			name: "batch success",
+			url:  "/updates/",
+			body: []byte(`[{"id": "some-metric","type": "counter", "delta": 10},{"id": "some-gauge","type": "gauge", "value": 100.01}]`),
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
+			want: want{statusCode: http.StatusOK, counters: 1, gauges: 1},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -12,6 +12,7 @@ type Storage interface {
 	ListGauges() []string
 	ListCounters() []string
 	SaveCommonModel(metric *apimodels.Metrics) error
+	SaveCommonModels(metrics []apimodels.Metrics) error
 }
 
 type FileStorage interface {
