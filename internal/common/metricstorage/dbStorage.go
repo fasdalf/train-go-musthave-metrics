@@ -39,22 +39,34 @@ func (s *DBStorage) Bootstrap(ctx context.Context) error {
 	defer tx.Rollback()
 
 	// создаём таблицу целочисленных счетчиков и необходимый индекс
-	tx.ExecContext(ctx, `
+	_, err = tx.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS gauge (
 			name varchar(250) NOT NULL,
 			value double PRECISION NOT NULL
 		)
     `)
-	tx.ExecContext(ctx, `CREATE UNIQUE INDEX IF NOT EXISTS gauge_name_udx ON gauge (name)`)
+	if err != nil {
+		return err
+	}
+	_, err = tx.ExecContext(ctx, `CREATE UNIQUE INDEX IF NOT EXISTS gauge_name_udx ON gauge (name)`)
+	if err != nil {
+		return err
+	}
 
 	// создаём таблицу дробных счетчиков и необходимый индекс
-	tx.ExecContext(ctx, `
+	_, err = tx.ExecContext(ctx, `
 		CREATE TABLE IF NOT EXISTS counter (
 			name varchar(250) NOT NULL,
 			value bigint NOT NULL
 		)
     `)
-	tx.ExecContext(ctx, `CREATE UNIQUE INDEX IF NOT EXISTS counter_name_udx ON counter (name)`)
+	if err != nil {
+		return err
+	}
+	_, err = tx.ExecContext(ctx, `CREATE UNIQUE INDEX IF NOT EXISTS counter_name_udx ON counter (name)`)
+	if err != nil {
+		return err
+	}
 
 	// коммитим транзакцию
 	return tx.Commit()
@@ -75,7 +87,7 @@ func (s *DBStorage) UpdateGauge(key string, value float64) {
 	_, err := s.db.Exec(`
         INSERT INTO gauge (name, value)
 		VALUES (@name, @value)
-		ON CONFLICT (name) DO UPDATE SET gauge.value = EXCLUDED.value;
+		ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value;
     `, pgx.NamedArgs{"name": key, "value": value})
 	if err != nil {
 		slog.Error("UpdateGauge failed", "error", err)

@@ -18,7 +18,7 @@ import (
 
 func main() {
 	c := config.GetConfig()
-	slog.Info("initializing mem storage")
+	slog.Info("initializing server")
 
 	retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
 	metricStorage := (*metricstorage.SavableModelStorage)(nil)
@@ -45,6 +45,7 @@ func main() {
 	}
 
 	if metricStorage == nil {
+		slog.Info("initializing in-mem storage")
 		metricStorage = metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())
 	}
 
