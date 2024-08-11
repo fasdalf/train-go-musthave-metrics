@@ -1,6 +1,8 @@
 package retryattempt
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"time"
 )
@@ -13,21 +15,34 @@ func NewRetryer(delays []time.Duration) *Retryer {
 	return &Retryer{delays: delays}
 }
 
+func NewOneAttemptRetryer() *Retryer {
+	return NewRetryer([]time.Duration{})
+}
+
 // Try Attempts retryable operation. Returns retry attempts count always and error on fail.
-func (r *Retryer) Try(do func() error, isRetryable func(err error) bool) (int, error) {
+func (r *Retryer) Try(ctx context.Context, do func() error, isRetryable func(err error) bool) (int, error) {
+	tmr := time.NewTimer(0)
+	tmr.Stop()
 	for i := 0; i <= len(r.delays); i++ {
 		if err := do(); err != nil {
 			if !isRetryable(err) {
-				return i, fmt.Errorf("retry attempt #%d was not recoverable: %w", i+1, err)
+				return i, fmt.Errorf("(retry) attempt #%d was not recoverable: %w", i+1, err)
 			}
 
 			if i == len(r.delays) {
-				return i, fmt.Errorf("retry attempt #%d all attempts made, last error: %w", i+1, err)
+				return i, fmt.Errorf("(retry) attempt #%d all attempts made, last error: %w", i+1, err)
 			}
 
 			delay := r.delays[i]
-			time.Sleep(delay)
-			continue
+
+			tmr.Reset(delay)
+			select {
+			case <-ctx.Done():
+				return i, errors.Join(fmt.Errorf("(retry) attempt #%d context exceeded after error: %w", i+1, err), context.DeadlineExceeded)
+			case <-tmr.C:
+				tmr.Stop()
+				continue
+			}
 		}
 
 		return i, nil

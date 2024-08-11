@@ -36,7 +36,7 @@ func main() {
 
 		defer db.Close()
 
-		dbStorage, err := metricstorage.NewDBStorage(db, context.Background(), retryer)
+		dbStorage, err := metricstorage.NewDBStorage(db, context.Background())
 		if err != nil {
 			slog.Error("can not init DB", "error", err)
 			panic(err)
@@ -68,7 +68,7 @@ func main() {
 	}
 
 	slog.Debug("initializing http router")
-	engine := server.NewRoutingEngine(metricStorage, savedChan, db)
+	engine := server.NewRoutingEngine(metricStorage, savedChan, db, retryer)
 	srv := &http.Server{
 		Addr:    c.Addr,
 		Handler: engine,

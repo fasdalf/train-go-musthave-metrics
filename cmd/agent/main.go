@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/config"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
@@ -17,7 +18,7 @@ func main() {
 	retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
 
 	time.AfterFunc(100*time.Millisecond, func() {
-		go sendMetricsRoutine(memStorage, address, sendInterval, retryer)
+		go sendMetricsRoutine(context.TODO(), memStorage, address, sendInterval, retryer)
 	})
 	for {
 		handlers.CollectMetrics(memStorage)
@@ -26,9 +27,9 @@ func main() {
 	}
 }
 
-func sendMetricsRoutine(storage handlers.Storage, address string, sendInterval time.Duration, retryer handlers.Retryer) {
+func sendMetricsRoutine(ctx context.Context, storage handlers.Storage, address string, sendInterval time.Duration, retryer handlers.Retryer) {
 	for {
-		handlers.SendMetrics(storage, address, retryer)
+		handlers.SendMetrics(ctx, storage, address, retryer)
 
 		slog.Info(`sender sleeping`, `delay`, sendInterval)
 		time.Sleep(sendInterval)

@@ -3,6 +3,7 @@ package handlers
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -18,13 +19,13 @@ import (
 const URLTemplate = "http://%s/updates/"
 
 type Retryer interface {
-	Try(do func() error, isRetryable func(err error) bool) (int, error)
+	Try(ctx context.Context, do func() error, isRetryable func(err error) bool) (int, error)
 }
 
-var TransportError = errors.New("resty error")
+var ErrTransport = errors.New("resty error")
 
 // SendMetrics sends pre collected metrics to server
-func SendMetrics(s Storage, address string, r Retryer) {
+func SendMetrics(ctx context.Context, s Storage, address string, r Retryer) {
 	slog.Info("Sending metricUpdates")
 	address = fmt.Sprintf(URLTemplate, address)
 
@@ -52,7 +53,7 @@ func SendMetrics(s Storage, address string, r Retryer) {
 
 		content, err := json.Marshal(metricUpdates)
 		if err != nil {
-			return errors.Join(fmt.Errorf("encoding request: %w", err), TransportError)
+			return errors.Join(fmt.Errorf("encoding request: %w", err), ErrTransport)
 		}
 		body := new(bytes.Buffer)
 		zb := gzip.NewWriter(body)
@@ -92,7 +93,7 @@ func SendMetrics(s Storage, address string, r Retryer) {
 		return false
 	}
 
-	if _, err := r.Try(doJob, isRecoverable); err != nil {
+	if _, err := r.Try(ctx, doJob, isRecoverable); err != nil {
 		slog.Info("SendMetrics error", "error", err)
 	}
 }

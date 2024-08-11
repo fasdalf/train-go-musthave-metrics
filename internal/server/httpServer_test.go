@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -91,7 +92,7 @@ func TestUpdateMetricIntegrational(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			router := NewRoutingEngine(tt.args.s, nil, nil)
+			router := NewRoutingEngine(tt.args.s, nil, nil, retryattempt.NewOneAttemptRetryer())
 
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(http.MethodPost, tt.url, bytes.NewBuffer(tt.body))
@@ -210,7 +211,7 @@ func TestViewMetricIntegrational(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			router := NewRoutingEngine(ms, nil, nil)
+			router := NewRoutingEngine(ms, nil, nil, retryattempt.NewOneAttemptRetryer())
 
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(tt.method, tt.url, bytes.NewBuffer(tt.body))

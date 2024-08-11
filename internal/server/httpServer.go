@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRoutingEngine(ms handlers.Storage, saved jsonofflinestorage.SavedChan, db *sql.DB) *gin.Engine {
+func NewRoutingEngine(ms handlers.Storage, saved jsonofflinestorage.SavedChan, db *sql.DB, retryer handlers.Retryer) *gin.Engine {
 	ginCore := gin.New()
 	ginCore.Use(gin.Recovery())
 	// IRL just use ginCore.Use(slogGin.New(slog.Default())) from slogGin "github.com/samber/slog-gin"
@@ -28,7 +28,7 @@ func NewRoutingEngine(ms handlers.Storage, saved jsonofflinestorage.SavedChan, d
 		updatePipeline = append(updatePipeline, handlers.NewSaveToFileHandler(saved))
 	}
 	ginCore.POST("/update/", updatePipeline...)
-	updatesPipeline := []gin.HandlerFunc{handlers.SaveMetricsHandler(ms)}
+	updatesPipeline := []gin.HandlerFunc{handlers.SaveMetricsHandler(ms, retryer)}
 	if saved != nil {
 		updatesPipeline = append(updatesPipeline, handlers.NewSaveToFileHandler(saved))
 	}
