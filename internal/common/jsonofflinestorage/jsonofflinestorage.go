@@ -138,6 +138,4 @@ func (l *JSONFileStorage) SaverRoutine(saved SavedChan) error {
 			t.Reset(l.storeInterval)
 		}
 	}
-
-	return nil
 }
