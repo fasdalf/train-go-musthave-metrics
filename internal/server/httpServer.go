@@ -3,11 +3,12 @@ package server
 import (
 	"database/sql"
 	"fmt"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"github.com/gin-gonic/gin"
 )
 
-func NewRoutingEngine(ms handlers.Storage, fs handlers.FileStorage, db *sql.DB) *gin.Engine {
+func NewRoutingEngine(ms handlers.Storage, saved jsonofflinestorage.SavedChan, db *sql.DB) *gin.Engine {
 	ginCore := gin.New()
 	ginCore.Use(gin.Recovery())
 	// IRL just use ginCore.Use(slogGin.New(slog.Default())) from slogGin "github.com/samber/slog-gin"
@@ -23,13 +24,13 @@ func NewRoutingEngine(ms handlers.Storage, fs handlers.FileStorage, db *sql.DB) 
 	ginCore.POST("/value", handlers.CheckMetricExistenceHandler(ms), handlers.MetricValueResponseHandler(ms))
 	ginCore.POST(fmt.Sprintf("/update/:%s/:%s/:%s", handlers.URLParamType, handlers.URLParamName, handlers.URLParamValue), handlers.NewUpdateMetricHandler(ms))
 	updatePipeline := []gin.HandlerFunc{handlers.SaveMetricHandler(ms), handlers.MetricValueResponseHandler(ms)}
-	if fs != nil {
-		updatePipeline = append(updatePipeline, handlers.NewSaveToFileHandler(fs))
+	if saved != nil {
+		updatePipeline = append(updatePipeline, handlers.NewSaveToFileHandler(saved))
 	}
 	ginCore.POST("/update/", updatePipeline...)
 	updatesPipeline := []gin.HandlerFunc{handlers.SaveMetricsHandler(ms)}
-	if fs != nil {
-		updatesPipeline = append(updatesPipeline, handlers.NewSaveToFileHandler(fs))
+	if saved != nil {
+		updatesPipeline = append(updatesPipeline, handlers.NewSaveToFileHandler(saved))
 	}
 	ginCore.POST("/updates/", updatesPipeline...)
 	return ginCore

@@ -3,7 +3,10 @@ package metricstorage
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"log/slog"
 )
@@ -11,11 +14,17 @@ import (
 // DBStorage store metrics in DB
 // TODO: use context and handle errors in all methods.
 type DBStorage struct {
+	r  Retryer
 	db *sql.DB
 }
 
-func NewDBStorage(db *sql.DB, ctx context.Context) (s *DBStorage, err error) {
+type Retryer interface {
+	Try(do func() error, isRetryable func(err error) bool) (int, error)
+}
+
+func NewDBStorage(db *sql.DB, ctx context.Context, retryer Retryer) (s *DBStorage, err error) {
 	s = &DBStorage{
+		r:  retryer,
 		db: db,
 	}
 
@@ -61,23 +70,29 @@ func (s *DBStorage) Bootstrap(ctx context.Context) error {
 }
 
 func (s *DBStorage) UpdateCounter(key string, value int) {
-	_, err := s.db.Exec(`
-        INSERT INTO counter (name, value)
-		VALUES (@name, @value)
-		ON CONFLICT (name) DO UPDATE SET value = counter.value+EXCLUDED.value;
-    `, pgx.NamedArgs{"name": key, "value": value})
-	if err != nil {
+	doJob := func() error {
+		_, err := s.db.Exec(`
+			INSERT INTO counter (name, value)
+			VALUES (@name, @value)
+			ON CONFLICT (name) DO UPDATE SET value = counter.value+EXCLUDED.value;
+		`, pgx.NamedArgs{"name": key, "value": value})
+		return err
+	}
+	if _, err := s.r.Try(doJob, isPgConnectionError); err != nil {
 		slog.Error("UpdateCounter failed", "error", err)
 	}
 }
 
 func (s *DBStorage) UpdateGauge(key string, value float64) {
-	_, err := s.db.Exec(`
-        INSERT INTO gauge (name, value)
-		VALUES (@name, @value)
-		ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value;
-    `, pgx.NamedArgs{"name": key, "value": value})
-	if err != nil {
+	doJob := func() error {
+		_, err := s.db.Exec(`
+			INSERT INTO gauge (name, value)
+			VALUES (@name, @value)
+			ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value;
+		`, pgx.NamedArgs{"name": key, "value": value})
+		return err
+	}
+	if _, err := s.r.Try(doJob, isPgConnectionError); err != nil {
 		slog.Error("UpdateGauge failed", "error", err)
 	}
 }
@@ -188,4 +203,12 @@ func (s *DBStorage) ListCounters() []string {
 	}
 
 	return keys
+}
+
+func isPgConnectionError(err error) bool {
+	pgErr := (*pgconn.PgError)(nil)
+	if errors.As(err, &pgErr); pgErr != nil && pgerrcode.IsConnectionException(pgErr.Code) {
+		return true
+	}
+	return false
 }

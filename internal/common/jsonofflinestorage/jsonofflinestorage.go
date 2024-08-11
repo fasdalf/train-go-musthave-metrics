@@ -25,7 +25,6 @@ type JSONFileStorage struct {
 	fileName      string
 	restore       bool
 	storeInterval time.Duration
-	lastStore     time.Time
 }
 
 func NewJSONFileStorage(storage Storage, fileName string, restore bool, storeInterval int) *JSONFileStorage {
@@ -35,56 +34,6 @@ func NewJSONFileStorage(storage Storage, fileName string, restore bool, storeInt
 		restore:       restore,
 		storeInterval: time.Duration(storeInterval) * time.Second,
 	}
-}
-
-func (l *JSONFileStorage) SaveWith2Buffers() error {
-	now := time.Now()
-	if l.lastStore.Add(l.storeInterval).After(now) {
-		return nil
-	}
-
-	dump := []apimodels.Metrics{}
-
-	for _, key := range l.storage.ListGauges() {
-		g := l.storage.GetGauge(key)
-		dump = append(dump, apimodels.Metrics{
-			ID:    key,
-			MType: constants.GaugeStr,
-			Delta: nil,
-			Value: &g,
-		})
-	}
-	for _, key := range l.storage.ListCounters() {
-		c := int64(l.storage.GetCounter(key))
-		dump = append(dump, apimodels.Metrics{
-			ID:    key,
-			MType: constants.CounterStr,
-			Delta: &c,
-			Value: nil,
-		})
-	}
-
-	body, err := json.MarshalIndent(dump, "", "  ")
-	if err != nil {
-		slog.Error("Can't generate JSON", "error", err)
-		return err
-	}
-	err = os.WriteFile(l.fileName, body, 0660)
-	if err != nil {
-		slog.Error("Can't write to file", "error", err)
-		return err
-	}
-
-	l.lastStore = now
-	return nil
-}
-
-func (l *JSONFileStorage) SaveWithInterval() error {
-	if l.storeInterval > 0 && l.lastStore.Add(l.storeInterval).After(time.Now()) {
-		return nil
-	}
-
-	return l.Save()
 }
 
 func (l *JSONFileStorage) Save() error {
@@ -125,7 +74,6 @@ func (l *JSONFileStorage) Save() error {
 	}
 
 	slog.Info("Saved to file", "file", l.fileName, "error", err)
-	l.lastStore = time.Now()
 	return nil
 }
 
@@ -163,5 +111,33 @@ func (l *JSONFileStorage) Restore() error {
 	}
 
 	slog.Info("Restored from file", "file", l.fileName)
+	return nil
+}
+
+type SavedChan = chan struct{}
+
+func (l *JSONFileStorage) SaverRoutine(saved SavedChan) error {
+	t := time.NewTimer(l.storeInterval)
+	t.Stop()
+	if l.storeInterval > 0 {
+		t.Reset(l.storeInterval)
+	}
+
+	for {
+		select {
+		case <-saved:
+		case <-t.C:
+		}
+
+		if err := l.Save(); err != nil {
+			slog.Error("SaverRoutine error", "error", err)
+		}
+
+		if l.storeInterval > 0 {
+			t.Stop()
+			t.Reset(l.storeInterval)
+		}
+	}
+
 	return nil
 }

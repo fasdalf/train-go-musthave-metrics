@@ -19,8 +19,7 @@ func SaveMetricsHandler(s Storage) func(c *gin.Context) {
 			return
 		}
 
-		err := s.SaveCommonModels(metrics)
-		if err != nil {
+		if err := s.SaveCommonModels(metrics); err != nil {
 			slog.Error("can't save metrics", "error", err)
 			_ = c.AbortWithError(http.StatusBadRequest, errors.New("can't save metrics"))
 			return

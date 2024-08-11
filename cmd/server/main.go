@@ -5,20 +5,22 @@ import (
 	"database/sql"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/config"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
+	"time"
 )
 
 func main() {
 	c := config.GetConfig()
 	slog.Info("initializing mem storage")
 
+	retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
 	metricStorage := (*metricstorage.SavableModelStorage)(nil)
 
 	db := (*sql.DB)(nil)
@@ -34,7 +36,7 @@ func main() {
 
 		defer db.Close()
 
-		dbStorage, err := metricstorage.NewDBStorage(db, context.Background())
+		dbStorage, err := metricstorage.NewDBStorage(db, context.Background(), retryer)
 		if err != nil {
 			slog.Error("can not init DB", "error", err)
 			panic(err)
@@ -46,7 +48,7 @@ func main() {
 		metricStorage = metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())
 	}
 
-	fileStorage := (handlers.FileStorage)(nil)
+	savedChan := (jsonofflinestorage.SavedChan)(nil)
 	if c.StorageFileName != "" && db == nil {
 		slog.Info("initializing file storage")
 		fileStorageService := jsonofflinestorage.NewJSONFileStorage(metricStorage, c.StorageFileName, c.StorageFileRestore, c.StorageFileStoreInterval)
@@ -55,11 +57,18 @@ func main() {
 			panic(err)
 		}
 		defer fileStorageService.Save()
-		fileStorage = fileStorageService
+
+		savedChan = make(jsonofflinestorage.SavedChan)
+		go func() {
+			err := fileStorageService.SaverRoutine(savedChan)
+			if err != nil {
+				slog.Error("async saver failed", "error", err)
+			}
+		}()
 	}
 
 	slog.Debug("initializing http router")
-	engine := server.NewRoutingEngine(metricStorage, fileStorage, db)
+	engine := server.NewRoutingEngine(metricStorage, savedChan, db)
 	srv := &http.Server{
 		Addr:    c.Addr,
 		Handler: engine,
