@@ -47,7 +47,14 @@ main:
 	}
 }
 
-func sendMetrics(ctx context.Context, storage handlers.Storage, address string, sendInterval time.Duration, retryer handlers.Retryer) {
+func sendMetrics(
+	ctx context.Context,
+	storage handlers.Storage,
+	address string,
+	sendInterval time.Duration,
+	retryer handlers.Retryer,
+	key string,
+) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -56,6 +63,6 @@ func sendMetrics(ctx context.Context, storage handlers.Storage, address string, 
 		}
 		slog.Info(`sender sleeping`, `delay`, sendInterval)
 		time.Sleep(sendInterval)
-		handlers.SendMetrics(ctx, storage, address, retryer)
+		handlers.SendMetrics(ctx, storage, address, retryer, key)
 	}
 }
