@@ -63,8 +63,10 @@ func TestUpdateMetricHandler(t *testing.T) {
 			handler := NewUpdateMetricHandler(tt.args.s)
 			handler(c)
 			assert.Equal(t, tt.want.statusCode, w.Code, "Код ответа не совпадает с ожидаемым")
-			assert.Equal(t, tt.want.gauges, len(tt.args.s.ListGauges()), "Got unexpected amount of gauges")
-			assert.Equal(t, tt.want.counters, len(tt.args.s.ListCounters()), "Got unexpected amount of counters")
+			l, _ := tt.args.s.ListGauges()
+			assert.Equal(t, tt.want.gauges, len(l), "Got unexpected amount of gauges")
+			l, _ = tt.args.s.ListCounters()
+			assert.Equal(t, tt.want.counters, len(l), "Got unexpected amount of counters")
 		})
 	}
 }

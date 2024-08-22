@@ -1,22 +1,25 @@
 package jsonofflinestorage
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"io"
 	"io/fs"
 	"log/slog"
 	"os"
+	"sync"
 	"time"
 )
 
 type Storage interface {
-	GetCounter(key string) int
-	GetGauge(key string) float64
-	ListGauges() []string
-	ListCounters() []string
+	GetCounter(key string) (int, error)
+	GetGauge(key string) (float64, error)
+	ListGauges() ([]string, error)
+	ListCounters() ([]string, error)
 	SaveCommonModel(metric *apimodels.Metrics) error
 }
 
@@ -25,6 +28,7 @@ type JSONFileStorage struct {
 	fileName      string
 	restore       bool
 	storeInterval time.Duration
+	mu            *sync.Mutex
 }
 
 func NewJSONFileStorage(storage Storage, fileName string, restore bool, storeInterval int) *JSONFileStorage {
@@ -33,21 +37,30 @@ func NewJSONFileStorage(storage Storage, fileName string, restore bool, storeInt
 		fileName:      fileName,
 		restore:       restore,
 		storeInterval: time.Duration(storeInterval) * time.Second,
+		mu:            new(sync.Mutex),
 	}
 }
 
 func (l *JSONFileStorage) Save() error {
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	file, err := os.OpenFile(l.fileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
-		slog.Error("Can't open file", "error", err)
-		return err
+		return fmt.Errorf("can't open file: %w", err)
 	}
 	defer file.Close()
 
 	encoder := json.NewEncoder(file)
 
-	for _, key := range l.storage.ListGauges() {
-		g := l.storage.GetGauge(key)
+	list, err := l.storage.ListGauges()
+	if err != nil {
+		return fmt.Errorf("can't ListGauges: %w", err)
+	}
+	for _, key := range list {
+		g, err := l.storage.GetGauge(key)
+		if err != nil {
+			return fmt.Errorf("can't GetGauge: %w", err)
+		}
 		err = encoder.Encode(apimodels.Metrics{
 			ID:    key,
 			MType: constants.GaugeStr,
@@ -55,21 +68,28 @@ func (l *JSONFileStorage) Save() error {
 			Value: &g,
 		})
 		if err != nil {
-			slog.Error("Can't write JSON", "error", err)
-			return err
+			return fmt.Errorf("can't write JSON: %w", err)
 		}
 	}
-	for _, key := range l.storage.ListCounters() {
-		c := int64(l.storage.GetCounter(key))
+
+	list, err = l.storage.ListCounters()
+	if err != nil {
+		return fmt.Errorf("can't ListCounters: %w", err)
+	}
+	for _, key := range list {
+		c, err := l.storage.GetCounter(key)
+		if err != nil {
+			return fmt.Errorf("can't GetCounter: %w", err)
+		}
+		c64 := int64(c)
 		err = encoder.Encode(apimodels.Metrics{
 			ID:    key,
 			MType: constants.CounterStr,
-			Delta: &c,
+			Delta: &c64,
 			Value: nil,
 		})
 		if err != nil {
-			slog.Error("Can't write JSON", "error", err)
-			return err
+			return fmt.Errorf("can't write JSON: %w", err)
 		}
 	}
 
@@ -87,8 +107,7 @@ func (l *JSONFileStorage) Restore() error {
 			slog.Warn("file does not exist, skipping JSON load", "error", err, "filename", l.fileName)
 			return nil
 		}
-		slog.Error("Can't open file", "error", err)
-		return err
+		return fmt.Errorf("can't open file: %w", err)
 	}
 	defer file.Close()
 
@@ -100,13 +119,11 @@ func (l *JSONFileStorage) Restore() error {
 			// just done.
 			break
 		} else if err != nil {
-			slog.Error("Can't decode json", "error", err)
-			return err
+			return fmt.Errorf("can't decode json: %w", err)
 		}
 
 		if err = l.storage.SaveCommonModel(v); err != nil {
-			slog.Error("Can't save value", "error", err)
-			return err
+			return fmt.Errorf("can't save value: %w", err)
 		}
 	}
 
@@ -116,26 +133,40 @@ func (l *JSONFileStorage) Restore() error {
 
 type SavedChan = chan struct{}
 
-func (l *JSONFileStorage) SaverRoutine(saved SavedChan) error {
-	t := time.NewTimer(l.storeInterval)
-	t.Stop()
+func (l *JSONFileStorage) SaveMetrics(ctx context.Context, saved SavedChan, wg *sync.WaitGroup) error {
+	defer wg.Done()
+	do := true
 	if l.storeInterval > 0 {
-		t.Reset(l.storeInterval)
+		t := time.NewTimer(l.storeInterval)
+		defer t.Stop()
+		for do {
+			select {
+			case <-ctx.Done():
+				do = false
+			case <-t.C:
+			}
+
+			if err := l.Save(); err != nil {
+				slog.Error("SaveMetrics error", "error", err)
+			}
+
+			if do {
+				t.Reset(l.storeInterval)
+			}
+		}
+		return nil
 	}
 
-	for {
+	for do {
 		select {
+		case <-ctx.Done():
+			do = false
 		case <-saved:
-		case <-t.C:
 		}
 
 		if err := l.Save(); err != nil {
-			slog.Error("SaverRoutine error", "error", err)
-		}
-
-		if l.storeInterval > 0 {
-			t.Stop()
-			t.Reset(l.storeInterval)
+			slog.Error("SaveMetrics error", "error", err)
 		}
 	}
+	return nil
 }

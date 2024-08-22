@@ -51,6 +51,10 @@ func SendMetrics(ctx context.Context, s Storage, address string, r Retryer) {
 			})
 		}
 
+		if len(metricUpdates) == 0 {
+			return nil
+		}
+
 		content, err := json.Marshal(metricUpdates)
 		if err != nil {
 			return errors.Join(fmt.Errorf("encoding request: %w", err), ErrTransport)

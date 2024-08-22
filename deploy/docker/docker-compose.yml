@@ -13,7 +13,7 @@ services:
       - ../../.env
     ports:
       - "${HTTP_EXTERNAL_PORT}:8080"
-      - "${DELVE_EXTERNAL_PORT}:40000"
+      - "${DELVE_EXTERNAL_PORT}:2345"
     volumes:
       - ./../../:/go/src/app
     depends_on:

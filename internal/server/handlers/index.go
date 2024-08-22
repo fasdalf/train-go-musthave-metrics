@@ -28,13 +28,38 @@ func NewIndexHandler(ms Storage) http.HandlerFunc {
 		}
 		slog.Info("showing index")
 
+		l, err := ms.ListGauges()
+		if err != nil {
+			slog.Error("can't list gauges", "error", err)
+			http.Error(w, `unexpected error`, http.StatusInternalServerError)
+			return
+		}
 		gauges := ""
-		for _, key := range ms.ListGauges() {
-			gauges += fmt.Sprintf(rowTemplate, key, fmt.Sprint(ms.GetGauge(key)))
+		for _, key := range l {
+			v, err := ms.GetGauge(key)
+			if err != nil {
+				slog.Error("can't get gauge", "name", key, "error", err)
+				http.Error(w, `unexpected error`, http.StatusInternalServerError)
+				return
+			}
+			gauges += fmt.Sprintf(rowTemplate, key, fmt.Sprint(v))
+		}
+
+		l, err = ms.ListCounters()
+		if err != nil {
+			slog.Error("can't list counters", "error", err)
+			http.Error(w, `unexpected error`, http.StatusInternalServerError)
+			return
 		}
 		counters := ""
-		for _, key := range ms.ListCounters() {
-			counters += fmt.Sprintf(rowTemplate, key, fmt.Sprint(ms.GetCounter(key)))
+		for _, key := range l {
+			v, err := ms.GetCounter(key)
+			if err != nil {
+				slog.Error("can't get counter", "name", key, "error", err)
+				http.Error(w, `unexpected error`, http.StatusInternalServerError)
+				return
+			}
+			counters += fmt.Sprintf(rowTemplate, key, fmt.Sprintf("%d", v))
 		}
 
 		w.Header().Set("Content-Type", "text/html")
