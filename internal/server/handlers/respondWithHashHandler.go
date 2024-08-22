@@ -25,8 +25,6 @@ func NewRespondWithHashHandler(key string) func(c *gin.Context) {
 		if _, err := newWriter.WriteReally(); err != nil {
 			slog.Error("error writing response", "error", err)
 		}
-
-		return
 	}
 	return validateHashHandler
 }

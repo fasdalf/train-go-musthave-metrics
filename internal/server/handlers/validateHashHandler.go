@@ -38,7 +38,6 @@ func NewValidateHashHandler(key string) func(c *gin.Context) {
 
 		c.Set(IsHashPresent, true)
 		c.Next()
-		return
 	}
 	return validateHashHandler
 }
