@@ -15,6 +15,7 @@ import (
 // Previous handler should add valid metric to context
 func CheckMetricExistenceHandler(s Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		slog.Info("start CheckMetricExistenceHandler")
 		metric := &apimodels.Metrics{}
 
 		// IRL just use err := c.BindJSON(&metric); and c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
@@ -57,6 +58,7 @@ func CheckMetricExistenceHandler(s Storage) func(c *gin.Context) {
 			return
 		}
 
+		slog.Info("setting to context", "key", contextMetricResponseKey, "value", metric)
 		c.Set(contextMetricResponseKey, metric)
 		c.Next()
 	}
