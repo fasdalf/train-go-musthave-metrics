@@ -28,12 +28,25 @@ func NewIndexHandler(ms Storage) http.HandlerFunc {
 		}
 		slog.Info("showing index")
 
+		l, err := ms.ListGauges()
+		if err != nil {
+			slog.Error("can't list gauges", "error", err)
+			http.Error(w, `unexpected error`, http.StatusInternalServerError)
+			return
+		}
 		gauges := ""
-		for _, key := range ms.ListGauges() {
+		for _, key := range l {
 			gauges += fmt.Sprintf(rowTemplate, key, fmt.Sprint(ms.GetGauge(key)))
 		}
+
+		l, err = ms.ListCounters()
+		if err != nil {
+			slog.Error("can't list counters", "error", err)
+			http.Error(w, `unexpected error`, http.StatusInternalServerError)
+			return
+		}
 		counters := ""
-		for _, key := range ms.ListCounters() {
+		for _, key := range l {
 			counters += fmt.Sprintf(rowTemplate, key, fmt.Sprint(ms.GetCounter(key)))
 		}
 

@@ -21,13 +21,23 @@ func NewViewStatsHandler(ms Storage) func(c *gin.Context) {
 		mValue := ""
 		switch mType {
 		case constants.GaugeStr:
-			if !ms.HasGauge(mName) {
+			if h, err := ms.HasGauge(mName); err != nil || !h {
+				if err != nil {
+					slog.Error("can't get gauge", "id", mName, "error", err)
+					http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+					return
+				}
 				http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(mName)), http.StatusNotFound)
 				return
 			}
 			mValue = fmt.Sprint(ms.GetGauge(mName))
 		case constants.CounterStr:
-			if !ms.HasCounter(mName) {
+			if h, err := ms.HasCounter(mName); err != nil || !h {
+				if err != nil {
+					slog.Error("can't get gauge", "id", mName, "error", err)
+					http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+					return
+				}
 				http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(mName)), http.StatusNotFound)
 				return
 			}

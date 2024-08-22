@@ -3,9 +3,9 @@ package metricstorage
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"github.com/jackc/pgx/v5"
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"log/slog"
 )
 
 // DBStorage store metrics in DB
@@ -13,6 +13,12 @@ import (
 type DBStorage struct {
 	db *sql.DB
 }
+
+type DBBatch struct {
+	tx *sql.Tx
+}
+
+type execSql func(query string, args ...any) (sql.Result, error)
 
 func NewDBStorage(db *sql.DB, ctx context.Context) (s *DBStorage, err error) {
 	s = &DBStorage{
@@ -36,7 +42,7 @@ func (s *DBStorage) Bootstrap(ctx context.Context) error {
 	}
 
 	// в случае неуспешного коммита все изменения транзакции будут отменены
-	defer tx.Rollback()
+	// если вместо _ = tx.Rollback() в каждом условии здесь вызвать defer tx.Rollback()
 
 	// создаём таблицу целочисленных счетчиков и необходимый индекс
 	_, err = tx.ExecContext(ctx, `
@@ -46,10 +52,12 @@ func (s *DBStorage) Bootstrap(ctx context.Context) error {
 		)
     `)
 	if err != nil {
+		_ = tx.Rollback()
 		return err
 	}
 	_, err = tx.ExecContext(ctx, `CREATE UNIQUE INDEX IF NOT EXISTS gauge_name_udx ON gauge (name)`)
 	if err != nil {
+		_ = tx.Rollback()
 		return err
 	}
 
@@ -61,10 +69,12 @@ func (s *DBStorage) Bootstrap(ctx context.Context) error {
 		)
     `)
 	if err != nil {
+		_ = tx.Rollback()
 		return err
 	}
 	_, err = tx.ExecContext(ctx, `CREATE UNIQUE INDEX IF NOT EXISTS counter_name_udx ON counter (name)`)
 	if err != nil {
+		_ = tx.Rollback()
 		return err
 	}
 
@@ -72,132 +82,155 @@ func (s *DBStorage) Bootstrap(ctx context.Context) error {
 	return tx.Commit()
 }
 
-func (s *DBStorage) UpdateCounter(key string, value int) {
-	_, err := s.db.Exec(`
+func updateCounterSQL(exec execSql, key string, value int) error {
+	_, err := exec(`
         INSERT INTO counter (name, value)
 		VALUES (@name, @value)
 		ON CONFLICT (name) DO UPDATE SET value = counter.value+EXCLUDED.value;
     `, pgx.NamedArgs{"name": key, "value": value})
-	if err != nil {
-		slog.Error("UpdateCounter failed", "error", err)
-	}
+	return err
+
 }
 
-func (s *DBStorage) UpdateGauge(key string, value float64) {
-	_, err := s.db.Exec(`
+func (s *DBStorage) UpdateCounter(key string, value int) error {
+	return updateCounterSQL(s.db.Exec, key, value)
+}
+
+func updateGaugeSQL(exec execSql, key string, value float64) error {
+	_, err := exec(`
         INSERT INTO gauge (name, value)
 		VALUES (@name, @value)
 		ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value;
     `, pgx.NamedArgs{"name": key, "value": value})
-	if err != nil {
-		slog.Error("UpdateGauge failed", "error", err)
-	}
+	return err
+}
+func (s *DBStorage) UpdateGauge(key string, value float64) error {
+	return updateGaugeSQL(s.db.Exec, key, value)
 }
 
-func (s *DBStorage) GetCounter(key string) (r int) {
+func (s *DBStorage) GetCounter(key string) (r int, err error) {
 	row := s.db.QueryRow(`
         SELECT t.value FROM counter t WHERE t.name = @name
     `, pgx.NamedArgs{"name": key})
-	err := row.Scan(&r)
+	err = row.Scan(&r)
 	if err != nil {
-		slog.Error("GetCounter failed", "error", err)
-		return 0
+		return 0, err
 	}
 
-	return r
+	return r, err
 }
 
-func (s *DBStorage) GetGauge(key string) (r float64) {
+func (s *DBStorage) GetGauge(key string) (r float64, err error) {
 	row := s.db.QueryRow(`
         SELECT t.value FROM gauge t WHERE t.name = @name
     `, pgx.NamedArgs{"name": key})
-	err := row.Scan(&r)
+	err = row.Scan(&r)
 	if err != nil {
-		slog.Error("GetCounter failed", "error", err)
-		return 0
+		return 0, err
 	}
 
-	return r
+	return r, err
 }
 
-func (s *DBStorage) HasCounter(key string) (r bool) {
+func (s *DBStorage) HasCounter(key string) (r bool, err error) {
 	row := s.db.QueryRow(`
         SELECT EXISTS(SELECT 1 FROM counter t WHERE t.name = @name)
     `, pgx.NamedArgs{"name": key})
-	err := row.Scan(&r)
+	err = row.Scan(&r)
 	if err != nil {
-		slog.Error("HasCounter failed", "error", err)
-		return false
+		return false, err
 	}
 
-	return r
+	return r, err
 }
 
-func (s *DBStorage) HasGauge(key string) (r bool) {
+func (s *DBStorage) HasGauge(key string) (r bool, err error) {
 	row := s.db.QueryRow(`
         SELECT EXISTS(SELECT 1 FROM gauge t WHERE t.name = @name)
     `, pgx.NamedArgs{"name": key})
-	err := row.Scan(&r)
+	err = row.Scan(&r)
 	if err != nil {
-		slog.Error("HasGauge failed", "error", err)
-		return false
+		return false, err
 	}
 
-	return r
+	return r, err
 }
 
-func (s *DBStorage) ListGauges() []string {
+func (s *DBStorage) ListGauges() ([]string, error) {
 	keys := []string{}
 	rows, err := s.db.Query(`
         SELECT t.name FROM gauge t
     `)
 	if err != nil {
-		slog.Error("ListGauges failed", "error", err)
-		return nil
+		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var k string
 		if err = rows.Scan(&s); err != nil {
-			slog.Error("ListGauges failed", "error", err)
-			return nil
+			return nil, err
 		}
 		keys = append(keys, k)
 	}
 
 	if err = rows.Err(); err != nil {
-		slog.Error("ListGauges failed", "error", err)
-		return nil
+		return nil, err
 	}
 
-	return keys
+	return keys, nil
 }
 
-func (s *DBStorage) ListCounters() []string {
+func (s *DBStorage) ListCounters() ([]string, error) {
 	keys := []string{}
 	rows, err := s.db.Query(`
         SELECT t.name FROM counter t
     `)
 	if err != nil {
-		slog.Error("ListCounters failed", "error", err)
-		return nil
+		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var k string
 		if err = rows.Scan(&s); err != nil {
-			slog.Error("ListCounters failed", "error", err)
-			return nil
+			return nil, err
 		}
 		keys = append(keys, k)
 	}
 
 	if err = rows.Err(); err != nil {
-		slog.Error("ListCounters failed", "error", err)
-		return nil
+		return nil, err
 	}
 
-	return keys
+	return keys, nil
+}
+
+func (s *DBStorage) StartBatch(ctx context.Context) (basicBatch, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &DBBatch{tx: tx}, nil
+}
+
+func (b *DBBatch) UpdateCounter(key string, value int) error {
+	err := updateCounterSQL(b.tx.Exec, key, value)
+	if err != nil {
+		err = errors.Join(err, b.rollback())
+	}
+	return err
+}
+func (b *DBBatch) UpdateGauge(key string, value float64) error {
+	err := updateGaugeSQL(b.tx.Exec, key, value)
+	if err != nil {
+		err = errors.Join(err, b.rollback())
+	}
+	return err
+}
+func (b *DBBatch) Commit() error {
+	return b.tx.Commit()
+}
+func (b *DBBatch) rollback() error {
+	return b.tx.Commit()
 }

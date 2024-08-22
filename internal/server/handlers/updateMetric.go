@@ -41,8 +41,12 @@ func NewUpdateMetricHandler(s Storage) func(c *gin.Context) {
 				_ = c.AbortWithError(http.StatusBadRequest, errors.New("invalid metric value"))
 				return
 			}
-			s.UpdateGauge(mName, floatValue)
-			slog.Info("value set", "new", s.GetGauge(mName))
+			err = s.UpdateGauge(mName, floatValue)
+			if err != nil {
+				slog.Error("can't update gauge", "value", floatValue, "error", err)
+				_ = c.AbortWithError(http.StatusInternalServerError, errors.New("unexpected error"))
+				return
+			}
 		case constants.CounterStr:
 			intValue, err := strconv.Atoi(mValue)
 			if err != nil {
@@ -50,8 +54,12 @@ func NewUpdateMetricHandler(s Storage) func(c *gin.Context) {
 				_ = c.AbortWithError(http.StatusBadRequest, errors.New("invalid metric value"))
 				return
 			}
-			s.UpdateCounter(mName, intValue)
-			slog.Info("value set", "new", s.GetGauge(mName))
+			err = s.UpdateCounter(mName, intValue)
+			if err != nil {
+				slog.Error("can't update counter", "value", floatValue, "error", err)
+				_ = c.AbortWithError(http.StatusInternalServerError, errors.New("unexpected error"))
+				return
+			}
 		default:
 			slog.Error("Type is invalid", "type", html.EscapeString(mType))
 			_ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf(

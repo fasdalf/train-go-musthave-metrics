@@ -22,7 +22,7 @@ func NewOneAttemptRetryer() *Retryer {
 // Try Attempts retryable operation. Returns retry attempts count always and error on fail.
 func (r *Retryer) Try(ctx context.Context, do func() error, isRetryable func(err error) bool) (int, error) {
 	tmr := time.NewTimer(0)
-	tmr.Stop()
+	defer tmr.Stop()
 	for i := 0; i <= len(r.delays); i++ {
 		if err := do(); err != nil {
 			if !isRetryable(err) {
@@ -35,12 +35,12 @@ func (r *Retryer) Try(ctx context.Context, do func() error, isRetryable func(err
 
 			delay := r.delays[i]
 
+			tmr.Stop()
 			tmr.Reset(delay)
 			select {
 			case <-ctx.Done():
 				return i, errors.Join(fmt.Errorf("(retry) attempt #%d context exceeded after error: %w", i+1, err), context.DeadlineExceeded)
 			case <-tmr.C:
-				tmr.Stop()
 				continue
 			}
 		}

@@ -1,18 +1,21 @@
 package handlers
 
-import "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+import (
+	"context"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+)
 
 type Storage interface {
-	UpdateCounter(key string, value int)
-	UpdateGauge(key string, value float64)
-	GetCounter(key string) int
-	GetGauge(key string) float64
-	HasCounter(key string) bool
-	HasGauge(key string) bool
-	ListGauges() []string
-	ListCounters() []string
+	UpdateCounter(key string, value int) error
+	UpdateGauge(key string, value float64) error
+	GetCounter(key string) (int, error)
+	GetGauge(key string) (float64, error)
+	HasCounter(key string) (bool, error)
+	HasGauge(key string) (bool, error)
+	ListGauges() ([]string, error)
+	ListCounters() ([]string, error)
 	SaveCommonModel(metric *apimodels.Metrics) error
-	SaveCommonModels(metrics []apimodels.Metrics) error
+	SaveCommonModels(ctx context.Context, metrics []apimodels.Metrics) error
 }
 
 type FileStorage interface {

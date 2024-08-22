@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
@@ -17,16 +18,20 @@ import (
 )
 
 func main() {
+	ctx, ctxCancel := context.WithCancel(context.Background())
 	c := config.GetConfig()
 	slog.Info("initializing server")
 
 	retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
-	metricStorage := (*metricstorage.SavableModelStorage)(nil)
+	var metricStorage *metricstorage.SavableModelStorage
 
-	db := (*sql.DB)(nil)
-	if c.StorageDBDSN != "" {
+	var db *sql.DB
+	var savedChan jsonofflinestorage.SavedChan
+
+	switch true {
+	case c.StorageDBDSN != "":
 		slog.Info("initializing database connection", "DATABASE_DSN", c.StorageDBDSN)
-		err := error(nil)
+		var err error
 		db, err = sql.Open("pgx", c.StorageDBDSN)
 		if err != nil {
 			slog.Error("can not connect to DB", "error", err)
@@ -42,30 +47,27 @@ func main() {
 			panic(err)
 		}
 		metricStorage = metricstorage.NewSavableModelStorage(dbStorage)
-	}
-
-	if metricStorage == nil {
-		slog.Info("initializing in-mem storage")
+	case c.StorageFileName != "":
+		slog.Info("initializing in-mem and in-file storage")
 		metricStorage = metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())
-	}
 
-	savedChan := (jsonofflinestorage.SavedChan)(nil)
-	if c.StorageFileName != "" && db == nil {
 		slog.Info("initializing file storage")
 		fileStorageService := jsonofflinestorage.NewJSONFileStorage(metricStorage, c.StorageFileName, c.StorageFileRestore, c.StorageFileStoreInterval)
 		if err := fileStorageService.Restore(); err != nil {
 			slog.Error("can not read file storage", "error", err)
 			panic(err)
 		}
-		defer fileStorageService.Save()
 
 		savedChan = make(jsonofflinestorage.SavedChan)
 		go func() {
-			err := fileStorageService.SaverRoutine(savedChan)
+			err := fileStorageService.SaveMetrics(ctx, savedChan)
 			if err != nil {
 				slog.Error("async saver failed", "error", err)
 			}
 		}()
+	default:
+		slog.Info("initializing in-mem only storage")
+		metricStorage = metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())
 	}
 
 	slog.Debug("initializing http router")
@@ -82,6 +84,7 @@ func main() {
 		<-quit
 		slog.Info("interrupt signal received")
 		signal.Stop(quit)
+		ctxCancel()
 		if err := srv.Close(); err != nil {
 			slog.Error("Server close error:", "error", err)
 		}
@@ -89,7 +92,7 @@ func main() {
 
 	slog.Info("starting http server", "address", c.Addr)
 	if err := srv.ListenAndServe(); err != nil {
-		if err == http.ErrServerClosed {
+		if errors.Is(err, http.ErrServerClosed) {
 			slog.Info("Server closed by interrupt signal")
 		} else {
 			slog.Error("server not started or stopped with error", "error", err)

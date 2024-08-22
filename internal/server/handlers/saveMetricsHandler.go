@@ -26,7 +26,7 @@ func SaveMetricsHandler(s Storage, retryer Retryer) func(c *gin.Context) {
 			return
 		}
 
-		if _, err := retryer.Try(c, func() error { return s.SaveCommonModels(metrics) }, isPgConnectionError); err != nil {
+		if _, err := retryer.Try(c, func() error { return s.SaveCommonModels(c, metrics) }, isPgConnectionError); err != nil {
 			slog.Error("can't save metrics", "error", err)
 			_ = c.AbortWithError(http.StatusBadRequest, errors.New("can't save metrics"))
 			return
@@ -38,7 +38,7 @@ func SaveMetricsHandler(s Storage, retryer Retryer) func(c *gin.Context) {
 }
 
 func isPgConnectionError(err error) bool {
-	pgErr := (*pgconn.PgError)(nil)
+	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr); pgErr != nil && pgerrcode.IsConnectionException(pgErr.Code) {
 		return true
 	}
