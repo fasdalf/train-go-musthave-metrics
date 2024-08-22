@@ -10,8 +10,7 @@ import (
 )
 
 type basicBatch interface {
-	UpdateCounter(key string, value int) error
-	UpdateGauge(key string, value float64) error
+	basicUpdater
 	Commit() error
 }
 

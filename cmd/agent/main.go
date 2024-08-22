@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"sync"
 	"time"
 )
 
@@ -21,8 +22,11 @@ func main() {
 	retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
 	ctx, cancel := context.WithCancel(context.Background())
 
-	go sendMetrics(ctx, memStorage, address, sendInterval, retryer, cfg.HashKey)
-	go collectMetrics(ctx, memStorage, collectInterval)
+	wg := new(sync.WaitGroup)
+	wg.Add(3)
+	go handlers.SendMetricsLoop(ctx, wg, memStorage, address, sendInterval, retryer, cfg.HashKey, cfg.RateLimit)
+	go handlers.Collect(handlers.CollectMetrics, ctx, wg, memStorage, collectInterval)
+	go handlers.Collect(handlers.CollectGopsutilMetrics, ctx, wg, memStorage, collectInterval)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
@@ -31,39 +35,5 @@ func main() {
 	signal.Stop(quit)
 	cancel()
 	slog.Info("attempting graceful shutdown")
-	time.Sleep(time.Second)
-}
-
-func collectMetrics(ctx context.Context, storage handlers.Storage, collectInterval time.Duration) {
-main:
-	for {
-		select {
-		case <-ctx.Done():
-			break main
-		default:
-		}
-		handlers.CollectMetrics(storage)
-		slog.Info(`collector sleeping`, `delay`, collectInterval)
-		time.Sleep(collectInterval)
-	}
-}
-
-func sendMetrics(
-	ctx context.Context,
-	storage handlers.Storage,
-	address string,
-	sendInterval time.Duration,
-	retryer handlers.Retryer,
-	key string,
-) {
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		default:
-		}
-		slog.Info(`sender sleeping`, `delay`, sendInterval)
-		time.Sleep(sendInterval)
-		handlers.SendMetrics(ctx, storage, address, retryer, key)
-	}
+	wg.Wait()
 }

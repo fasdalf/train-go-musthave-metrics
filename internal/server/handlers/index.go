@@ -51,13 +51,6 @@ func NewIndexHandler(ms Storage) http.HandlerFunc {
 			http.Error(w, `unexpected error`, http.StatusInternalServerError)
 			return
 		}
-
-		l, err = ms.ListCounters()
-		if err != nil {
-			slog.Error("can't list counters", "error", err)
-			http.Error(w, `unexpected error`, http.StatusInternalServerError)
-			return
-		}
 		counters := ""
 		for _, key := range l {
 			v, err := ms.GetCounter(key)

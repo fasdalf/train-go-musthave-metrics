@@ -4,10 +4,11 @@ import (
 	"log/slog"
 	"math/rand"
 	"runtime"
+	"time"
 )
 
 // CollectMetrics collects various metrics to given storage
-func CollectMetrics(s Storage) {
+func CollectMetrics(s Storage, collectInterval time.Duration) error {
 	slog.Info("Collecting metrics")
 	s.UpdateCounter("PollCount", s.GetCounter("PollCount")+1)
 	s.UpdateGauge("RandomValue", rand.Float64())
@@ -42,6 +43,7 @@ func CollectMetrics(s Storage) {
 	s.UpdateGauge("StackSys", float64(ms.StackSys))
 	s.UpdateGauge("Sys", float64(ms.Sys))
 	s.UpdateGauge("TotalAlloc", float64(ms.TotalAlloc))
+	return nil
 }
 
 /*

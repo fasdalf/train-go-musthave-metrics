@@ -8,7 +8,7 @@ import (
 
 func TestCollectMetrics(t *testing.T) {
 	s := metricstorage.NewMemStorageMuted()
-	CollectMetrics(s)
+	CollectMetrics(s, 0)
 	assert.Equal(t, len(s.ListCounters()), 1)
 	assert.Equal(t, len(s.ListGauges()), 28)
 }
