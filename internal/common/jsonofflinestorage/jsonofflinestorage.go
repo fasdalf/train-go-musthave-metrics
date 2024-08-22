@@ -134,13 +134,16 @@ func (l *JSONFileStorage) Restore() error {
 type SavedChan = chan struct{}
 
 func (l *JSONFileStorage) SaveMetrics(ctx context.Context, saved SavedChan) error {
+	slog.Error("#trace SaveMetrics")
 	do := true
 	if l.storeInterval > 0 {
+		slog.Error("#trace SaveMetrics")
 		t := time.NewTimer(l.storeInterval)
 		defer t.Stop()
 		for do {
 			select {
 			case <-ctx.Done():
+				slog.Error("#trace SaveMetrics")
 				do = false
 			case <-t.C:
 			}
@@ -157,15 +160,22 @@ func (l *JSONFileStorage) SaveMetrics(ctx context.Context, saved SavedChan) erro
 	}
 
 	for do {
+		slog.Error("#trace SaveMetrics")
 		select {
 		case <-ctx.Done():
+			slog.Error("#trace SaveMetrics")
 			do = false
 		case <-saved:
+			slog.Error("#trace SaveMetrics")
 		}
 
+		slog.Error("#trace SaveMetrics")
 		if err := l.Save(); err != nil {
+			slog.Error("#trace SaveMetrics")
 			slog.Error("SaveMetrics error", "error", err)
 		}
+		slog.Error("#trace SaveMetrics")
 	}
+	slog.Error("#trace SaveMetrics")
 	return nil
 }
