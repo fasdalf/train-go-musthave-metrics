@@ -133,7 +133,8 @@ func (l *JSONFileStorage) Restore() error {
 
 type SavedChan = chan struct{}
 
-func (l *JSONFileStorage) SaveMetrics(ctx context.Context, saved SavedChan) error {
+func (l *JSONFileStorage) SaveMetrics(ctx context.Context, saved SavedChan, wg *sync.WaitGroup) error {
+	defer wg.Done()
 	slog.Info("#trace SaveMetrics")
 	do := true
 	if l.storeInterval > 0 {

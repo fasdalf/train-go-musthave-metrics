@@ -14,11 +14,13 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"time"
 )
 
 func main() {
 	ctx, ctxCancel := context.WithCancel(context.Background())
+	wg := &sync.WaitGroup{}
 	c := config.GetConfig()
 	slog.Info("initializing server")
 
@@ -64,8 +66,9 @@ func main() {
 			savedChan = make(jsonofflinestorage.SavedChan)
 		}
 
+		wg.Add(1)
 		go func() {
-			err := fileStorageService.SaveMetrics(ctx, savedChan)
+			err := fileStorageService.SaveMetrics(ctx, savedChan, wg)
 			if err != nil {
 				slog.Error("async saver failed", "error", err)
 			}
@@ -99,9 +102,8 @@ func main() {
 	if err := srv.ListenAndServe(); err != nil {
 		if errors.Is(err, http.ErrServerClosed) {
 			slog.Info("Server closed by interrupt signal")
-			// pause for file save
-			time.Sleep(time.Second / 2)
-			slog.Info("exit")
+			slog.Info("wait for bg processes")
+			wg.Wait()
 		} else {
 			slog.Error("server not started or stopped with error", "error", err)
 			panic(err)
