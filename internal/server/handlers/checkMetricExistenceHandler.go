@@ -22,6 +22,7 @@ func CheckMetricExistenceHandler(s Storage) func(c *gin.Context) {
 		dec := json.NewDecoder(c.Request.Body)
 		if err := dec.Decode(metric); err != nil {
 			slog.Error("can't parse JSON", "error", err)
+			// TODO: replace with c.AbortWithError to skip later middlewares
 			http.Error(c.Writer, "Invalid JSON", http.StatusBadRequest)
 			return
 		}
