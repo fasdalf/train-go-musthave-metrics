@@ -93,6 +93,7 @@ func (s *MemStorage) ListCounters() ([]string, error) {
 func (s *MemStorage) StartBatch(ctx context.Context) (basicBatch, error) {
 	s.countersRWM.Lock()
 	s.gaugesRWM.Lock()
+	s.inBatch = true
 	return &MemBatch{ms: s}, nil
 }
 

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"github.com/gin-gonic/gin"
@@ -30,7 +31,13 @@ func NewViewStatsHandler(ms Storage) func(c *gin.Context) {
 				http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(mName)), http.StatusNotFound)
 				return
 			}
-			mValue = fmt.Sprint(ms.GetGauge(mName))
+			value, err := ms.GetGauge(mName)
+			if err != nil {
+				slog.Error("can't get gauge", "name", mName, "error", err)
+				_ = c.AbortWithError(http.StatusInternalServerError, errors.New(`unexpected error`))
+				return
+			}
+			mValue = fmt.Sprint(value)
 		case constants.CounterStr:
 			if h, err := ms.HasCounter(mName); err != nil || !h {
 				if err != nil {
@@ -41,7 +48,13 @@ func NewViewStatsHandler(ms Storage) func(c *gin.Context) {
 				http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(mName)), http.StatusNotFound)
 				return
 			}
-			mValue = fmt.Sprint(ms.GetCounter(mName))
+			value, err := ms.GetCounter(mName)
+			if err != nil {
+				slog.Error("can't get counter", "name", mName, "error", err)
+				_ = c.AbortWithError(http.StatusInternalServerError, errors.New(`unexpected error`))
+				return
+			}
+			mValue = fmt.Sprint(value)
 		default:
 			slog.Error("Invalid type", "type", mType)
 			http.Error(c.Writer, fmt.Sprintf(
