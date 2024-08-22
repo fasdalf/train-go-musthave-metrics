@@ -59,8 +59,6 @@ func main() {
 			slog.Error("can not read file storage", "error", err)
 			panic(err)
 		}
-		// ##@@
-		//defer fileStorageService.Save()
 
 		if c.StorageFileStoreInterval > 0 {
 			savedChan = make(jsonofflinestorage.SavedChan)
