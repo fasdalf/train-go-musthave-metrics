@@ -36,7 +36,13 @@ func NewIndexHandler(ms Storage) http.HandlerFunc {
 		}
 		gauges := ""
 		for _, key := range l {
-			gauges += fmt.Sprintf(rowTemplate, key, fmt.Sprint(ms.GetGauge(key)))
+			v, err := ms.GetGauge(key)
+			if err != nil {
+				slog.Error("can't get gauge", "name", key, "error", err)
+				http.Error(w, `unexpected error`, http.StatusInternalServerError)
+				return
+			}
+			gauges += fmt.Sprintf(rowTemplate, key, fmt.Sprint(v))
 		}
 
 		l, err = ms.ListCounters()
@@ -47,7 +53,13 @@ func NewIndexHandler(ms Storage) http.HandlerFunc {
 		}
 		counters := ""
 		for _, key := range l {
-			counters += fmt.Sprintf(rowTemplate, key, fmt.Sprint(ms.GetCounter(key)))
+			v, err := ms.GetCounter(key)
+			if err != nil {
+				slog.Error("can't get counter", "name", key, "error", err)
+				http.Error(w, `unexpected error`, http.StatusInternalServerError)
+				return
+			}
+			counters += fmt.Sprintf(rowTemplate, key, fmt.Sprintf("%d", v))
 		}
 
 		w.Header().Set("Content-Type", "text/html")
