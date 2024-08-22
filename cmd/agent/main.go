@@ -13,14 +13,15 @@ import (
 )
 
 func main() {
-	collectInterval := time.Duration(config.GetConfig().PollInterval) * time.Second
-	sendInterval := time.Duration(config.GetConfig().ReportInterval) * time.Second
-	address := config.GetConfig().Addr
+	cfg := config.GetConfig()
+	collectInterval := time.Duration(cfg.PollInterval) * time.Second
+	sendInterval := time.Duration(cfg.ReportInterval) * time.Second
+	address := cfg.Addr
 	memStorage := metricstorage.NewMemStorageMuted()
 	retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
 	ctx, cancel := context.WithCancel(context.Background())
 
-	go sendMetrics(ctx, memStorage, address, sendInterval, retryer)
+	go sendMetrics(ctx, memStorage, address, sendInterval, retryer, cfg.HashKey)
 	go collectMetrics(ctx, memStorage, collectInterval)
 
 	quit := make(chan os.Signal, 1)
