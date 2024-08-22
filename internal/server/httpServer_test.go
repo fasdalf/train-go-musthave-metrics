@@ -99,8 +99,10 @@ func TestUpdateMetricIntegrational(t *testing.T) {
 			router.ServeHTTP(w, req)
 
 			assert.Equal(t, tt.want.statusCode, w.Code, "Код ответа не совпадает с ожидаемым")
-			assert.Equal(t, tt.want.gauges, len(tt.args.s.ListGauges()))
-			assert.Equal(t, tt.want.counters, len(tt.args.s.ListCounters()))
+			l, _ := tt.args.s.ListGauges()
+			assert.Equal(t, tt.want.gauges, len(l))
+			l, _ = tt.args.s.ListCounters()
+			assert.Equal(t, tt.want.counters, len(l))
 		})
 	}
 }

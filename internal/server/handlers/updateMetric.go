@@ -56,7 +56,7 @@ func NewUpdateMetricHandler(s Storage) func(c *gin.Context) {
 			}
 			err = s.UpdateCounter(mName, intValue)
 			if err != nil {
-				slog.Error("can't update counter", "value", floatValue, "error", err)
+				slog.Error("can't update counter", "value", intValue, "error", err)
 				_ = c.AbortWithError(http.StatusInternalServerError, errors.New("unexpected error"))
 				return
 			}
