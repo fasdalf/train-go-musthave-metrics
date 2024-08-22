@@ -10,6 +10,8 @@ import (
 
 func NewRoutingEngine(ms handlers.Storage, saved jsonofflinestorage.SavedChan, db *sql.DB, retryer handlers.Retryer) *gin.Engine {
 	ginCore := gin.New()
+	ginCore.RedirectTrailingSlash = false
+	ginCore.RedirectFixedPath = false
 	ginCore.Use(gin.Recovery())
 	// IRL just use ginCore.Use(slogGin.New(slog.Default())) from slogGin "github.com/samber/slog-gin"
 	// "We have it at home" logging. Uses .../loggingResponseWriter.go and .../slogHandler.go
@@ -21,7 +23,11 @@ func NewRoutingEngine(ms handlers.Storage, saved jsonofflinestorage.SavedChan, d
 	ginCore.GET("/", gin.WrapF(handlers.NewIndexHandler(ms)))
 	ginCore.GET("/ping", handlers.NewPingDBHandler(db))
 	ginCore.GET(fmt.Sprintf("/value/:%s/:%s", handlers.URLParamType, handlers.URLParamName), handlers.NewViewStatsHandler(ms))
-	ginCore.POST("/value", handlers.CheckMetricExistenceHandler(ms), handlers.MetricValueResponseHandler(ms))
+
+	valuePipeline := []gin.HandlerFunc{handlers.CheckMetricExistenceHandler(ms), handlers.MetricValueResponseHandler(ms)}
+	// Path with slash is for broken test in iteration 14
+	ginCore.POST("/value/", valuePipeline...)
+	ginCore.POST("/value", valuePipeline...)
 	ginCore.POST(fmt.Sprintf("/update/:%s/:%s/:%s", handlers.URLParamType, handlers.URLParamName, handlers.URLParamValue), handlers.NewUpdateMetricHandler(ms))
 	updatePipeline := []gin.HandlerFunc{handlers.SaveMetricHandler(ms), handlers.MetricValueResponseHandler(ms)}
 	if saved != nil {
