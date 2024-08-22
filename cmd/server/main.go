@@ -77,7 +77,7 @@ func main() {
 	}
 
 	slog.Debug("initializing http router")
-	engine := server.NewRoutingEngine(metricStorage, savedChan, db, retryer)
+	engine := server.NewRoutingEngine(metricStorage, savedChan, db, retryer, c.HashKey)
 	srv := &http.Server{
 		Addr:    c.Addr,
 		Handler: engine,

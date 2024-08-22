@@ -12,6 +12,7 @@ import (
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
 
 	resty "github.com/go-resty/resty/v2"
 )
@@ -25,7 +26,7 @@ type Retryer interface {
 var ErrTransport = errors.New("resty error")
 
 // SendMetrics sends pre collected metrics to server
-func SendMetrics(ctx context.Context, s Storage, address string, r Retryer) {
+func SendMetrics(ctx context.Context, s Storage, address string, r Retryer, key string) {
 	slog.Info("Sending metricUpdates")
 	address = fmt.Sprintf(URLTemplate, address)
 
@@ -71,8 +72,13 @@ func SendMetrics(ctx context.Context, s Storage, address string, r Retryer) {
 		req.SetHeader("Content-Encoding", "gzip")
 		req.SetHeader("Accept-Encoding", "gzip")
 		req.SetHeader("Content-Type", "application/json")
+
+		if key != "" {
+			hash := cryptofacade.Hash(body.Bytes(), []byte(key))
+			req.SetHeader(constants.HashSHA256, hash)
+		}
+
 		req.SetBody(body)
-		//resp, err := req.Post(address)
 		resp, err := req.Post(address)
 		if err != nil {
 			return fmt.Errorf("sending metrics: %w", err)

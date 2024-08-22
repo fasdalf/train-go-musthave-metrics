@@ -19,6 +19,7 @@ type Config struct {
 	Addr           string `env:"ADDRESS"`
 	PollInterval   int    `env:"POLL_INTERVAL"`
 	ReportInterval int    `env:"REPORT_INTERVAL"`
+	HashKey        string `env:"KEY"`
 }
 
 var config *Config
@@ -33,6 +34,7 @@ func init() {
 	flag.StringVarP(&config.Addr, "address", "a", defaultAddress, "The address to listen on for HTTP requests.")
 	flag.IntVarP(&config.PollInterval, "pollinterval", "p", defaultPollInterval, "Metrics poll interval in seconds.")
 	flag.IntVarP(&config.ReportInterval, "reportInterval", "r", defaultPollInterval, "Report to server interval in seconds.")
+	flag.StringVarP(&config.HashKey, "key", "k", "", "Key for signature Hash header.  If not provided, will not sign the request.")
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	flag.Parse()
 	// pflag handles --help itself.

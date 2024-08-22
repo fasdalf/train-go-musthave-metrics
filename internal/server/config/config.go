@@ -21,6 +21,7 @@ type Config struct {
 	StorageFileStoreInterval int    `env:"STORE_INTERVAL"`
 	StorageFileRestore       bool   `env:"RESTORE"`
 	StorageDBDSN             string `env:"DATABASE_DSN"`
+	HashKey                  string `env:"KEY"`
 }
 
 var config *Config
@@ -37,6 +38,7 @@ func init() {
 	flag.IntVarP(&config.StorageFileStoreInterval, "storeinterval", "i", defaultStorageFileStoreInterval, "Interval in seconds to dump metrics to JSON file. \"0\" is on every change.")
 	flag.BoolVarP(&config.StorageFileRestore, "restore", "r", defaultStorageFileRestore, "Metrics restore from file on startup.")
 	flag.StringVarP(&config.StorageDBDSN, "databasedsn", "d", "", "Postgres PGX DSN to use DB storage. Disabled when empty.")
+	flag.StringVarP(&config.HashKey, "key", "k", "", "Key for signature Hash header.  If not provided, will not sign the request.")
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	flag.Parse()
 	// pflag handles --help itself.
