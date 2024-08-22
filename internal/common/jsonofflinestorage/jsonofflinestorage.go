@@ -41,7 +41,7 @@ func NewJSONFileStorage(storage Storage, fileName string, restore bool, storeInt
 func (l *JSONFileStorage) Save() error {
 	file, err := os.OpenFile(l.fileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
-		return fmt.Errorf("Can't open file: %w", err)
+		return fmt.Errorf("can't open file: %w", err)
 	}
 	defer file.Close()
 
@@ -49,12 +49,12 @@ func (l *JSONFileStorage) Save() error {
 
 	list, err := l.storage.ListGauges()
 	if err != nil {
-		return fmt.Errorf("Can't ListGauges: %w", err)
+		return fmt.Errorf("can't ListGauges: %w", err)
 	}
 	for _, key := range list {
 		g, err := l.storage.GetGauge(key)
 		if err != nil {
-			return fmt.Errorf("Can't GetGauge: %w", err)
+			return fmt.Errorf("can't GetGauge: %w", err)
 		}
 		err = encoder.Encode(apimodels.Metrics{
 			ID:    key,
@@ -63,18 +63,18 @@ func (l *JSONFileStorage) Save() error {
 			Value: &g,
 		})
 		if err != nil {
-			return fmt.Errorf("Can't write JSON: %w", err)
+			return fmt.Errorf("can't write JSON: %w", err)
 		}
 	}
 
 	list, err = l.storage.ListCounters()
 	if err != nil {
-		return fmt.Errorf("Can't ListCounters: %w", err)
+		return fmt.Errorf("can't ListCounters: %w", err)
 	}
 	for _, key := range list {
 		c, err := l.storage.GetCounter(key)
 		if err != nil {
-			return fmt.Errorf("Can't GetCounter: %w", err)
+			return fmt.Errorf("can't GetCounter: %w", err)
 		}
 		c64 := int64(c)
 		err = encoder.Encode(apimodels.Metrics{
@@ -84,7 +84,7 @@ func (l *JSONFileStorage) Save() error {
 			Value: nil,
 		})
 		if err != nil {
-			return fmt.Errorf("Can't write JSON: %w", err)
+			return fmt.Errorf("can't write JSON: %w", err)
 		}
 	}
 
@@ -102,7 +102,7 @@ func (l *JSONFileStorage) Restore() error {
 			slog.Warn("file does not exist, skipping JSON load", "error", err, "filename", l.fileName)
 			return nil
 		}
-		return fmt.Errorf("Can't open file: %w", err)
+		return fmt.Errorf("can't open file: %w", err)
 	}
 	defer file.Close()
 
@@ -114,11 +114,11 @@ func (l *JSONFileStorage) Restore() error {
 			// just done.
 			break
 		} else if err != nil {
-			return fmt.Errorf("Can't decode json: %w", err)
+			return fmt.Errorf("can't decode json: %w", err)
 		}
 
 		if err = l.storage.SaveCommonModel(v); err != nil {
-			return fmt.Errorf("Can't save value: %w", err)
+			return fmt.Errorf("can't save value: %w", err)
 		}
 	}
 

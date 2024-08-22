@@ -18,7 +18,7 @@ type DBBatch struct {
 	tx *sql.Tx
 }
 
-type execSql func(query string, args ...any) (sql.Result, error)
+type execSQL func(query string, args ...any) (sql.Result, error)
 
 func NewDBStorage(db *sql.DB, ctx context.Context) (s *DBStorage, err error) {
 	s = &DBStorage{
@@ -82,7 +82,7 @@ func (s *DBStorage) Bootstrap(ctx context.Context) error {
 	return tx.Commit()
 }
 
-func updateCounterSQL(exec execSql, key string, value int) error {
+func updateCounterSQL(exec execSQL, key string, value int) error {
 	_, err := exec(`
         INSERT INTO counter (name, value)
 		VALUES (@name, @value)
@@ -96,7 +96,7 @@ func (s *DBStorage) UpdateCounter(key string, value int) error {
 	return updateCounterSQL(s.db.Exec, key, value)
 }
 
-func updateGaugeSQL(exec execSql, key string, value float64) error {
+func updateGaugeSQL(exec execSQL, key string, value float64) error {
 	_, err := exec(`
         INSERT INTO gauge (name, value)
 		VALUES (@name, @value)
