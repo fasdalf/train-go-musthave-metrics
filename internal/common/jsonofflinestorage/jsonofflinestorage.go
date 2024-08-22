@@ -11,6 +11,7 @@ import (
 	"io/fs"
 	"log/slog"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -27,6 +28,7 @@ type JSONFileStorage struct {
 	fileName      string
 	restore       bool
 	storeInterval time.Duration
+	mu            *sync.Mutex
 }
 
 func NewJSONFileStorage(storage Storage, fileName string, restore bool, storeInterval int) *JSONFileStorage {
@@ -35,10 +37,13 @@ func NewJSONFileStorage(storage Storage, fileName string, restore bool, storeInt
 		fileName:      fileName,
 		restore:       restore,
 		storeInterval: time.Duration(storeInterval) * time.Second,
+		mu:            new(sync.Mutex),
 	}
 }
 
 func (l *JSONFileStorage) Save() error {
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	file, err := os.OpenFile(l.fileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		return fmt.Errorf("can't open file: %w", err)
