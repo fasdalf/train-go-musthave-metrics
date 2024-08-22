@@ -25,8 +25,8 @@ func main() {
 	retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
 	var metricStorage *metricstorage.SavableModelStorage
 
-	var db *sql.DB
-	var savedChan jsonofflinestorage.SavedChan
+	var db *sql.DB = nil
+	var savedChan jsonofflinestorage.SavedChan = nil
 
 	switch true {
 	case c.StorageDBDSN != "":
@@ -58,7 +58,10 @@ func main() {
 			panic(err)
 		}
 
-		savedChan = make(jsonofflinestorage.SavedChan)
+		if c.StorageFileStoreInterval > 0 {
+			savedChan = make(jsonofflinestorage.SavedChan)
+		}
+
 		go func() {
 			err := fileStorageService.SaveMetrics(ctx, savedChan)
 			if err != nil {

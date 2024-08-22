@@ -46,6 +46,7 @@ func CheckMetricExistenceHandler(s Storage) func(c *gin.Context) {
 					return
 				}
 				slog.Info("#trace CheckMetricExistenceHandler")
+				slog.Error("metric not found", "id", metric.ID)
 				http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(metric.ID)), http.StatusNotFound)
 				slog.Info("#trace CheckMetricExistenceHandler")
 				return
@@ -62,6 +63,7 @@ func CheckMetricExistenceHandler(s Storage) func(c *gin.Context) {
 					return
 				}
 				slog.Info("#trace CheckMetricExistenceHandler")
+				slog.Error("metric not found", "id", metric.ID)
 				http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(metric.ID)), http.StatusNotFound)
 				slog.Info("#trace CheckMetricExistenceHandler")
 				return
