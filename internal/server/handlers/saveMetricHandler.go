@@ -9,7 +9,6 @@ import (
 )
 
 // SaveMetricHandler save metric to storage
-// Previous handler should add valid metric to context
 func SaveMetricHandler(s Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		metric := &apimodels.Metrics{}

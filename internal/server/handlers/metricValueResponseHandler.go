@@ -6,6 +6,7 @@ import (
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"github.com/gin-gonic/gin"
 	"log/slog"
+	"net/http"
 	"reflect"
 )
 
@@ -34,17 +35,28 @@ func MetricValueResponseHandler(s Storage) func(c *gin.Context) {
 
 		switch metric.MType {
 		case constants.GaugeStr:
-			gauge := s.GetGauge(metric.ID)
+			gauge, err := s.GetGauge(metric.ID)
+			if err != nil {
+				slog.Error("can't get gauge", "id", metric.ID, "error", err)
+				http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+				return
+			}
 			metric.Value = &gauge
 		case constants.CounterStr:
-			counter := int64(s.GetCounter(metric.ID))
-			metric.Delta = &counter
+			counter, err := s.GetCounter(metric.ID)
+			if err != nil {
+				slog.Error("can't get counter", "id", metric.ID, "error", err)
+				http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+				return
+			}
+			counter64 := int64(counter)
+			metric.Delta = &counter64
 		default:
 			c.Next()
 			return
 		}
 
-		// HAve to set headers *before* writing to body
+		// Have to set headers *before* writing to body
 		c.Header("Content-Type", "application/json")
 		// IRL just use c.IndentedJSON(200, metric)
 		// Use encoder manually

@@ -22,18 +22,31 @@ func CheckMetricExistenceHandler(s Storage) func(c *gin.Context) {
 		dec := json.NewDecoder(c.Request.Body)
 		if err := dec.Decode(metric); err != nil {
 			slog.Error("can't parse JSON", "error", err)
+			// TODO: replace with c.AbortWithError to skip later middlewares
 			http.Error(c.Writer, "Invalid JSON", http.StatusBadRequest)
 			return
 		}
 
 		switch metric.MType {
 		case constants.GaugeStr:
-			if !s.HasGauge(metric.ID) {
+			if h, err := s.HasGauge(metric.ID); err != nil || !h {
+				if err != nil {
+					slog.Error("can't check metric existence", "id", metric.ID, "error", err)
+					http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+					return
+				}
+				slog.Error("metric not found", "id", metric.ID)
 				http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(metric.ID)), http.StatusNotFound)
 				return
 			}
 		case constants.CounterStr:
-			if !s.HasCounter(metric.ID) {
+			if h, err := s.HasCounter(metric.ID); err != nil || !h {
+				if err != nil {
+					slog.Error("can't check metric existence", "id", metric.ID, "error", err)
+					http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+					return
+				}
+				slog.Error("metric not found", "id", metric.ID)
 				http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(metric.ID)), http.StatusNotFound)
 				return
 			}

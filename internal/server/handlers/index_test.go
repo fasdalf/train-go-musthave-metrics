@@ -19,7 +19,7 @@ func TestNewIndexHandler(t *testing.T) {
 	}{
 		{
 			name: "empty",
-			args: args{metricstorage.NewMemStorageWithSave()},
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
 			wantBody: `<html><body>
 <table>
 <tr><td colspan=2>Gauges</td></tr>
@@ -31,7 +31,7 @@ func TestNewIndexHandler(t *testing.T) {
 		{
 			name: "valid gauge",
 			args: args{(func() Storage {
-				ms := metricstorage.NewMemStorageWithSave()
+				ms := metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())
 				ms.UpdateGauge("title1", 20.1)
 				return ms
 			})()},
@@ -47,7 +47,7 @@ func TestNewIndexHandler(t *testing.T) {
 		{
 			name: "valid counter",
 			args: args{(func() Storage {
-				ms := metricstorage.NewMemStorageWithSave()
+				ms := metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())
 				ms.UpdateCounter("title2", 201)
 				return ms
 			})()},
@@ -63,7 +63,7 @@ func TestNewIndexHandler(t *testing.T) {
 		{
 			name: "gauge and counter",
 			args: args{(func() Storage {
-				ms := metricstorage.NewMemStorageWithSave()
+				ms := metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())
 				ms.UpdateGauge("title1", 20.1)
 				ms.UpdateCounter("title2", 201)
 				return ms

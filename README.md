@@ -1,7 +1,7 @@
 # go-musthave-metrics-tpl
 
 Шаблон репозитория для трека «Сервер сбора метрик и алертинга».
-
+ 
 ## Начало работы
 
 1. Склонируйте репозиторий в любую подходящую директорию на вашем компьютере.
@@ -30,3 +30,7 @@ git fetch template && git checkout template/main .github
 При мёрже ветки с инкрементом в основную ветку `main` будут запускаться все автотесты.
 
 Подробнее про локальный и автоматический запуск читайте в [README автотестов](https://github.com/Yandex-Practicum/go-autotests).
+
+
+`go install github.com/go-delve/delve/cmd/dlv@latest; go mod tidy; go mod vendor`
+`dlv debug ./cmd/server/main.go --headless=true --api-version=2  -- -k 1234 --filestoragepath new.json --restore`

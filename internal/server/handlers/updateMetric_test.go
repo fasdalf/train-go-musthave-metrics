@@ -27,25 +27,25 @@ func TestUpdateMetricHandler(t *testing.T) {
 		{
 			name:  "empty",
 			vType: "", vName: "", vValue: "",
-			args: args{metricstorage.NewMemStorageWithSave()},
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
 			want: want{statusCode: http.StatusNotFound, counters: 0, gauges: 0},
 		},
 		{
 			name:  "valid gauge",
 			vType: "gauge", vName: "some-metric", vValue: "10.001",
-			args: args{metricstorage.NewMemStorageWithSave()},
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
 			want: want{statusCode: http.StatusOK, counters: 0, gauges: 1},
 		},
 		{
 			name:  "valid counter",
 			vType: "counter", vName: "some-metric", vValue: "10",
-			args: args{metricstorage.NewMemStorageWithSave()},
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
 			want: want{statusCode: http.StatusOK, counters: 1, gauges: 0},
 		},
 		{
 			name:  "NaN counter",
 			vType: "counter", vName: "some-metric", vValue: "NaN",
-			args: args{metricstorage.NewMemStorageWithSave()},
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
 			want: want{statusCode: http.StatusBadRequest, counters: 0, gauges: 0},
 		},
 	}
@@ -63,8 +63,10 @@ func TestUpdateMetricHandler(t *testing.T) {
 			handler := NewUpdateMetricHandler(tt.args.s)
 			handler(c)
 			assert.Equal(t, tt.want.statusCode, w.Code, "Код ответа не совпадает с ожидаемым")
-			assert.Equal(t, tt.want.gauges, len(tt.args.s.ListGauges()), "Got unexpected amount of gauges")
-			assert.Equal(t, tt.want.counters, len(tt.args.s.ListCounters()), "Got unexpected amount of counters")
+			l, _ := tt.args.s.ListGauges()
+			assert.Equal(t, tt.want.gauges, len(l), "Got unexpected amount of gauges")
+			l, _ = tt.args.s.ListCounters()
+			assert.Equal(t, tt.want.counters, len(l), "Got unexpected amount of counters")
 		})
 	}
 }

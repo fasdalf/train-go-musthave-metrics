@@ -20,6 +20,7 @@ type Config struct {
 	StorageFileName          string `env:"FILE_STORAGE_PATH"`
 	StorageFileStoreInterval int    `env:"STORE_INTERVAL"`
 	StorageFileRestore       bool   `env:"RESTORE"`
+	StorageDBDSN             string `env:"DATABASE_DSN"`
 }
 
 var config *Config
@@ -35,6 +36,7 @@ func init() {
 	flag.StringVarP(&config.StorageFileName, "filestoragepath", "f", "", "A path and file name to store JSON data. Leave empty to disable file storage.")
 	flag.IntVarP(&config.StorageFileStoreInterval, "storeinterval", "i", defaultStorageFileStoreInterval, "Interval in seconds to dump metrics to JSON file. \"0\" is on every change.")
 	flag.BoolVarP(&config.StorageFileRestore, "restore", "r", defaultStorageFileRestore, "Metrics restore from file on startup.")
+	flag.StringVarP(&config.StorageDBDSN, "databasedsn", "d", "", "Postgres PGX DSN to use DB storage. Disabled when empty.")
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	flag.Parse()
 	// pflag handles --help itself.
