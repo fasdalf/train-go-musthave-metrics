@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRoutingEngine(ms handlers.Storage, saved jsonofflinestorage.SavedChan, db *sql.DB, retryer handlers.Retryer) *gin.Engine {
+func NewRoutingEngine(ms handlers.Storage, saved jsonofflinestorage.SavedChan, db *sql.DB, retryer handlers.Retryer, key string) *gin.Engine {
 	ginCore := gin.New()
 	ginCore.RedirectTrailingSlash = false
 	ginCore.RedirectFixedPath = false
@@ -16,6 +16,10 @@ func NewRoutingEngine(ms handlers.Storage, saved jsonofflinestorage.SavedChan, d
 	// IRL just use ginCore.Use(slogGin.New(slog.Default())) from slogGin "github.com/samber/slog-gin"
 	// "We have it at home" logging. Uses .../loggingResponseWriter.go and .../slogHandler.go
 	ginCore.Use(handlers.SlogHandler)
+	if key != "" {
+		ginCore.Use(handlers.NewValidateHashHandler(key))
+		ginCore.Use(handlers.NewRespondWithHashHandler(key))
+	}
 	// IRL just use ginCore.Use(gzip.Gzip(gzip.DefaultCompression)) from "github.com/gin-contrib/gzip"
 	// "We have it at home" compression. Uses .../compressWriter.go and .../gzipCompressionHandler.go
 	ginCore.Use(handlers.GzipCompressionHandler)

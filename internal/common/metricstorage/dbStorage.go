@@ -168,7 +168,7 @@ func (s *DBStorage) ListGauges() ([]string, error) {
 
 	for rows.Next() {
 		var k string
-		if err = rows.Scan(&s); err != nil {
+		if err = rows.Scan(&k); err != nil {
 			return nil, err
 		}
 		keys = append(keys, k)
@@ -193,7 +193,7 @@ func (s *DBStorage) ListCounters() ([]string, error) {
 
 	for rows.Next() {
 		var k string
-		if err = rows.Scan(&s); err != nil {
+		if err = rows.Scan(&k); err != nil {
 			return nil, err
 		}
 		keys = append(keys, k)
