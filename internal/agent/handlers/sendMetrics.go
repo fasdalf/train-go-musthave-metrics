@@ -35,13 +35,14 @@ func SendMetrics(ctx context.Context, s Storage, address string, r Retryer, key 
 	address = fmt.Sprintf(URLTemplate, address)
 
 	w := newWorker(address, key)
-	if _, err := r.Try(ctx, newProducer(ctx, s, w, rateLimit), isRecoverable); err != nil {
+	p := newProducer(ctx, s, w, rateLimit)
+	if _, err := r.Try(ctx, p, isRecoverable); err != nil {
 		slog.Info("SendMetrics error", "error", err)
 	}
 }
 
 func isRecoverable(err error) bool {
-	var netErr net.Error = nil
+	var netErr net.Error
 	if errors.As(err, &netErr) && netErr != nil {
 		return true
 	}
@@ -123,19 +124,19 @@ func newProducer(ctx context.Context, s Storage, w workerFunc, l int) func() err
 			eg.Go(func() error { return w(innerCtx, i, ch) })
 		}
 
-		for _, key := range s.ListCounters() {
-			counter := int64(s.GetCounter(key))
+		for _, counterName := range s.ListCounters() {
+			counter := int64(s.GetCounter(counterName))
 			ch <- &apimodels.Metrics{
-				ID:    key,
+				ID:    counterName,
 				MType: constants.CounterStr,
 				Delta: &counter,
 				Value: nil,
 			}
 		}
-		for _, key := range s.ListGauges() {
-			gauge := s.GetGauge(key)
+		for _, gaugeName := range s.ListGauges() {
+			gauge := s.GetGauge(gaugeName)
 			ch <- &apimodels.Metrics{
-				ID:    key,
+				ID:    gaugeName,
 				MType: constants.GaugeStr,
 				Delta: nil,
 				Value: &gauge,

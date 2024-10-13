@@ -1,14 +1,12 @@
 package server
 
 import (
-	"database/sql"
 	"fmt"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"github.com/gin-gonic/gin"
 )
 
-func NewRoutingEngine(ms handlers.Storage, saved jsonofflinestorage.SavedChan, db *sql.DB, retryer handlers.Retryer, key string) *gin.Engine {
+func NewRoutingEngine(ms handlers.Storage, db handlers.Pingable, retryer handlers.Retryer, key string) *gin.Engine {
 	ginCore := gin.New()
 	ginCore.RedirectTrailingSlash = false
 	ginCore.RedirectFixedPath = false
@@ -33,15 +31,7 @@ func NewRoutingEngine(ms handlers.Storage, saved jsonofflinestorage.SavedChan, d
 	ginCore.POST("/value/", valuePipeline...)
 	ginCore.POST("/value", valuePipeline...)
 	ginCore.POST(fmt.Sprintf("/update/:%s/:%s/:%s", handlers.URLParamType, handlers.URLParamName, handlers.URLParamValue), handlers.NewUpdateMetricHandler(ms))
-	updatePipeline := []gin.HandlerFunc{handlers.SaveMetricHandler(ms), handlers.MetricValueResponseHandler(ms)}
-	if saved != nil {
-		updatePipeline = append(updatePipeline, handlers.NewSaveToFileHandler(saved))
-	}
-	ginCore.POST("/update/", updatePipeline...)
-	updatesPipeline := []gin.HandlerFunc{handlers.SaveMetricsHandler(ms, retryer)}
-	if saved != nil {
-		updatesPipeline = append(updatesPipeline, handlers.NewSaveToFileHandler(saved))
-	}
-	ginCore.POST("/updates/", updatesPipeline...)
+	ginCore.POST("/update/", handlers.SaveMetricHandler(ms), handlers.MetricValueResponseHandler(ms))
+	ginCore.POST("/updates/", handlers.SaveMetricsHandler(ms, retryer))
 	return ginCore
 }

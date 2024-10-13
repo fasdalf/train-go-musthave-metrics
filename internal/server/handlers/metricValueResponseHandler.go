@@ -18,7 +18,7 @@ const (
 // Previous handler should add valid metric to context
 func MetricValueResponseHandler(s Storage) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var metric *apimodels.Metrics = nil
+		var metric *apimodels.Metrics
 		metricWrapped, ok := c.Get(contextMetricResponseKey)
 		if !ok {
 			slog.Error("No value in context", "key", contextMetricResponseKey)

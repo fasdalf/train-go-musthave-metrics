@@ -6,8 +6,6 @@ import (
 )
 
 type Storage interface {
-	UpdateCounter(key string, value int) error
-	UpdateGauge(key string, value float64) error
 	GetCounter(key string) (int, error)
 	GetGauge(key string) (float64, error)
 	HasCounter(key string) (bool, error)
@@ -16,8 +14,4 @@ type Storage interface {
 	ListCounters() ([]string, error)
 	SaveCommonModel(metric *apimodels.Metrics) error
 	SaveCommonModels(ctx context.Context, metrics []apimodels.Metrics) error
-}
-
-type FileStorage interface {
-	SaveWithInterval() error
 }
