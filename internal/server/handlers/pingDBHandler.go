@@ -1,14 +1,17 @@
 package handlers
 
 import (
-	"database/sql"
 	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
 )
 
+type Pingable interface {
+	Ping() error
+}
+
 // NewPingDBHandler create handler to check DB connection
-func NewPingDBHandler(db *sql.DB) func(c *gin.Context) {
+func NewPingDBHandler(db Pingable) func(c *gin.Context) {
 	pingDBHandler := func(c *gin.Context) {
 		if db == nil {
 			slog.Error("DATABASE_DSN is empty")

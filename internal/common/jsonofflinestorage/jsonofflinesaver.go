@@ -23,27 +23,52 @@ type Storage interface {
 	SaveCommonModel(metric *apimodels.Metrics) error
 }
 
+// JSONFileStorage is a background routine to manage json data file.
 type JSONFileStorage struct {
-	storage       Storage
-	fileName      string
-	restore       bool
-	storeInterval time.Duration
-	mu            *sync.Mutex
+	storage          Storage
+	fileName         string
+	isRestoreEnabled bool
+	storeInterval    time.Duration
+	mu               *sync.Mutex
+	saved            chan struct{}
+	clear            func() bool
 }
 
-func NewJSONFileStorage(storage Storage, fileName string, restore bool, storeInterval int) *JSONFileStorage {
+func NewJSONFileStorage(storage Storage, fileName string, restore bool, storeInterval int, saved chan struct{}, clear func() bool) *JSONFileStorage {
 	return &JSONFileStorage{
-		storage:       storage,
-		fileName:      fileName,
-		restore:       restore,
-		storeInterval: time.Duration(storeInterval) * time.Second,
-		mu:            new(sync.Mutex),
+		storage:          storage,
+		fileName:         fileName,
+		isRestoreEnabled: restore,
+		storeInterval:    time.Duration(storeInterval) * time.Second,
+		mu:               new(sync.Mutex),
+		saved:            saved,
+		clear:            clear,
 	}
 }
 
-func (l *JSONFileStorage) Save() error {
+func (l *JSONFileStorage) Start(ctx context.Context, wg *sync.WaitGroup) error {
+	if err := l.restore(); err != nil {
+		return fmt.Errorf("could not isRestoreEnabled json file: %w", err)
+	}
+	wg.Add(1)
+	go func() {
+		err := l.saveToFile(ctx, wg)
+		if err != nil {
+			slog.Error("async saver failed", "error", err)
+		}
+	}()
+	return nil
+}
+
+func (l *JSONFileStorage) save() error {
 	l.mu.Lock()
 	defer l.mu.Unlock()
+
+	// check if we can live without it.
+	if !l.clear() {
+		return nil
+	}
+
 	file, err := os.OpenFile(l.fileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		return fmt.Errorf("can't open file: %w", err)
@@ -97,8 +122,8 @@ func (l *JSONFileStorage) Save() error {
 	return nil
 }
 
-func (l *JSONFileStorage) Restore() error {
-	if !l.restore {
+func (l *JSONFileStorage) restore() error {
+	if !l.isRestoreEnabled {
 		return nil
 	}
 	file, err := os.OpenFile(l.fileName, os.O_RDONLY, 0666)
@@ -133,7 +158,7 @@ func (l *JSONFileStorage) Restore() error {
 
 type SavedChan = chan struct{}
 
-func (l *JSONFileStorage) SaveMetrics(ctx context.Context, saved SavedChan, wg *sync.WaitGroup) error {
+func (l *JSONFileStorage) saveToFile(ctx context.Context, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	do := true
 	if l.storeInterval > 0 {
@@ -146,8 +171,8 @@ func (l *JSONFileStorage) SaveMetrics(ctx context.Context, saved SavedChan, wg *
 			case <-t.C:
 			}
 
-			if err := l.Save(); err != nil {
-				slog.Error("SaveMetrics error", "error", err)
+			if err := l.save(); err != nil {
+				slog.Error("saveToFile error", "error", err)
 			}
 
 			if do {
@@ -161,11 +186,11 @@ func (l *JSONFileStorage) SaveMetrics(ctx context.Context, saved SavedChan, wg *
 		select {
 		case <-ctx.Done():
 			do = false
-		case <-saved:
+		case <-l.saved:
 		}
 
-		if err := l.Save(); err != nil {
-			slog.Error("SaveMetrics error", "error", err)
+		if err := l.save(); err != nil {
+			slog.Error("saveToFile error", "error", err)
 		}
 	}
 	return nil
