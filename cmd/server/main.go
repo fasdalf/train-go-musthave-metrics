@@ -13,6 +13,7 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"log/slog"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"sync"
@@ -73,6 +74,9 @@ func main() {
 		Addr:    c.Addr,
 		Handler: engine,
 	}
+
+	// for "net/http/pprof"
+	go http.ListenAndServe(":8093", nil)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
