@@ -2,10 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/config"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
 	"log/slog"
 	"net/http"
 	_ "net/http/pprof"
@@ -13,6 +9,11 @@ import (
 	"os/signal"
 	"sync"
 	"time"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/config"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
 )
 
 func main() {

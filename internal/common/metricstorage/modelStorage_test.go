@@ -1,10 +1,11 @@
 package metricstorage
 
 import (
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"strconv"
 	"testing"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 )
 
 func BenchmarkModelStorageSingleUpdates(b *testing.B) {

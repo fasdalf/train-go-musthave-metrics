@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
 	"log/slog"
 	"net/http"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
 )
 
 type netHTTPPoster struct{}

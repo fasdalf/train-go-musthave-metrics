@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"html"
+
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"html"
 )
 
 type basicBatch interface {

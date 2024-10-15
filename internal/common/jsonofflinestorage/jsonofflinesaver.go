@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"io"
 	"io/fs"
 	"log/slog"
 	"os"
 	"sync"
 	"time"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 )
 
 type Storage interface {

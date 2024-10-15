@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"log/slog"
+
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
 	"github.com/go-resty/resty/v2"
-	"log/slog"
 )
 
 type restyPoster struct{}

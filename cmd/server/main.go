@@ -4,13 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/server"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/server/config"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
-	_ "github.com/jackc/pgx/v5/stdlib"
 	"log/slog"
 	"net/http"
 	_ "net/http/pprof"
@@ -18,6 +11,14 @@ import (
 	"os/signal"
 	"sync"
 	"time"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/server"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/server/config"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func main() {
