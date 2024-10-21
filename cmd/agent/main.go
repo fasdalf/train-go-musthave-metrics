@@ -27,7 +27,7 @@ func main() {
 
 	wg := new(sync.WaitGroup)
 	wg.Add(3)
-	go handlers.SendMetricsLoop(ctx, wg, memStorage, address, sendInterval, retryer, handlers.NewDefaultPoster(), cfg.HashKey, cfg.RateLimit)
+	go handlers.SendMetricsLoop(ctx, wg, memStorage, address, sendInterval, retryer, handlers.NewNetHTTPPoster(), cfg.HashKey, cfg.RateLimit)
 	go handlers.Collect(handlers.CollectMetrics, ctx, wg, memStorage, collectInterval)
 	go handlers.Collect(handlers.CollectGopsutilMetrics, ctx, wg, memStorage, collectInterval)
 	// for "net/http/pprof"

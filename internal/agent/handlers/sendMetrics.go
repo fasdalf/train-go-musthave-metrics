@@ -14,10 +14,8 @@ import (
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 
-	resty "github.com/go-resty/resty/v2"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -28,7 +26,7 @@ type Retryer interface {
 }
 
 type MetricsPoster interface {
-	Post(ctx context.Context, idlog *slog.Logger, metricUpdates []*apimodels.Metrics, key string, address string) error
+	Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) error
 }
 
 var ErrTransport = errors.New("resty error")
@@ -69,65 +67,18 @@ func newWorker(address string, key string, poster MetricsPoster) workerFunc {
 			metricUpdates = append(metricUpdates, m)
 		}
 
-		return poster.Post(ctx, idlog, metricUpdates, key, address)
+		idlog.Info("received metricUpdates", "count", len(metricUpdates))
+		if len(metricUpdates) == 0 {
+			return nil
+		}
+
+		body, err := compressMetrics(metricUpdates)
+		if err != nil {
+			idlog.Error("failed to prepare request body", "error", err)
+			return err
+		}
+		return poster.Post(ctx, idlog, body, key, address)
 	}
-}
-
-type defaultPoster struct{}
-
-func (p *defaultPoster) Post(ctx context.Context, idlog *slog.Logger, metricUpdates []*apimodels.Metrics, key string, address string) error {
-	idlog.Info("recieved metricUpdates", "count", len(metricUpdates))
-	if len(metricUpdates) == 0 {
-		return nil
-	}
-
-	client := resty.New()
-	content, err := json.Marshal(metricUpdates)
-	if err != nil {
-		idlog.Error("marshal metricUpdates error", "error", err)
-		return errors.Join(fmt.Errorf("encoding request: %w", err), ErrTransport)
-	}
-	body := new(bytes.Buffer)
-	zb := gzip.NewWriter(body)
-	_, err = zb.Write(content)
-	if err != nil {
-		idlog.Error("gzip writer error", "error", err)
-		return fmt.Errorf("compressing request: %w", err)
-	}
-	_ = zb.Close()
-
-	req := client.R()
-	req.SetContext(ctx)
-	req.SetHeader("Content-Encoding", "gzip")
-	req.SetHeader("Accept-Encoding", "gzip")
-	req.SetHeader("Content-Type", "application/json")
-
-	if key != "" {
-		hash := cryptofacade.Hash(body.Bytes(), []byte(key))
-		req.SetHeader(constants.HashSHA256, hash)
-	}
-
-	req.SetBody(body)
-	resp, err := req.Post(address)
-	if err != nil {
-		idlog.Error("send request error", "error", err)
-		return fmt.Errorf("sending metrics: %w", err)
-	}
-
-	if resp != nil && resp.RawResponse.Body != nil {
-		_ = resp.RawResponse.Body.Close()
-	}
-
-	if resp != nil && resp.IsError() {
-		idlog.Error("response error", "error", resp.Error())
-		return fmt.Errorf("sending metrics https status error: %d", resp.StatusCode())
-	}
-	idlog.Info("sent metricUpdates", "count", len(metricUpdates))
-	return nil
-}
-
-func NewDefaultPoster() MetricsPoster {
-	return &defaultPoster{}
 }
 
 func newProducer(ctx context.Context, s Storage, w workerFunc, l int) func() error {
@@ -160,6 +111,23 @@ func newProducer(ctx context.Context, s Storage, w workerFunc, l int) func() err
 		close(ch)
 		return eg.Wait()
 	}
+}
+
+// compressMetrics compresses the metrics using gzip.
+func compressMetrics(metricUpdates []*apimodels.Metrics) (*bytes.Buffer, error) {
+	content, err := json.Marshal(metricUpdates)
+	if err != nil {
+		return nil, errors.Join(fmt.Errorf("encoding request: %w", err), ErrTransport)
+	}
+	body := new(bytes.Buffer)
+	zb := gzip.NewWriter(body)
+	defer zb.Close()
+	_, err = zb.Write(content)
+	if err != nil {
+		return nil, fmt.Errorf("compressing request: %w", err)
+	}
+
+	return body, nil
 }
 
 func SendMetricsLoop(
