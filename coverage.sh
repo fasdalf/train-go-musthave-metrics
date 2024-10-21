@@ -1,7 +1,7 @@
 #!/bin/bash
 # go tool pprof -http=":9090" -seconds=30 http://localhost:8093/debug/pprof/goroutine
 # можно использовать опции focus и ignore —
-# go tool pprof -focus=myproject -ignore="^runtime|^net/http|^[github.com|^golang.org](http://github.com%7C%5Egolang.org)" base.pprof
+# go tool pprof -focus=github.com/fasdalf/train-go-musthave-metrics -ignore="^runtime|^net/http|^[github.com|^golang.org](http://github.com%7C%5Egolang.org)" base.pprof
 # Это позволит сфокусироваться на вызовах, связанных именно с нашим проектом.
 
 # curl -s http://localhost:8093/debug/pprof/heap?seconds=30 > server.heap.result.pprof
