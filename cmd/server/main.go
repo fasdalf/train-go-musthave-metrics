@@ -21,6 +21,7 @@ import (
 )
 
 func main() {
+	const pprofHTTPAddr = ":8093"
 	ctx, ctxCancel := context.WithCancel(context.Background())
 	wg := &sync.WaitGroup{}
 	c := config.GetConfig()
@@ -76,7 +77,7 @@ func main() {
 	}
 
 	// for "net/http/pprof"
-	go http.ListenAndServe(":8093", nil)
+	go http.ListenAndServe(pprofHTTPAddr, nil)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
