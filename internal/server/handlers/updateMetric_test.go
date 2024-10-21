@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUpdateMetricHandler(t *testing.T) {

@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
-	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+	"github.com/gin-gonic/gin"
 )
 
 // SaveMetricHandler save metric to storage

@@ -2,13 +2,14 @@ package server
 
 import (
 	"bytes"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"github.com/stretchr/testify/assert"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 func TestUpdateMetricIntegrational(t *testing.T) {

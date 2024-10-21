@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"github.com/gin-gonic/gin"
 	"log/slog"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 // SlogHandler gin middleware

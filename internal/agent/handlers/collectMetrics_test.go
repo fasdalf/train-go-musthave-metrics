@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"testing"
+
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestCollectMetrics(t *testing.T) {

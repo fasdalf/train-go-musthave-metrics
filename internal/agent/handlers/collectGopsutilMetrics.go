@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"github.com/shirou/gopsutil/v4/cpu"
-	"github.com/shirou/gopsutil/v4/mem"
 	"strconv"
 	"time"
+
+	"github.com/shirou/gopsutil/v4/cpu"
+	"github.com/shirou/gopsutil/v4/mem"
 )
 
 // CollectGopsutilMetrics collects various metrics to given storage

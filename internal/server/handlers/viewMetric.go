@@ -3,11 +3,12 @@ package handlers
 import (
 	"errors"
 	"fmt"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"github.com/gin-gonic/gin"
 	"html"
 	"log/slog"
 	"net/http"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+	"github.com/gin-gonic/gin"
 )
 
 // NewViewStatsHandler view single stored metric
