@@ -7,6 +7,8 @@ import (
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
 	"log/slog"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"sync"
@@ -14,6 +16,7 @@ import (
 )
 
 func main() {
+	const pprofHTTPAddr = ":8092"
 	cfg := config.GetConfig()
 	collectInterval := time.Duration(cfg.PollInterval) * time.Second
 	sendInterval := time.Duration(cfg.ReportInterval) * time.Second
@@ -24,10 +27,11 @@ func main() {
 
 	wg := new(sync.WaitGroup)
 	wg.Add(3)
-	go handlers.SendMetricsLoop(ctx, wg, memStorage, address, sendInterval, retryer, cfg.HashKey, cfg.RateLimit)
+	go handlers.SendMetricsLoop(ctx, wg, memStorage, address, sendInterval, retryer, handlers.NewNetHTTPPoster(), cfg.HashKey, cfg.RateLimit)
 	go handlers.Collect(handlers.CollectMetrics, ctx, wg, memStorage, collectInterval)
 	go handlers.Collect(handlers.CollectGopsutilMetrics, ctx, wg, memStorage, collectInterval)
-
+	// for "net/http/pprof"
+	go http.ListenAndServe(pprofHTTPAddr, nil)
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 	<-quit

@@ -13,6 +13,7 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"log/slog"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"sync"
@@ -20,6 +21,7 @@ import (
 )
 
 func main() {
+	const pprofHTTPAddr = ":8093"
 	ctx, ctxCancel := context.WithCancel(context.Background())
 	wg := &sync.WaitGroup{}
 	c := config.GetConfig()
@@ -73,6 +75,9 @@ func main() {
 		Addr:    c.Addr,
 		Handler: engine,
 	}
+
+	// for "net/http/pprof"
+	go http.ListenAndServe(pprofHTTPAddr, nil)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
