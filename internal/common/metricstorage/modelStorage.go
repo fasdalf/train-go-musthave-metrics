@@ -1,3 +1,4 @@
+// Main storage wrapper for the server application
 package metricstorage
 
 import (
@@ -43,6 +44,7 @@ type basicUpdater interface {
 	UpdateGauge(key string, value float64) error
 }
 
+// saveCommonModel — common function for saving models
 func saveCommonModel(u basicUpdater, metric *apimodels.Metrics) (err error) {
 	switch metric.MType {
 	case constants.GaugeStr:
