@@ -39,4 +39,5 @@ git fetch template && git checkout template/main .github
 
 * go install -v golang.org/x/tools/cmd/godoc@latest
 * godoc -http=:8080 -goroot=.
-* http://localhost:8080/pkg/github.com/fasdalf/train-go-musthave-metrics/?m=all
+* in browser http://localhost:8080/pkg/github.com/fasdalf/train-go-musthave-metrics/?m=all
+* inline example http://localhost:8075/pkg/github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt/?m=all#Retryer.Try
