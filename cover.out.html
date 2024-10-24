@@ -1,0 +1,2518 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>agent: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/fasdalf/train-go-musthave-metrics/cmd/agent/main.go (0.0%)</option>
+				
+				<option value="file1">github.com/fasdalf/train-go-musthave-metrics/cmd/server/main.go (0.0%)</option>
+				
+				<option value="file2">github.com/fasdalf/train-go-musthave-metrics/internal/agent/config/config.go (0.0%)</option>
+				
+				<option value="file3">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/collectGopsutilMetrics.go (0.0%)</option>
+				
+				<option value="file4">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/collectLoop.go (61.5%)</option>
+				
+				<option value="file5">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/collectMetrics.go (100.0%)</option>
+				
+				<option value="file6">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/mockposter.go (100.0%)</option>
+				
+				<option value="file7">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/nethttpposter.go (0.0%)</option>
+				
+				<option value="file8">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/restyposter.go (0.0%)</option>
+				
+				<option value="file9">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/sendMetrics.go (75.9%)</option>
+				
+				<option value="file10">github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade/cryptofacade.go (100.0%)</option>
+				
+				<option value="file11">github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage/jsonofflinesaver.go (0.0%)</option>
+				
+				<option value="file12">github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/dbStorage.go (0.0%)</option>
+				
+				<option value="file13">github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/dirtystorage.go (0.0%)</option>
+				
+				<option value="file14">github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorage.go (91.5%)</option>
+				
+				<option value="file15">github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorageMuted.go (0.0%)</option>
+				
+				<option value="file16">github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/modelStorage.go (90.0%)</option>
+				
+				<option value="file17">github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt/retryattempt.go (33.3%)</option>
+				
+				<option value="file18">github.com/fasdalf/train-go-musthave-metrics/internal/server/config/config.go (0.0%)</option>
+				
+				<option value="file19">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/checkMetricExistenceHandler.go (0.0%)</option>
+				
+				<option value="file20">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/compressWriter.go (0.0%)</option>
+				
+				<option value="file21">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/gzipCompressionHandler.go (0.0%)</option>
+				
+				<option value="file22">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/hashWriter.go (0.0%)</option>
+				
+				<option value="file23">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/index.go (58.3%)</option>
+				
+				<option value="file24">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/loggingResponseWriter.go (0.0%)</option>
+				
+				<option value="file25">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/metricValueResponseHandler.go (0.0%)</option>
+				
+				<option value="file26">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/pingDBHandler.go (0.0%)</option>
+				
+				<option value="file27">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/respondWithHashHandler.go (0.0%)</option>
+				
+				<option value="file28">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/saveMetricHandler.go (0.0%)</option>
+				
+				<option value="file29">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/saveMetricsHandler.go (0.0%)</option>
+				
+				<option value="file30">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/slogHandler.go (0.0%)</option>
+				
+				<option value="file31">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/updateMetric.go (72.7%)</option>
+				
+				<option value="file32">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/validateHashHandler.go (0.0%)</option>
+				
+				<option value="file33">github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/viewMetric.go (67.6%)</option>
+				
+				<option value="file34">github.com/fasdalf/train-go-musthave-metrics/internal/server/httpServer.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "context"
+        "log/slog"
+        "net/http"
+        _ "net/http/pprof"
+        "os"
+        "os/signal"
+        "sync"
+        "time"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/agent/config"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
+)
+
+func main() <span class="cov0" title="0">{
+        const pprofHTTPAddr = ":8092"
+        cfg := config.GetConfig()
+        collectInterval := time.Duration(cfg.PollInterval) * time.Second
+        sendInterval := time.Duration(cfg.ReportInterval) * time.Second
+        address := cfg.Addr
+        memStorage := metricstorage.NewMemStorageMuted()
+        retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
+        ctx, cancel := context.WithCancel(context.Background())
+
+        wg := new(sync.WaitGroup)
+        wg.Add(3)
+        go handlers.SendMetricsLoop(ctx, wg, memStorage, address, sendInterval, retryer, handlers.NewNetHTTPPoster(), cfg.HashKey, cfg.RateLimit)
+        go handlers.Collect(handlers.CollectMetrics, ctx, wg, memStorage, collectInterval)
+        go handlers.Collect(handlers.CollectGopsutilMetrics, ctx, wg, memStorage, collectInterval)
+        // for "net/http/pprof"
+        go http.ListenAndServe(pprofHTTPAddr, nil)
+        quit := make(chan os.Signal, 1)
+        signal.Notify(quit, os.Interrupt)
+        &lt;-quit
+        slog.Info("interrupt signal received")
+        signal.Stop(quit)
+        cancel()
+        slog.Info("attempting graceful shutdown")
+        wg.Wait()
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package main
+
+import (
+        "context"
+        "database/sql"
+        "errors"
+        "log/slog"
+        "net/http"
+        _ "net/http/pprof"
+        "os"
+        "os/signal"
+        "sync"
+        "time"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/server"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/server/config"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
+        _ "github.com/jackc/pgx/v5/stdlib"
+)
+
+func main() <span class="cov0" title="0">{
+        const pprofHTTPAddr = ":8093"
+        ctx, ctxCancel := context.WithCancel(context.Background())
+        wg := &amp;sync.WaitGroup{}
+        c := config.GetConfig()
+        slog.Info("initializing server")
+
+        retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
+        var metricStorage *metricstorage.SavableModelStorage
+
+        var db handlers.Pingable
+
+        switch true </span>{
+        case c.StorageDBDSN != "":<span class="cov0" title="0">
+                slog.Info("initializing database connection", "DATABASE_DSN", c.StorageDBDSN)
+                var err error
+                pgx, err := sql.Open("pgx", c.StorageDBDSN)
+                if err != nil </span><span class="cov0" title="0">{
+                        slog.Error("can not connect to DB", "error", err)
+
+                        panic(err)</span>
+                }
+
+                <span class="cov0" title="0">defer pgx.Close()
+
+                dbStorage, err := metricstorage.NewDBStorage(pgx, context.Background())
+                if err != nil </span><span class="cov0" title="0">{
+                        slog.Error("can not init DB", "error", err)
+                        panic(err)</span>
+                }
+                <span class="cov0" title="0">metricStorage = metricstorage.NewSavableModelStorage(dbStorage)
+                db = pgx</span>
+        case c.StorageFileName != "":<span class="cov0" title="0">
+                slog.Info("initializing in-mem and in-file storage")
+                dirtyStorage := metricstorage.NewDirtyStorage(metricstorage.NewMemStorage())
+                modelStorage := metricstorage.NewSavableModelStorage(dirtyStorage)
+
+                slog.Info("initializing file storage")
+                fileSaver := jsonofflinestorage.NewJSONFileStorage(modelStorage, c.StorageFileName, c.StorageFileRestore, c.StorageFileStoreInterval, dirtyStorage.SavedChan, dirtyStorage.Clear)
+                if err := fileSaver.Start(ctx, wg); err != nil </span><span class="cov0" title="0">{
+                        slog.Error("can not init file storage", "error", err)
+                        panic(err)</span>
+                }
+                <span class="cov0" title="0">metricStorage = modelStorage</span>
+        default:<span class="cov0" title="0">
+                slog.Info("initializing in-mem only storage")
+                metricStorage = metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())</span>
+        }
+
+        <span class="cov0" title="0">slog.Debug("initializing http router")
+        engine := server.NewRoutingEngine(metricStorage, db, retryer, c.HashKey)
+        srv := &amp;http.Server{
+                Addr:    c.Addr,
+                Handler: engine,
+        }
+
+        // for "net/http/pprof"
+        go http.ListenAndServe(pprofHTTPAddr, nil)
+
+        quit := make(chan os.Signal, 1)
+        signal.Notify(quit, os.Interrupt)
+
+        go func() </span><span class="cov0" title="0">{
+                &lt;-quit
+                slog.Info("interrupt signal received")
+                signal.Stop(quit)
+                ctxCancel()
+                if err := srv.Close(); err != nil </span><span class="cov0" title="0">{
+                        slog.Error("Server close error:", "error", err)
+                }</span>
+        }()
+
+        <span class="cov0" title="0">slog.Info("starting http server", "address", c.Addr)
+        if err := srv.ListenAndServe(); err != nil </span><span class="cov0" title="0">{
+                if errors.Is(err, http.ErrServerClosed) </span><span class="cov0" title="0">{
+                        slog.Info("Server closed by interrupt signal")
+                        slog.Info("wait for bg processes")
+                        wg.Wait()
+                }</span> else<span class="cov0" title="0"> {
+                        slog.Error("server not started or stopped with error", "error", err)
+                        panic(err)</span>
+                }
+        }
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package config
+
+import (
+        goflag "flag"
+        "fmt"
+        "log/slog"
+        "os"
+
+        "github.com/caarlos0/env/v6"
+        flag "github.com/spf13/pflag"
+)
+
+const (
+        defaultAddress        = "localhost:8080"
+        defaultPollInterval   = 2
+        defaultReportInterval = 10
+)
+
+type Config struct {
+        Addr           string `env:"ADDRESS"`
+        PollInterval   int    `env:"POLL_INTERVAL"`
+        ReportInterval int    `env:"REPORT_INTERVAL"`
+        HashKey        string `env:"KEY"`
+        RateLimit      int    `env:"RATE_LIMIT"`
+}
+
+var config *Config
+
+func GetConfig() Config <span class="cov0" title="0">{
+        return *config
+}</span>
+
+func init() <span class="cov0" title="0">{
+        config = &amp;Config{}
+        // Flags
+        flag.StringVarP(&amp;config.Addr, "address", "a", defaultAddress, "The address to listen on for HTTP requests.")
+        flag.IntVarP(&amp;config.PollInterval, "pollinterval", "p", defaultPollInterval, "Metrics poll interval in seconds.")
+        flag.IntVarP(&amp;config.ReportInterval, "reportInterval", "r", defaultPollInterval, "Report to server interval in seconds.")
+        flag.StringVarP(&amp;config.HashKey, "key", "k", "", "Key for signature Hash header.  If not provided, will not sign the request.")
+        flag.IntVarP(&amp;config.RateLimit, "ratelimit", "l", 1, "Limit number of outcoming requests.")
+        flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
+        flag.Parse()
+        // pflag handles --help itself.
+
+        // Env. variables. This should take over the command line. Bad practice as I know.
+        if err := env.Parse(config); err != nil </span><span class="cov0" title="0">{
+                fmt.Printf("%+v\n", err)
+        }</span>
+
+        <span class="cov0" title="0">if config.RateLimit &lt; 1 </span><span class="cov0" title="0">{
+                panic("ratelimit must be greater than zero")</span>
+        }
+
+        <span class="cov0" title="0">slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &amp;slog.HandlerOptions{AddSource: true})))</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package handlers
+
+import (
+        "strconv"
+        "time"
+
+        "github.com/shirou/gopsutil/v4/cpu"
+        "github.com/shirou/gopsutil/v4/mem"
+)
+
+// CollectGopsutilMetrics collects various metrics to given storage
+func CollectGopsutilMetrics(s Storage, collectInterval time.Duration) error <span class="cov0" title="0">{
+        vmem, err := mem.VirtualMemory()
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">s.UpdateGauge("TotalMemory", float64(vmem.Total))
+        s.UpdateGauge("FreeMemory", float64(vmem.Free))
+        cpus, err := cpu.Percent(collectInterval, true)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">for i, percent := range cpus </span><span class="cov0" title="0">{
+                s.UpdateGauge("CPUutilization"+strconv.Itoa(i+1), percent)
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package handlers
+
+import (
+        "context"
+        "log/slog"
+        "sync"
+        "time"
+)
+
+type callback = func(s Storage, collectInterval time.Duration) error
+
+func loop(c func(), ctx context.Context, wg *sync.WaitGroup, i time.Duration) <span class="cov8" title="1">{
+        defer wg.Done()
+        timer := time.NewTimer(i + 1)
+        defer timer.Stop()
+        for </span><span class="cov8" title="1">{
+                select </span>{
+                case &lt;-ctx.Done():<span class="cov8" title="1">
+                        return</span>
+                case &lt;-timer.C:<span class="cov8" title="1"></span>
+                }
+                <span class="cov8" title="1">c()
+                timer.Reset(i)</span>
+        }
+}
+
+func Collect(c callback, ctx context.Context, wg *sync.WaitGroup, storage Storage, collectInterval time.Duration) <span class="cov0" title="0">{
+        cb := func() </span><span class="cov0" title="0">{
+                if err := c(storage, collectInterval); err != nil </span><span class="cov0" title="0">{
+                        slog.Error(`collector error`, `err`, err)
+                }</span>
+                <span class="cov0" title="0">slog.Info(`collector sleeping`, `delay`, collectInterval)</span>
+        }
+        <span class="cov0" title="0">loop(cb, ctx, wg, collectInterval)</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package handlers
+
+import (
+        "log/slog"
+        "math/rand"
+        "runtime"
+        "time"
+)
+
+// CollectMetrics collects various metrics to given storage
+func CollectMetrics(s Storage, collectInterval time.Duration) error <span class="cov8" title="1">{
+        slog.Info("Collecting metrics")
+        s.UpdateCounter("PollCount", s.GetCounter("PollCount")+1)
+        s.UpdateGauge("RandomValue", rand.Float64())
+
+        ms := runtime.MemStats{}
+        runtime.ReadMemStats(&amp;ms)
+
+        s.UpdateGauge("Alloc", float64(ms.Alloc))
+        s.UpdateGauge("BuckHashSys", float64(ms.BuckHashSys))
+        s.UpdateGauge("Frees", float64(ms.Frees))
+        s.UpdateGauge("GCCPUFraction", ms.GCCPUFraction)
+        s.UpdateGauge("GCSys", float64(ms.GCSys))
+        s.UpdateGauge("HeapAlloc", float64(ms.HeapAlloc))
+        s.UpdateGauge("HeapIdle", float64(ms.HeapIdle))
+        s.UpdateGauge("HeapInuse", float64(ms.HeapInuse))
+        s.UpdateGauge("HeapObjects", float64(ms.HeapObjects))
+        s.UpdateGauge("HeapReleased", float64(ms.HeapReleased))
+        s.UpdateGauge("HeapSys", float64(ms.HeapSys))
+        s.UpdateGauge("LastGC", float64(ms.LastGC))
+        s.UpdateGauge("Lookups", float64(ms.Lookups))
+        s.UpdateGauge("MCacheInuse", float64(ms.MCacheInuse))
+        s.UpdateGauge("MCacheSys", float64(ms.MCacheSys))
+        s.UpdateGauge("MSpanInuse", float64(ms.MSpanInuse))
+        s.UpdateGauge("MSpanSys", float64(ms.MSpanSys))
+        s.UpdateGauge("Mallocs", float64(ms.Mallocs))
+        s.UpdateGauge("NextGC", float64(ms.NextGC))
+        s.UpdateGauge("NumForcedGC", float64(ms.NumForcedGC))
+        s.UpdateGauge("NumGC", float64(ms.NumGC))
+        s.UpdateGauge("OtherSys", float64(ms.OtherSys))
+        s.UpdateGauge("PauseTotalNs", float64(ms.PauseTotalNs))
+        s.UpdateGauge("StackInuse", float64(ms.StackInuse))
+        s.UpdateGauge("StackSys", float64(ms.StackSys))
+        s.UpdateGauge("Sys", float64(ms.Sys))
+        s.UpdateGauge("TotalAlloc", float64(ms.TotalAlloc))
+        return nil
+}</span>
+
+/*
+// Can use smth. like this when all counters are in same object
+//    p := Point{3, 5, "Z"}
+//    pX := getAttr(&amp;p, "X")
+//
+//    // Get test (int)
+//    fmt.Println(pX.Int()) // 3
+
+func getAttr(obj interface{}, fieldName string) reflect.Value {
+    pointToStruct := reflect.ValueOf(obj) // addressable
+    curStruct := pointToStruct.Elem()
+    if curStruct.Kind() != reflect.Struct {
+        panic("not struct")
+    }
+    curField := curStruct.FieldByName(fieldName) // type: reflect.Value
+    if !curField.IsValid() {
+        panic("not found:" + fieldName)
+    }
+    return curField
+}
+*/
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package handlers
+
+import (
+        "bytes"
+        "context"
+        "log/slog"
+)
+
+type mockPoster struct {
+        Attempts int
+        Cancel   context.CancelFunc
+}
+
+func (p *mockPoster) Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) error <span class="cov8" title="1">{
+        p.Attempts--
+        if (p.Attempts) &lt;= 0 </span><span class="cov8" title="1">{
+                p.Cancel()
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func NewMockPoster(attempts int, cancel context.CancelFunc) *mockPoster <span class="cov8" title="1">{
+        return &amp;mockPoster{Attempts: attempts, Cancel: cancel}
+}</span>
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">package handlers
+
+import (
+        "bytes"
+        "context"
+        "fmt"
+        "log/slog"
+        "net/http"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
+)
+
+type netHTTPPoster struct{}
+
+func (p *netHTTPPoster) Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) error <span class="cov0" title="0">{
+        request, err := http.NewRequest(http.MethodPost, address, body)
+        if err != nil </span><span class="cov0" title="0">{
+                idlog.Error("init request error", "error", err)
+                return fmt.Errorf("sending metrics: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">request.Header.Set("Content-Type", "application/json")
+        request.Header.Set("Content-Encoding", "gzip")
+        request.Header.Set("Accept-Encoding", "gzip")
+
+        if key != "" </span><span class="cov0" title="0">{
+                hash := cryptofacade.Hash(body.Bytes(), []byte(key))
+                request.Header.Set(constants.HashSHA256, hash)
+        }</span>
+
+        <span class="cov0" title="0">resp, err := http.DefaultClient.Do(request)
+        if err != nil </span><span class="cov0" title="0">{
+                idlog.Error("send request error", "error", err)
+                return fmt.Errorf("sending metrics: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">if resp != nil &amp;&amp; resp.Body != nil </span><span class="cov0" title="0">{
+                defer resp.Body.Close()
+        }</span>
+
+        <span class="cov0" title="0">if resp != nil &amp;&amp; resp.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
+                idlog.Error("response error", "error", resp.StatusCode)
+                return fmt.Errorf("sending metrics https status error: %d", resp.StatusCode)
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func NewNetHTTPPoster() *netHTTPPoster <span class="cov0" title="0">{
+        return &amp;netHTTPPoster{}
+}</span>
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package handlers
+
+import (
+        "bytes"
+        "context"
+        "fmt"
+        "log/slog"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
+        "github.com/go-resty/resty/v2"
+)
+
+type restyPoster struct{}
+
+func (p *restyPoster) Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) error <span class="cov0" title="0">{
+        client := resty.New()
+        req := client.R()
+        req.SetContext(ctx)
+        req.SetHeader("Content-Encoding", "gzip")
+        req.SetHeader("Accept-Encoding", "gzip")
+        req.SetHeader("Content-Type", "application/json")
+
+        if key != "" </span><span class="cov0" title="0">{
+                hash := cryptofacade.Hash(body.Bytes(), []byte(key))
+                req.SetHeader(constants.HashSHA256, hash)
+        }</span>
+
+        <span class="cov0" title="0">req.SetBody(body)
+        resp, err := req.Post(address)
+        if err != nil </span><span class="cov0" title="0">{
+                idlog.Error("send request error", "error", err)
+                return fmt.Errorf("sending metrics: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">if resp != nil &amp;&amp; resp.RawResponse.Body != nil </span><span class="cov0" title="0">{
+                _ = resp.RawResponse.Body.Close()
+        }</span>
+
+        <span class="cov0" title="0">if resp != nil &amp;&amp; resp.IsError() </span><span class="cov0" title="0">{
+                idlog.Error("response error", "error", resp.Error())
+                return fmt.Errorf("sending metrics https status error: %d", resp.StatusCode())
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func NewRestyPoster() *restyPoster <span class="cov0" title="0">{
+        return &amp;restyPoster{}
+}</span>
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package handlers
+
+import (
+        "bytes"
+        "compress/gzip"
+        "context"
+        "encoding/json"
+        "errors"
+        "fmt"
+        "log/slog"
+        "net"
+        "sync"
+        "time"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
+
+        "golang.org/x/sync/errgroup"
+)
+
+const URLTemplate = "http://%s/updates/"
+
+type Retryer interface {
+        Try(ctx context.Context, do func() error, isRetryable func(err error) bool) (int, error)
+}
+
+type MetricsPoster interface {
+        Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) error
+}
+
+var ErrTransport = errors.New("resty error")
+
+// SendMetrics sends pre collected metrics to server
+func SendMetrics(ctx context.Context, s Storage, address string, r Retryer, poster MetricsPoster, key string, rateLimit int) <span class="cov8" title="1">{
+        slog.Info("Sending metricUpdates")
+        address = fmt.Sprintf(URLTemplate, address)
+
+        w := newWorker(address, key, poster)
+        p := newProducer(ctx, s, w, rateLimit)
+        if _, err := r.Try(ctx, p, isRecoverable); err != nil </span><span class="cov0" title="0">{
+                slog.Info("SendMetrics error", "error", err)
+        }</span>
+}
+
+func isRecoverable(err error) bool <span class="cov0" title="0">{
+        var netErr net.Error
+        if errors.As(err, &amp;netErr) &amp;&amp; netErr != nil </span><span class="cov0" title="0">{
+                return true
+        }</span>
+        <span class="cov0" title="0">return false</span>
+}
+
+type workerFunc = func(ctx context.Context, id int, mCh &lt;-chan *apimodels.Metrics) error
+
+func newWorker(address string, key string, poster MetricsPoster) workerFunc <span class="cov8" title="1">{
+        return func(ctx context.Context, id int, mCh &lt;-chan *apimodels.Metrics) error </span><span class="cov8" title="1">{
+                idlog := slog.With("workerFunc", "metricUpdates", "id", id)
+                metricUpdates := make([]*apimodels.Metrics, 0)
+                for m := range mCh </span><span class="cov8" title="1">{
+                        select </span>{
+                        case &lt;-ctx.Done():<span class="cov0" title="0">
+                                idlog.Error("context ended", "error", ctx.Err())
+                                return ctx.Err()</span>
+                        default:<span class="cov8" title="1"></span>
+                        }
+                        <span class="cov8" title="1">metricUpdates = append(metricUpdates, m)</span>
+                }
+
+                <span class="cov8" title="1">idlog.Info("received metricUpdates", "count", len(metricUpdates))
+                if len(metricUpdates) == 0 </span><span class="cov8" title="1">{
+                        return nil
+                }</span>
+
+                <span class="cov8" title="1">body, err := compressMetrics(metricUpdates)
+                if err != nil </span><span class="cov0" title="0">{
+                        idlog.Error("failed to prepare request body", "error", err)
+                        return err
+                }</span>
+                <span class="cov8" title="1">return poster.Post(ctx, idlog, body, key, address)</span>
+        }
+}
+
+func newProducer(ctx context.Context, s Storage, w workerFunc, l int) func() error <span class="cov8" title="1">{
+        return func() error </span><span class="cov8" title="1">{
+                ch := make(chan *apimodels.Metrics)
+                eg, innerCtx := errgroup.WithContext(ctx)
+                for i := 0; i &lt; l; i++ </span><span class="cov8" title="1">{
+                        eg.Go(func() error </span><span class="cov8" title="1">{ return w(innerCtx, i, ch) }</span>)
+                }
+
+                <span class="cov8" title="1">for _, counterName := range s.ListCounters() </span><span class="cov0" title="0">{
+                        counter := int64(s.GetCounter(counterName))
+                        ch &lt;- &amp;apimodels.Metrics{
+                                ID:    counterName,
+                                MType: constants.CounterStr,
+                                Delta: &amp;counter,
+                                Value: nil,
+                        }
+                }</span>
+                <span class="cov8" title="1">for _, gaugeName := range s.ListGauges() </span><span class="cov8" title="1">{
+                        gauge := s.GetGauge(gaugeName)
+                        ch &lt;- &amp;apimodels.Metrics{
+                                ID:    gaugeName,
+                                MType: constants.GaugeStr,
+                                Delta: nil,
+                                Value: &amp;gauge,
+                        }
+                }</span>
+
+                <span class="cov8" title="1">close(ch)
+                return eg.Wait()</span>
+        }
+}
+
+// compressMetrics compresses the metrics using gzip.
+func compressMetrics(metricUpdates []*apimodels.Metrics) (*bytes.Buffer, error) <span class="cov8" title="1">{
+        content, err := json.Marshal(metricUpdates)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, errors.Join(fmt.Errorf("encoding request: %w", err), ErrTransport)
+        }</span>
+        <span class="cov8" title="1">body := new(bytes.Buffer)
+        zb := gzip.NewWriter(body)
+        defer zb.Close()
+        _, err = zb.Write(content)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("compressing request: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return body, nil</span>
+}
+
+func SendMetricsLoop(
+        ctx context.Context,
+        wg *sync.WaitGroup,
+        storage Storage,
+        address string,
+        sendInterval time.Duration,
+        retryer handlers.Retryer,
+        poster MetricsPoster,
+        key string,
+        rateLimit int,
+) <span class="cov8" title="1">{
+        cb := func() </span><span class="cov8" title="1">{
+                SendMetrics(ctx, storage, address, retryer, poster, key, rateLimit)
+                slog.Info(`sender sleeping`, `delay`, sendInterval)
+        }</span>
+        <span class="cov8" title="1">loop(cb, ctx, wg, sendInterval)</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package cryptofacade
+
+import (
+        "crypto/sha256"
+        "encoding/hex"
+)
+
+func Hash(body, key []byte) string <span class="cov8" title="1">{
+        // создаём новый hash.Hash, вычисляющий контрольную сумму SHA-256
+        h := sha256.New()
+        // передаём байты для хеширования
+        h.Write(body)
+        // получаем хеш в виде строки
+        return hex.EncodeToString(h.Sum(key))
+}</span>
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">package jsonofflinestorage
+
+import (
+        "context"
+        "encoding/json"
+        "errors"
+        "fmt"
+        "io"
+        "io/fs"
+        "log/slog"
+        "os"
+        "sync"
+        "time"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+)
+
+type Storage interface {
+        GetCounter(key string) (int, error)
+        GetGauge(key string) (float64, error)
+        ListGauges() ([]string, error)
+        ListCounters() ([]string, error)
+        SaveCommonModel(metric *apimodels.Metrics) error
+}
+
+// JSONFileStorage is a background routine to manage json data file.
+type JSONFileStorage struct {
+        storage          Storage
+        fileName         string
+        isRestoreEnabled bool
+        storeInterval    time.Duration
+        mu               *sync.Mutex
+        saved            chan struct{}
+        clear            func() bool
+}
+
+func NewJSONFileStorage(storage Storage, fileName string, restore bool, storeInterval int, saved chan struct{}, clear func() bool) *JSONFileStorage <span class="cov0" title="0">{
+        return &amp;JSONFileStorage{
+                storage:          storage,
+                fileName:         fileName,
+                isRestoreEnabled: restore,
+                storeInterval:    time.Duration(storeInterval) * time.Second,
+                mu:               new(sync.Mutex),
+                saved:            saved,
+                clear:            clear,
+        }
+}</span>
+
+func (l *JSONFileStorage) Start(ctx context.Context, wg *sync.WaitGroup) error <span class="cov0" title="0">{
+        if err := l.restore(); err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("could not isRestoreEnabled json file: %w", err)
+        }</span>
+        <span class="cov0" title="0">wg.Add(1)
+        go func() </span><span class="cov0" title="0">{
+                err := l.saveToFile(ctx, wg)
+                if err != nil </span><span class="cov0" title="0">{
+                        slog.Error("async saver failed", "error", err)
+                }</span>
+        }()
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (l *JSONFileStorage) save() error <span class="cov0" title="0">{
+        l.mu.Lock()
+        defer l.mu.Unlock()
+
+        // check if we can live without it.
+        if !l.clear() </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+
+        <span class="cov0" title="0">file, err := os.OpenFile(l.fileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("can't open file: %w", err)
+        }</span>
+        <span class="cov0" title="0">defer file.Close()
+
+        encoder := json.NewEncoder(file)
+
+        list, err := l.storage.ListGauges()
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("can't ListGauges: %w", err)
+        }</span>
+        <span class="cov0" title="0">for _, key := range list </span><span class="cov0" title="0">{
+                g, err := l.storage.GetGauge(key)
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("can't GetGauge: %w", err)
+                }</span>
+                <span class="cov0" title="0">err = encoder.Encode(apimodels.Metrics{
+                        ID:    key,
+                        MType: constants.GaugeStr,
+                        Delta: nil,
+                        Value: &amp;g,
+                })
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("can't write JSON: %w", err)
+                }</span>
+        }
+
+        <span class="cov0" title="0">list, err = l.storage.ListCounters()
+        if err != nil </span><span class="cov0" title="0">{
+                return fmt.Errorf("can't ListCounters: %w", err)
+        }</span>
+        <span class="cov0" title="0">for _, key := range list </span><span class="cov0" title="0">{
+                c, err := l.storage.GetCounter(key)
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("can't GetCounter: %w", err)
+                }</span>
+                <span class="cov0" title="0">c64 := int64(c)
+                err = encoder.Encode(apimodels.Metrics{
+                        ID:    key,
+                        MType: constants.CounterStr,
+                        Delta: &amp;c64,
+                        Value: nil,
+                })
+                if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("can't write JSON: %w", err)
+                }</span>
+        }
+
+        <span class="cov0" title="0">slog.Info("Saved to file", "file", l.fileName, "error", err)
+        return nil</span>
+}
+
+func (l *JSONFileStorage) restore() error <span class="cov0" title="0">{
+        if !l.isRestoreEnabled </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+        <span class="cov0" title="0">file, err := os.OpenFile(l.fileName, os.O_RDONLY, 0666)
+        if err != nil </span><span class="cov0" title="0">{
+                if errors.Is(err, fs.ErrNotExist) </span><span class="cov0" title="0">{
+                        slog.Warn("file does not exist, skipping JSON load", "error", err, "filename", l.fileName)
+                        return nil
+                }</span>
+                <span class="cov0" title="0">return fmt.Errorf("can't open file: %w", err)</span>
+        }
+        <span class="cov0" title="0">defer file.Close()
+
+        decoder := json.NewDecoder(file)
+
+        for </span><span class="cov0" title="0">{
+                v := &amp;apimodels.Metrics{}
+                if err = decoder.Decode(v); errors.Is(err, io.ErrUnexpectedEOF) || errors.Is(err, io.EOF) </span><span class="cov0" title="0">{
+                        // just done.
+                        break</span>
+                } else<span class="cov0" title="0"> if err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("can't decode json: %w", err)
+                }</span>
+
+                <span class="cov0" title="0">if err = l.storage.SaveCommonModel(v); err != nil </span><span class="cov0" title="0">{
+                        return fmt.Errorf("can't save value: %w", err)
+                }</span>
+        }
+
+        <span class="cov0" title="0">slog.Info("Restored from file", "file", l.fileName)
+        return nil</span>
+}
+
+type SavedChan = chan struct{}
+
+func (l *JSONFileStorage) saveToFile(ctx context.Context, wg *sync.WaitGroup) error <span class="cov0" title="0">{
+        defer wg.Done()
+        do := true
+        if l.storeInterval &gt; 0 </span><span class="cov0" title="0">{
+                t := time.NewTimer(l.storeInterval)
+                defer t.Stop()
+                for do </span><span class="cov0" title="0">{
+                        select </span>{
+                        case &lt;-ctx.Done():<span class="cov0" title="0">
+                                do = false</span>
+                        case &lt;-t.C:<span class="cov0" title="0"></span>
+                        }
+
+                        <span class="cov0" title="0">if err := l.save(); err != nil </span><span class="cov0" title="0">{
+                                slog.Error("saveToFile error", "error", err)
+                        }</span>
+
+                        <span class="cov0" title="0">if do </span><span class="cov0" title="0">{
+                                t.Reset(l.storeInterval)
+                        }</span>
+                }
+                <span class="cov0" title="0">return nil</span>
+        }
+
+        <span class="cov0" title="0">for do </span><span class="cov0" title="0">{
+                select </span>{
+                case &lt;-ctx.Done():<span class="cov0" title="0">
+                        do = false</span>
+                case &lt;-l.saved:<span class="cov0" title="0"></span>
+                }
+
+                <span class="cov0" title="0">if err := l.save(); err != nil </span><span class="cov0" title="0">{
+                        slog.Error("saveToFile error", "error", err)
+                }</span>
+        }
+        <span class="cov0" title="0">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">package metricstorage
+
+import (
+        "context"
+        "database/sql"
+        "errors"
+
+        "github.com/jackc/pgx/v5"
+        _ "github.com/jackc/pgx/v5/stdlib"
+)
+
+// DBStorage store metrics in DB
+// TODO: use context and handle errors in all methods.
+type DBStorage struct {
+        db *sql.DB
+}
+
+type DBBatch struct {
+        tx *sql.Tx
+}
+
+type execSQL func(query string, args ...any) (sql.Result, error)
+
+func NewDBStorage(db *sql.DB, ctx context.Context) (s *DBStorage, err error) <span class="cov0" title="0">{
+        s = &amp;DBStorage{
+                db: db,
+        }
+
+        // IRL it should be done in main() with separate command line flag.
+        if err = s.Bootstrap(ctx); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return s, nil</span>
+}
+
+// Bootstrap подготавливает БД к работе, создавая необходимые таблицы и индексы
+func (s *DBStorage) Bootstrap(ctx context.Context) error <span class="cov0" title="0">{
+        // запускаем транзакцию
+        tx, err := s.db.BeginTx(ctx, nil)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        // в случае неуспешного коммита все изменения транзакции будут отменены
+        // если вместо _ = tx.Rollback() в каждом условии здесь вызвать defer tx.Rollback()
+
+        // создаём таблицу целочисленных счетчиков и необходимый индекс
+        <span class="cov0" title="0">_, err = tx.ExecContext(ctx, `
+                CREATE TABLE IF NOT EXISTS gauge (
+                        name varchar(250) NOT NULL,
+                        value double PRECISION NOT NULL
+                )
+    `)
+        if err != nil </span><span class="cov0" title="0">{
+                _ = tx.Rollback()
+                return err
+        }</span>
+        <span class="cov0" title="0">_, err = tx.ExecContext(ctx, `CREATE UNIQUE INDEX IF NOT EXISTS gauge_name_udx ON gauge (name)`)
+        if err != nil </span><span class="cov0" title="0">{
+                _ = tx.Rollback()
+                return err
+        }</span>
+
+        // создаём таблицу дробных счетчиков и необходимый индекс
+        <span class="cov0" title="0">_, err = tx.ExecContext(ctx, `
+                CREATE TABLE IF NOT EXISTS counter (
+                        name varchar(250) NOT NULL,
+                        value bigint NOT NULL
+                )
+    `)
+        if err != nil </span><span class="cov0" title="0">{
+                _ = tx.Rollback()
+                return err
+        }</span>
+        <span class="cov0" title="0">_, err = tx.ExecContext(ctx, `CREATE UNIQUE INDEX IF NOT EXISTS counter_name_udx ON counter (name)`)
+        if err != nil </span><span class="cov0" title="0">{
+                _ = tx.Rollback()
+                return err
+        }</span>
+
+        // коммитим транзакцию
+        <span class="cov0" title="0">return tx.Commit()</span>
+}
+
+func updateCounterSQL(exec execSQL, key string, value int) error <span class="cov0" title="0">{
+        _, err := exec(`
+        INSERT INTO counter (name, value)
+                VALUES (@name, @value)
+                ON CONFLICT (name) DO UPDATE SET value = counter.value+EXCLUDED.value;
+    `, pgx.NamedArgs{"name": key, "value": value})
+        return err
+
+}</span>
+
+func (s *DBStorage) UpdateCounter(key string, value int) error <span class="cov0" title="0">{
+        return updateCounterSQL(s.db.Exec, key, value)
+}</span>
+
+func updateGaugeSQL(exec execSQL, key string, value float64) error <span class="cov0" title="0">{
+        _, err := exec(`
+        INSERT INTO gauge (name, value)
+                VALUES (@name, @value)
+                ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value;
+    `, pgx.NamedArgs{"name": key, "value": value})
+        return err
+}</span>
+func (s *DBStorage) UpdateGauge(key string, value float64) error <span class="cov0" title="0">{
+        return updateGaugeSQL(s.db.Exec, key, value)
+}</span>
+
+func (s *DBStorage) GetCounter(key string) (r int, err error) <span class="cov0" title="0">{
+        row := s.db.QueryRow(`
+        SELECT t.value FROM counter t WHERE t.name = @name
+    `, pgx.NamedArgs{"name": key})
+        err = row.Scan(&amp;r)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+
+        <span class="cov0" title="0">return r, err</span>
+}
+
+func (s *DBStorage) GetGauge(key string) (r float64, err error) <span class="cov0" title="0">{
+        row := s.db.QueryRow(`
+        SELECT t.value FROM gauge t WHERE t.name = @name
+    `, pgx.NamedArgs{"name": key})
+        err = row.Scan(&amp;r)
+        if err != nil </span><span class="cov0" title="0">{
+                return 0, err
+        }</span>
+
+        <span class="cov0" title="0">return r, err</span>
+}
+
+func (s *DBStorage) HasCounter(key string) (r bool, err error) <span class="cov0" title="0">{
+        row := s.db.QueryRow(`
+        SELECT EXISTS(SELECT 1 FROM counter t WHERE t.name = @name)
+    `, pgx.NamedArgs{"name": key})
+        err = row.Scan(&amp;r)
+        if err != nil </span><span class="cov0" title="0">{
+                return false, err
+        }</span>
+
+        <span class="cov0" title="0">return r, err</span>
+}
+
+func (s *DBStorage) HasGauge(key string) (r bool, err error) <span class="cov0" title="0">{
+        row := s.db.QueryRow(`
+        SELECT EXISTS(SELECT 1 FROM gauge t WHERE t.name = @name)
+    `, pgx.NamedArgs{"name": key})
+        err = row.Scan(&amp;r)
+        if err != nil </span><span class="cov0" title="0">{
+                return false, err
+        }</span>
+
+        <span class="cov0" title="0">return r, err</span>
+}
+
+func (s *DBStorage) ListGauges() ([]string, error) <span class="cov0" title="0">{
+        keys := []string{}
+        rows, err := s.db.Query(`
+        SELECT t.name FROM gauge t
+    `)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">defer rows.Close()
+
+        for rows.Next() </span><span class="cov0" title="0">{
+                var k string
+                if err = rows.Scan(&amp;k); err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov0" title="0">keys = append(keys, k)</span>
+        }
+
+        <span class="cov0" title="0">if err = rows.Err(); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return keys, nil</span>
+}
+
+func (s *DBStorage) ListCounters() ([]string, error) <span class="cov0" title="0">{
+        keys := []string{}
+        rows, err := s.db.Query(`
+        SELECT t.name FROM counter t
+    `)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">defer rows.Close()
+
+        for rows.Next() </span><span class="cov0" title="0">{
+                var k string
+                if err = rows.Scan(&amp;k); err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+                <span class="cov0" title="0">keys = append(keys, k)</span>
+        }
+
+        <span class="cov0" title="0">if err = rows.Err(); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return keys, nil</span>
+}
+
+func (s *DBStorage) StartBatch(ctx context.Context) (basicBatch, error) <span class="cov0" title="0">{
+        tx, err := s.db.BeginTx(ctx, nil)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">return &amp;DBBatch{tx: tx}, nil</span>
+}
+
+func (b *DBBatch) UpdateCounter(key string, value int) error <span class="cov0" title="0">{
+        err := updateCounterSQL(b.tx.Exec, key, value)
+        if err != nil </span><span class="cov0" title="0">{
+                err = errors.Join(err, b.rollback())
+        }</span>
+        <span class="cov0" title="0">return err</span>
+}
+func (b *DBBatch) UpdateGauge(key string, value float64) error <span class="cov0" title="0">{
+        err := updateGaugeSQL(b.tx.Exec, key, value)
+        if err != nil </span><span class="cov0" title="0">{
+                err = errors.Join(err, b.rollback())
+        }</span>
+        <span class="cov0" title="0">return err</span>
+}
+func (b *DBBatch) Commit() error <span class="cov0" title="0">{
+        return b.tx.Commit()
+}</span>
+func (b *DBBatch) rollback() error <span class="cov0" title="0">{
+        return b.tx.Commit()
+}</span>
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">package metricstorage
+
+import "sync"
+
+type DirtyStorage struct {
+        basicStorage
+        SavedChan chan struct{}
+        isDirty   bool
+        dirtyMx   *sync.Mutex
+}
+
+// NewDirtyStorage creates new storage
+func NewDirtyStorage(storage basicStorage) *DirtyStorage <span class="cov0" title="0">{
+        return &amp;DirtyStorage{
+                basicStorage: storage,
+                isDirty:      false,
+                SavedChan:    make(chan struct{}),
+                dirtyMx:      &amp;sync.Mutex{},
+        }
+}</span>
+
+func (ds *DirtyStorage) UpdateCounter(key string, value int) error <span class="cov0" title="0">{
+        err := ds.basicStorage.UpdateCounter(key, value)
+        if err == nil </span><span class="cov0" title="0">{
+                ds.markDirty()
+        }</span>
+        <span class="cov0" title="0">return err</span>
+}
+
+func (ds *DirtyStorage) UpdateGauge(key string, value float64) error <span class="cov0" title="0">{
+        err := ds.basicStorage.UpdateGauge(key, value)
+        if err == nil </span><span class="cov0" title="0">{
+                ds.markDirty()
+        }</span>
+        <span class="cov0" title="0">return err</span>
+}
+
+func (ds *DirtyStorage) markDirty() <span class="cov0" title="0">{
+        ds.dirtyMx.Lock()
+        defer ds.dirtyMx.Unlock()
+        ds.isDirty = true
+        select </span>{
+        case ds.SavedChan &lt;- struct{}{}:<span class="cov0" title="0"></span>
+        default:<span class="cov0" title="0"></span>
+        }
+}
+
+// Clear removes dirty flag and returns its current value.
+func (ds *DirtyStorage) Clear() bool <span class="cov0" title="0">{
+        ds.dirtyMx.Lock()
+        defer ds.dirtyMx.Unlock()
+        result := ds.isDirty
+        ds.isDirty = false
+        return result
+}</span>
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">package metricstorage
+
+import (
+        "context"
+        "sync"
+)
+
+type MemStorage struct {
+        counters    map[string]int
+        countersRWM *sync.RWMutex
+        gauges      map[string]float64
+        gaugesRWM   *sync.RWMutex
+        inBatch     bool
+}
+
+type MemBatch struct {
+        ms *MemStorage
+}
+
+func NewMemStorage() *MemStorage <span class="cov8" title="1">{
+        return &amp;MemStorage{
+                counters:    make(map[string]int),
+                countersRWM: new(sync.RWMutex),
+                gauges:      make(map[string]float64),
+                gaugesRWM:   new(sync.RWMutex),
+        }
+}</span>
+
+func (s *MemStorage) UpdateCounter(key string, value int) error <span class="cov8" title="1">{
+        if !s.inBatch </span><span class="cov8" title="1">{
+                s.countersRWM.Lock()
+                defer s.countersRWM.Unlock()
+        }</span>
+        <span class="cov8" title="1">s.counters[key] += value
+        return nil</span>
+}
+
+func (s *MemStorage) UpdateGauge(key string, value float64) error <span class="cov8" title="1">{
+        if !s.inBatch </span><span class="cov8" title="1">{
+                s.gaugesRWM.Lock()
+                defer s.gaugesRWM.Unlock()
+        }</span>
+        <span class="cov8" title="1">s.gauges[key] = value
+        return nil</span>
+}
+
+func (s *MemStorage) GetCounter(key string) (int, error) <span class="cov8" title="1">{
+        s.countersRWM.RLock()
+        defer s.countersRWM.RUnlock()
+        return s.counters[key], nil
+}</span>
+
+func (s *MemStorage) GetGauge(key string) (float64, error) <span class="cov8" title="1">{
+        s.gaugesRWM.RLock()
+        defer s.gaugesRWM.RUnlock()
+        return s.gauges[key], nil
+}</span>
+
+func (s *MemStorage) HasCounter(key string) (bool, error) <span class="cov0" title="0">{
+        s.countersRWM.RLock()
+        defer s.countersRWM.RUnlock()
+        _, ok := s.counters[key]
+        return ok, nil
+}</span>
+
+func (s *MemStorage) HasGauge(key string) (bool, error) <span class="cov8" title="1">{
+        s.gaugesRWM.RLock()
+        defer s.gaugesRWM.RUnlock()
+        _, ok := s.gauges[key]
+        return ok, nil
+}</span>
+
+// ListGauges lists all gauges keys.
+func (s *MemStorage) ListGauges() ([]string, error) <span class="cov8" title="1">{
+        s.gaugesRWM.RLock()
+        defer s.gaugesRWM.RUnlock()
+        keys := make([]string, 0, len(s.gauges))
+        for k := range s.gauges </span><span class="cov8" title="1">{
+                keys = append(keys, k)
+        }</span>
+        <span class="cov8" title="1">return keys, nil</span>
+}
+
+// ListCounters lists all counters keys.
+func (s *MemStorage) ListCounters() ([]string, error) <span class="cov8" title="1">{
+        s.countersRWM.RLock()
+        defer s.countersRWM.RUnlock()
+        keys := make([]string, 0, len(s.counters))
+        for k := range s.counters </span><span class="cov8" title="1">{
+                keys = append(keys, k)
+        }</span>
+        <span class="cov8" title="1">return keys, nil</span>
+}
+
+func (s *MemStorage) StartBatch(ctx context.Context) (basicBatch, error) <span class="cov8" title="1">{
+        s.countersRWM.Lock()
+        s.gaugesRWM.Lock()
+        s.inBatch = true
+        return &amp;MemBatch{ms: s}, nil
+}</span>
+
+func (b *MemBatch) UpdateCounter(key string, value int) error <span class="cov8" title="1">{
+        return b.ms.UpdateCounter(key, value)
+}</span>
+func (b *MemBatch) UpdateGauge(key string, value float64) error <span class="cov8" title="1">{
+        return b.ms.UpdateGauge(key, value)
+
+}</span>
+func (b *MemBatch) Commit() error <span class="cov8" title="1">{
+        b.ms.inBatch = false
+        b.ms.countersRWM.Unlock()
+        b.ms.gaugesRWM.Unlock()
+        return nil
+}</span>
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">package metricstorage
+
+type MemStorageMuted struct {
+        MemStorage
+}
+
+func NewMemStorageMuted() *MemStorageMuted <span class="cov0" title="0">{
+        return &amp;MemStorageMuted{
+                MemStorage: *NewMemStorage(),
+        }
+}</span>
+
+func (s *MemStorageMuted) UpdateCounter(key string, value int) <span class="cov0" title="0">{
+        _ = s.MemStorage.UpdateCounter(key, value)
+}</span>
+
+func (s *MemStorageMuted) UpdateGauge(key string, value float64) <span class="cov0" title="0">{
+        _ = s.MemStorage.UpdateGauge(key, value)
+}</span>
+
+func (s *MemStorageMuted) GetCounter(key string) int <span class="cov0" title="0">{
+        r, _ := s.MemStorage.GetCounter(key)
+        return r
+}</span>
+
+func (s *MemStorageMuted) GetGauge(key string) float64 <span class="cov0" title="0">{
+        r, _ := s.MemStorage.GetGauge(key)
+        return r
+}</span>
+
+func (s *MemStorageMuted) ListGauges() []string <span class="cov0" title="0">{
+        keys, _ := s.MemStorage.ListGauges()
+        return keys
+}</span>
+
+func (s *MemStorageMuted) ListCounters() []string <span class="cov0" title="0">{
+        keys, _ := s.MemStorage.ListCounters()
+        return keys
+}</span>
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">// Main storage wrapper for the server application
+package metricstorage
+
+import (
+        "context"
+        "errors"
+        "fmt"
+        "html"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+)
+
+type basicBatch interface {
+        basicUpdater
+        Commit() error
+}
+
+type basicStorage interface {
+        UpdateCounter(key string, value int) error
+        UpdateGauge(key string, value float64) error
+        GetCounter(key string) (int, error)
+        GetGauge(key string) (float64, error)
+        HasCounter(key string) (bool, error)
+        HasGauge(key string) (bool, error)
+        ListGauges() ([]string, error)
+        ListCounters() ([]string, error)
+        StartBatch(ctx context.Context) (basicBatch, error)
+}
+
+// SavableModelStorage wrapper around storage interface
+type SavableModelStorage struct {
+        basicStorage
+}
+
+func NewSavableModelStorage(bs basicStorage) *SavableModelStorage <span class="cov8" title="1">{
+        return &amp;SavableModelStorage{
+                basicStorage: bs,
+        }
+}</span>
+
+type basicUpdater interface {
+        UpdateCounter(key string, value int) error
+        UpdateGauge(key string, value float64) error
+}
+
+// saveCommonModel — common function for saving models
+func saveCommonModel(u basicUpdater, metric *apimodels.Metrics) (err error) <span class="cov8" title="1">{
+        switch metric.MType </span>{
+        case constants.GaugeStr:<span class="cov8" title="1">
+                if metric.Value == nil </span><span class="cov8" title="1">{
+                        return errors.New("empty metric value, float64 required")
+                }</span>
+                <span class="cov8" title="1">err = u.UpdateGauge(metric.ID, *metric.Value)</span>
+        case constants.CounterStr:<span class="cov8" title="1">
+                if metric.Delta == nil </span><span class="cov8" title="1">{
+                        return errors.New("empty metric delta, integer required")
+                }</span>
+                <span class="cov8" title="1">delta := int(*metric.Delta)
+                err = u.UpdateCounter(metric.ID, delta)</span>
+        default:<span class="cov8" title="1">
+                err = fmt.Errorf(
+                        "invalid type \"%s\", only %s and %s supported",
+                        html.EscapeString(metric.MType),
+                        constants.GaugeStr,
+                        constants.CounterStr,
+                )</span>
+        }
+
+        <span class="cov8" title="1">return err</span>
+}
+
+// SaveCommonModel save standard model or throw error
+func (s *SavableModelStorage) SaveCommonModel(metric *apimodels.Metrics) (err error) <span class="cov8" title="1">{
+        return saveCommonModel(s, metric)
+}</span>
+
+// SaveCommonModels save slice of standard models or throw error
+func (s *SavableModelStorage) SaveCommonModels(ctx context.Context, metrics []apimodels.Metrics) error <span class="cov8" title="1">{
+        batch, err := s.StartBatch(ctx)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+
+        <span class="cov8" title="1">for _, m := range metrics </span><span class="cov8" title="1">{
+                if err = saveCommonModel(batch, &amp;m); err != nil </span><span class="cov0" title="0">{
+                        return err
+                }</span>
+        }
+
+        <span class="cov8" title="1">err = batch.Commit()
+
+        return err</span>
+}
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">package retryattempt
+
+import (
+        "context"
+        "errors"
+        "fmt"
+        "time"
+)
+
+type Retryer struct {
+        delays []time.Duration
+}
+
+func NewRetryer(delays []time.Duration) *Retryer <span class="cov8" title="1">{
+        return &amp;Retryer{delays: delays}
+}</span>
+
+func NewOneAttemptRetryer() *Retryer <span class="cov0" title="0">{
+        return NewRetryer([]time.Duration{})
+}</span>
+
+// Try Attempts retryable operation. Returns retry attempts count always and error on fail.
+func (r *Retryer) Try(ctx context.Context, do func() error, isRetryable func(err error) bool) (int, error) <span class="cov8" title="1">{
+        tmr := time.NewTimer(0)
+        defer tmr.Stop()
+        for i := 0; i &lt;= len(r.delays); i++ </span><span class="cov8" title="1">{
+                if err := do(); err != nil </span><span class="cov0" title="0">{
+                        if !isRetryable(err) </span><span class="cov0" title="0">{
+                                return i, fmt.Errorf("(retry) attempt #%d was not recoverable: %w", i+1, err)
+                        }</span>
+
+                        <span class="cov0" title="0">if i == len(r.delays) </span><span class="cov0" title="0">{
+                                return i, fmt.Errorf("(retry) attempt #%d all attempts made, last error: %w", i+1, err)
+                        }</span>
+
+                        <span class="cov0" title="0">delay := r.delays[i]
+
+                        tmr.Stop()
+                        tmr.Reset(delay)
+                        select </span>{
+                        case &lt;-ctx.Done():<span class="cov0" title="0">
+                                return i, errors.Join(fmt.Errorf("(retry) attempt #%d context exceeded after error: %w", i+1, err), context.DeadlineExceeded)</span>
+                        case &lt;-tmr.C:<span class="cov0" title="0">
+                                continue</span>
+                        }
+                }
+
+                <span class="cov8" title="1">return i, nil</span>
+        }
+
+        // unreachable
+        <span class="cov0" title="0">return 0, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">package config
+
+import (
+        goflag "flag"
+        "fmt"
+        "log/slog"
+        "os"
+
+        env "github.com/caarlos0/env/v6"
+        flag "github.com/spf13/pflag"
+)
+
+const (
+        defaultAddress                  = ":8080"
+        defaultStorageFileStoreInterval = 300
+        defaultStorageFileRestore       = true
+)
+
+type Config struct {
+        Addr                     string `env:"ADDRESS"`
+        StorageFileName          string `env:"FILE_STORAGE_PATH"`
+        StorageFileStoreInterval int    `env:"STORE_INTERVAL"`
+        StorageFileRestore       bool   `env:"RESTORE"`
+        StorageDBDSN             string `env:"DATABASE_DSN"`
+        HashKey                  string `env:"KEY"`
+}
+
+var config *Config
+
+func GetConfig() Config <span class="cov0" title="0">{
+        return *config
+}</span>
+
+func init() <span class="cov0" title="0">{
+        config = &amp;Config{}
+        // Flags
+        flag.StringVarP(&amp;config.Addr, "address", "a", defaultAddress, "The address to listen on for HTTP requests")
+        flag.StringVarP(&amp;config.StorageFileName, "filestoragepath", "f", "", "A path and file name to store JSON data. Leave empty to disable file storage.")
+        flag.IntVarP(&amp;config.StorageFileStoreInterval, "storeinterval", "i", defaultStorageFileStoreInterval, "Interval in seconds to dump metrics to JSON file. \"0\" is on every change.")
+        flag.BoolVarP(&amp;config.StorageFileRestore, "restore", "r", defaultStorageFileRestore, "Metrics restore from file on startup.")
+        flag.StringVarP(&amp;config.StorageDBDSN, "databasedsn", "d", "", "Postgres PGX DSN to use DB storage. Disabled when empty.")
+        flag.StringVarP(&amp;config.HashKey, "key", "k", "", "Key for signature Hash header.  If not provided, will not sign the request.")
+        flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
+        flag.Parse()
+        // pflag handles --help itself.
+
+        // Env. variables. This should take over the command line. Bad practice as I know.
+        if err := env.Parse(config); err != nil </span><span class="cov0" title="0">{
+                fmt.Printf("%+v\n", err)
+        }</span>
+
+        <span class="cov0" title="0">slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &amp;slog.HandlerOptions{AddSource: true})))</span>
+}
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">package handlers
+
+import (
+        "encoding/json"
+        "fmt"
+        "html"
+        "log/slog"
+        "net/http"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+        "github.com/gin-gonic/gin"
+)
+
+// CheckMetricExistenceHandler checks metrics has value set
+// Previous handler should add valid metric to context
+func CheckMetricExistenceHandler(s Storage) func(c *gin.Context) <span class="cov0" title="0">{
+        return func(c *gin.Context) </span><span class="cov0" title="0">{
+                metric := &amp;apimodels.Metrics{}
+
+                // IRL just use err := c.BindJSON(&amp;metric); and c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+                // use json and http on our own
+                dec := json.NewDecoder(c.Request.Body)
+                if err := dec.Decode(metric); err != nil </span><span class="cov0" title="0">{
+                        slog.Error("can't parse JSON", "error", err)
+                        // TODO: replace with c.AbortWithError to skip later middlewares
+                        http.Error(c.Writer, "Invalid JSON", http.StatusBadRequest)
+                        return
+                }</span>
+
+                <span class="cov0" title="0">switch metric.MType </span>{
+                case constants.GaugeStr:<span class="cov0" title="0">
+                        if h, err := s.HasGauge(metric.ID); err != nil || !h </span><span class="cov0" title="0">{
+                                if err != nil </span><span class="cov0" title="0">{
+                                        slog.Error("can't check metric existence", "id", metric.ID, "error", err)
+                                        http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+                                        return
+                                }</span>
+                                <span class="cov0" title="0">slog.Error("metric not found", "id", metric.ID)
+                                http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(metric.ID)), http.StatusNotFound)
+                                return</span>
+                        }
+                case constants.CounterStr:<span class="cov0" title="0">
+                        if h, err := s.HasCounter(metric.ID); err != nil || !h </span><span class="cov0" title="0">{
+                                if err != nil </span><span class="cov0" title="0">{
+                                        slog.Error("can't check metric existence", "id", metric.ID, "error", err)
+                                        http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+                                        return
+                                }</span>
+                                <span class="cov0" title="0">slog.Error("metric not found", "id", metric.ID)
+                                http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(metric.ID)), http.StatusNotFound)
+                                return</span>
+                        }
+                default:<span class="cov0" title="0">
+                        slog.Error("Invalid type", "type", metric.MType)
+                        http.Error(c.Writer, fmt.Sprintf(
+                                "Invalid type, only %s and %s supported",
+                                constants.GaugeStr,
+                                constants.CounterStr,
+                        ), http.StatusBadRequest)
+                        return</span>
+                }
+
+                <span class="cov0" title="0">c.Set(contextMetricResponseKey, metric)
+                c.Next()</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">package handlers
+
+import (
+        "compress/gzip"
+        "io"
+
+        "github.com/gin-gonic/gin"
+)
+
+// compressWriter реализует интерфейс http.ResponseWriter и позволяет прозрачно для сервера
+// сжимать передаваемые данные и выставлять правильные HTTP-заголовки
+type compressWriter struct {
+        gin.ResponseWriter
+        zw *gzip.Writer
+}
+
+func newCompressWriter(w gin.ResponseWriter) *compressWriter <span class="cov0" title="0">{
+        return &amp;compressWriter{
+                ResponseWriter: w,
+                zw:             gzip.NewWriter(w),
+        }
+}</span>
+
+func (c *compressWriter) Write(p []byte) (int, error) <span class="cov0" title="0">{
+        return c.zw.Write(p)
+}</span>
+
+func (c *compressWriter) WriteHeader(statusCode int) <span class="cov0" title="0">{
+        if statusCode &lt; 300 </span><span class="cov0" title="0">{
+                c.ResponseWriter.Header().Set("Content-Encoding", "gzip")
+        }</span>
+        <span class="cov0" title="0">c.ResponseWriter.WriteHeader(statusCode)</span>
+}
+
+// Close закрывает gzip.Writer и досылает все данные из буфера.
+func (c *compressWriter) Close() error <span class="cov0" title="0">{
+        return c.zw.Close()
+}</span>
+
+// compressReader реализует интерфейс io.ReadCloser и позволяет прозрачно для сервера
+// декомпрессировать получаемые от клиента данные
+type compressReader struct {
+        r  io.ReadCloser
+        zr *gzip.Reader
+}
+
+func newCompressReader(r io.ReadCloser) (*compressReader, error) <span class="cov0" title="0">{
+        zr, err := gzip.NewReader(r)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov0" title="0">return &amp;compressReader{
+                r:  r,
+                zr: zr,
+        }, nil</span>
+}
+
+func (c compressReader) Read(p []byte) (n int, err error) <span class="cov0" title="0">{
+        return c.zr.Read(p)
+}</span>
+
+func (c *compressReader) Close() error <span class="cov0" title="0">{
+        if err := c.r.Close(); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">return c.zr.Close()</span>
+}
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">package handlers
+
+import (
+        "net/http"
+        "strings"
+
+        "github.com/gin-gonic/gin"
+)
+
+// GzipCompressionHandler middleware
+func GzipCompressionHandler(c *gin.Context) <span class="cov0" title="0">{
+        // по умолчанию устанавливаем оригинальный http.ResponseWriter как тот,
+        // который будем передавать следующей функции
+        ow := c.Writer
+
+        // проверяем, что клиент умеет получать от сервера сжатые данные в формате gzip
+        acceptEncoding := c.GetHeader("Accept-Encoding")
+        supportsGzip := strings.Contains(acceptEncoding, "gzip")
+        if supportsGzip </span><span class="cov0" title="0">{
+                // оборачиваем оригинальный http.ResponseWriter новым с поддержкой сжатия
+                cw := newCompressWriter(c.Writer)
+                cw.Header().Set("Content-Encoding", "gzip")
+                // не забываем отправить клиенту все сжатые данные после завершения middleware
+                defer cw.Close()
+                // меняем оригинальный http.ResponseWriter на новый
+                ow = cw
+        }</span>
+
+        <span class="cov0" title="0">c.Writer = ow
+
+        // проверяем, что клиент отправил серверу сжатые данные в формате gzip
+        contentEncoding := c.GetHeader("Content-Encoding")
+        sendsGzip := strings.Contains(contentEncoding, "gzip")
+        if sendsGzip </span><span class="cov0" title="0">{
+                // оборачиваем тело запроса в io.Reader с поддержкой декомпрессии
+                cr, err := newCompressReader(c.Request.Body)
+                if err != nil </span><span class="cov0" title="0">{
+                        c.Writer.WriteHeader(http.StatusInternalServerError)
+                        return
+                }</span>
+                <span class="cov0" title="0">defer cr.Close()
+                // меняем тело запроса на новое
+                c.Request.Body = cr</span>
+        }
+
+        // передаём управление хендлеру
+        <span class="cov0" title="0">c.Next()</span>
+}
+</pre>
+		
+		<pre class="file" id="file22" style="display: none">package handlers
+
+import (
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
+        "github.com/gin-gonic/gin"
+)
+
+// hashWriter реализует интерфейс http.ResponseWriter и позволяет прозрачно для сервера
+// посчитать хеш записанного в него тела.
+type hashWriter struct {
+        gin.ResponseWriter
+        body []byte
+}
+
+func newHashWriter(w gin.ResponseWriter) *hashWriter <span class="cov0" title="0">{
+        return &amp;hashWriter{
+                ResponseWriter: w,
+                body:           make([]byte, 0),
+        }
+}</span>
+
+func (c *hashWriter) Write(p []byte) (int, error) <span class="cov0" title="0">{
+        c.body = append(c.body, p...)
+        return len(p), nil
+}</span>
+
+func (c *hashWriter) GetHash(key string) string <span class="cov0" title="0">{
+        return cryptofacade.Hash(c.body, []byte(key))
+}</span>
+
+func (c *hashWriter) WriteReally() (int, error) <span class="cov0" title="0">{
+        return c.ResponseWriter.Write(c.body)
+}</span>
+</pre>
+		
+		<pre class="file" id="file23" style="display: none">package handlers
+
+import (
+        "fmt"
+        "log/slog"
+        "net/http"
+)
+
+// NewIndexHandler list all stored metrics
+func NewIndexHandler(ms Storage) http.HandlerFunc <span class="cov8" title="1">{
+        const (
+                pageTemplate = `&lt;html&gt;&lt;body&gt;
+&lt;table&gt;
+&lt;tr&gt;&lt;td colspan=2&gt;Gauges&lt;/td&gt;&lt;/tr&gt;
+%s&lt;tr&gt;&lt;td colspan=2&gt;counters&lt;/td&gt;&lt;/tr&gt;
+%s&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;
+`
+                rowTemplate = `&lt;tr&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;/tr&gt;
+`
+        )
+
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov8" title="1">{
+                if r.Method != http.MethodGet </span><span class="cov0" title="0">{
+                        slog.Error("GET requests only", `requested`, r.Method)
+                        http.Error(w, "GET requests only", http.StatusMethodNotAllowed)
+                        return
+                }</span>
+                <span class="cov8" title="1">slog.Info("showing index")
+
+                l, err := ms.ListGauges()
+                if err != nil </span><span class="cov0" title="0">{
+                        slog.Error("can't list gauges", "error", err)
+                        http.Error(w, `unexpected error`, http.StatusInternalServerError)
+                        return
+                }</span>
+                <span class="cov8" title="1">gauges := ""
+                for _, key := range l </span><span class="cov8" title="1">{
+                        v, err := ms.GetGauge(key)
+                        if err != nil </span><span class="cov0" title="0">{
+                                slog.Error("can't get gauge", "name", key, "error", err)
+                                http.Error(w, `unexpected error`, http.StatusInternalServerError)
+                                return
+                        }</span>
+                        <span class="cov8" title="1">gauges += fmt.Sprintf(rowTemplate, key, fmt.Sprint(v))</span>
+                }
+
+                <span class="cov8" title="1">l, err = ms.ListCounters()
+                if err != nil </span><span class="cov0" title="0">{
+                        slog.Error("can't list counters", "error", err)
+                        http.Error(w, `unexpected error`, http.StatusInternalServerError)
+                        return
+                }</span>
+                <span class="cov8" title="1">counters := ""
+                for _, key := range l </span><span class="cov8" title="1">{
+                        v, err := ms.GetCounter(key)
+                        if err != nil </span><span class="cov0" title="0">{
+                                slog.Error("can't get counter", "name", key, "error", err)
+                                http.Error(w, `unexpected error`, http.StatusInternalServerError)
+                                return
+                        }</span>
+                        <span class="cov8" title="1">counters += fmt.Sprintf(rowTemplate, key, fmt.Sprintf("%d", v))</span>
+                }
+
+                <span class="cov8" title="1">w.Header().Set("Content-Type", "text/html")
+                _, _ = w.Write([]byte(fmt.Sprintf(pageTemplate, gauges, counters)))
+
+                slog.Info("Processed OK")</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file24" style="display: none">package handlers
+
+import (
+        "github.com/gin-gonic/gin"
+)
+
+type (
+        // берём структуру для хранения сведений об ответе
+        loggingResponseData struct {
+                status int
+                size   int
+        }
+
+        // добавляем реализацию http.ResponseWriter
+        loggingResponseWriter struct {
+                gin.ResponseWriter // встраиваем оригинальный http.ResponseWriter
+                responseData       *loggingResponseData
+        }
+)
+
+func (r *loggingResponseWriter) Write(b []byte) (int, error) <span class="cov0" title="0">{
+        // записываем ответ, используя оригинальный http.ResponseWriter
+        size, err := r.ResponseWriter.Write(b)
+        r.responseData.size += size // захватываем размер
+        return size, err
+}</span>
+
+func (r *loggingResponseWriter) WriteHeader(statusCode int) <span class="cov0" title="0">{
+        // записываем код статуса, используя оригинальный http.ResponseWriter
+        r.ResponseWriter.WriteHeader(statusCode)
+        r.responseData.status = statusCode // захватываем код статуса
+}</span>
+</pre>
+		
+		<pre class="file" id="file25" style="display: none">package handlers
+
+import (
+        "encoding/json"
+        "log/slog"
+        "net/http"
+        "reflect"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+        "github.com/gin-gonic/gin"
+)
+
+const (
+        contextMetricResponseKey = "apimodels.Metrics"
+)
+
+// MetricValueResponseHandler respond with current metric value
+// Previous handler should add valid metric to context
+func MetricValueResponseHandler(s Storage) func(c *gin.Context) <span class="cov0" title="0">{
+        return func(c *gin.Context) </span><span class="cov0" title="0">{
+                var metric *apimodels.Metrics
+                metricWrapped, ok := c.Get(contextMetricResponseKey)
+                if !ok </span><span class="cov0" title="0">{
+                        slog.Error("No value in context", "key", contextMetricResponseKey)
+                        c.Next()
+                        return
+                }</span>
+
+                <span class="cov0" title="0">metric, ok = metricWrapped.(*apimodels.Metrics)
+                if !ok </span><span class="cov0" title="0">{
+                        slog.Error("value in context is not a metric", "key", contextMetricResponseKey, "type", reflect.TypeOf(metricWrapped))
+                        c.Next()
+                        return
+                }</span>
+
+                <span class="cov0" title="0">switch metric.MType </span>{
+                case constants.GaugeStr:<span class="cov0" title="0">
+                        gauge, err := s.GetGauge(metric.ID)
+                        if err != nil </span><span class="cov0" title="0">{
+                                slog.Error("can't get gauge", "id", metric.ID, "error", err)
+                                http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+                                return
+                        }</span>
+                        <span class="cov0" title="0">metric.Value = &amp;gauge</span>
+                case constants.CounterStr:<span class="cov0" title="0">
+                        counter, err := s.GetCounter(metric.ID)
+                        if err != nil </span><span class="cov0" title="0">{
+                                slog.Error("can't get counter", "id", metric.ID, "error", err)
+                                http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+                                return
+                        }</span>
+                        <span class="cov0" title="0">counter64 := int64(counter)
+                        metric.Delta = &amp;counter64</span>
+                default:<span class="cov0" title="0">
+                        c.Next()
+                        return</span>
+                }
+
+                // Have to set headers *before* writing to body
+                <span class="cov0" title="0">c.Header("Content-Type", "application/json")
+                // IRL just use c.IndentedJSON(200, metric)
+                // Use encoder manually
+                enc := json.NewEncoder(c.Writer)
+                enc.SetIndent("", "  ")
+                if err := enc.Encode(metric); err != nil </span><span class="cov0" title="0">{
+                        slog.Error(err.Error())
+                }</span>
+
+                <span class="cov0" title="0">c.Next()
+                slog.Info("Processed OK")</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file26" style="display: none">package handlers
+
+import (
+        "log/slog"
+        "net/http"
+
+        "github.com/gin-gonic/gin"
+)
+
+type Pingable interface {
+        Ping() error
+}
+
+// NewPingDBHandler create handler to check DB connection
+func NewPingDBHandler(db Pingable) func(c *gin.Context) <span class="cov0" title="0">{
+        pingDBHandler := func(c *gin.Context) </span><span class="cov0" title="0">{
+                if db == nil </span><span class="cov0" title="0">{
+                        slog.Error("DATABASE_DSN is empty")
+                        http.Error(c.Writer, "DATABASE_DSN is empty", http.StatusBadRequest)
+                        return
+                }</span>
+                <span class="cov0" title="0">if err := db.Ping(); err != nil </span><span class="cov0" title="0">{
+                        slog.Error("DB connection lost", "error", err)
+                        http.Error(c.Writer, "DB connection lost", http.StatusBadRequest)
+                        return
+                }</span>
+
+                <span class="cov0" title="0">c.Header("Content-Type", "text/plain")
+                if _, err := c.Writer.Write([]byte("OK")); err != nil </span><span class="cov0" title="0">{
+                        slog.Error("response write error", "error", err)
+                }</span>
+
+                <span class="cov0" title="0">slog.Info("Processed OK")</span>
+        }
+
+        <span class="cov0" title="0">return pingDBHandler</span>
+}
+</pre>
+		
+		<pre class="file" id="file27" style="display: none">package handlers
+
+import (
+        "log/slog"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+        "github.com/gin-gonic/gin"
+)
+
+// NewRespondWithHashHandler validate hash header and
+func NewRespondWithHashHandler(key string) func(c *gin.Context) <span class="cov0" title="0">{
+        validateHashHandler := func(c *gin.Context) </span><span class="cov0" title="0">{
+                if isHashPresent, ok := c.Get(IsHashPresent); !ok || !isHashPresent.(bool) </span><span class="cov0" title="0">{
+                        slog.Info("Hash is not present in context")
+                        c.Next()
+                        return
+                }</span>
+
+                <span class="cov0" title="0">newWriter := newHashWriter(c.Writer)
+                c.Writer = newWriter
+                c.Next()
+
+                hash := newWriter.GetHash(key)
+                slog.Info("setting header", "header", constants.HashSHA256, "value", hash)
+                c.Header(constants.HashSHA256, hash)
+                if _, err := newWriter.WriteReally(); err != nil </span><span class="cov0" title="0">{
+                        slog.Error("error writing response", "error", err)
+                }</span>
+        }
+        <span class="cov0" title="0">return validateHashHandler</span>
+}
+</pre>
+		
+		<pre class="file" id="file28" style="display: none">package handlers
+
+import (
+        "encoding/json"
+        "log/slog"
+        "net/http"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+        "github.com/gin-gonic/gin"
+)
+
+// SaveMetricHandler save metric to storage
+func SaveMetricHandler(s Storage) func(c *gin.Context) <span class="cov0" title="0">{
+        return func(c *gin.Context) </span><span class="cov0" title="0">{
+                metric := &amp;apimodels.Metrics{}
+
+                // IRL just use err := c.BindJSON(&amp;metric); and c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON"})
+                // use json and http on our own
+                dec := json.NewDecoder(c.Request.Body)
+                if err := dec.Decode(metric); err != nil </span><span class="cov0" title="0">{
+                        slog.Error("can't parse JSON", "error", err)
+                        http.Error(c.Writer, "Invalid JSON", http.StatusBadRequest)
+                        return
+                }</span>
+
+                <span class="cov0" title="0">err := s.SaveCommonModel(metric)
+                if err != nil </span><span class="cov0" title="0">{
+                        slog.Error("can't save metric", "error", err)
+                        _ = c.AbortWithError(http.StatusBadRequest, err)
+                        return
+                }</span>
+
+                <span class="cov0" title="0">c.Set(contextMetricResponseKey, metric)
+                c.Next()</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file29" style="display: none">package handlers
+
+import (
+        "context"
+        "errors"
+        "log/slog"
+        "net/http"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+        "github.com/gin-gonic/gin"
+        "github.com/jackc/pgerrcode"
+        "github.com/jackc/pgx/v5/pgconn"
+)
+
+type Retryer interface {
+        Try(ctx context.Context, do func() error, isRetryable func(err error) bool) (int, error)
+}
+
+// SaveMetricsHandler save metric batch to a storage
+func SaveMetricsHandler(s Storage, retryer Retryer) func(c *gin.Context) <span class="cov0" title="0">{
+        return func(c *gin.Context) </span><span class="cov0" title="0">{
+                metrics := []apimodels.Metrics{}
+
+                if err := c.BindJSON(&amp;metrics); err != nil </span><span class="cov0" title="0">{
+                        slog.Error("can't parse JSON", "error", err)
+                        _ = c.AbortWithError(http.StatusBadRequest, errors.New("can't parse JSON"))
+                        return
+                }</span>
+
+                <span class="cov0" title="0">if _, err := retryer.Try(c, func() error </span><span class="cov0" title="0">{ return s.SaveCommonModels(c, metrics) }</span>, isPgConnectionError); err != nil <span class="cov0" title="0">{
+                        slog.Error("can't save metrics", "error", err)
+                        _ = c.AbortWithError(http.StatusBadRequest, errors.New("can't save metrics"))
+                        return
+                }</span>
+
+                <span class="cov0" title="0">c.JSON(http.StatusOK, gin.H{"savedCount": len(metrics)})
+                c.Next()</span>
+        }
+}
+
+func isPgConnectionError(err error) bool <span class="cov0" title="0">{
+        var pgErr *pgconn.PgError
+        if errors.As(err, &amp;pgErr); pgErr != nil &amp;&amp; pgerrcode.IsConnectionException(pgErr.Code) </span><span class="cov0" title="0">{
+                return true
+        }</span>
+        <span class="cov0" title="0">return false</span>
+}
+</pre>
+		
+		<pre class="file" id="file30" style="display: none">package handlers
+
+import (
+        "log/slog"
+        "time"
+
+        "github.com/gin-gonic/gin"
+)
+
+// SlogHandler gin middleware
+func SlogHandler(c *gin.Context) <span class="cov0" title="0">{
+        start := time.Now()
+
+        responseData := &amp;loggingResponseData{
+                status: 0,
+                size:   0,
+        }
+        lw := &amp;loggingResponseWriter{
+                ResponseWriter: c.Writer, // встраиваем оригинальный gin.ResponseWriter
+                responseData:   responseData,
+        }
+
+        c.Writer = lw
+        // передаём управление хендлеру
+        c.Next()
+
+        duration := time.Since(start)
+
+        slog.Info("HTTP request processed",
+                "uri", c.Request.RequestURI,
+                "method", c.Request.Method,
+                "status", responseData.status, // получаем перехваченный код статуса ответа
+                "duration", duration.String(),
+                "size", responseData.size, // получаем перехваченный размер ответа
+        )
+}</span>
+</pre>
+		
+		<pre class="file" id="file31" style="display: none">package handlers
+
+import (
+        "errors"
+        "fmt"
+        "html"
+        "log/slog"
+        "net/http"
+        "strconv"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+        "github.com/gin-gonic/gin"
+)
+
+const (
+        URLParamType  = "type"
+        URLParamName  = "name"
+        URLParamValue = "value"
+)
+
+// NewUpdateMetricHandler update single metric value
+//
+// #Deprecated: for old lesson
+func NewUpdateMetricHandler(s Storage) func(c *gin.Context) <span class="cov8" title="1">{
+        return func(c *gin.Context) </span><span class="cov8" title="1">{
+                mType := c.Param(URLParamType)
+                mName := c.Param(URLParamName)
+                mValue := c.Param(URLParamValue)
+                slog.Info("Processing update", "type", mType, "name", mName, "value", mValue)
+
+                if mName == "" </span><span class="cov8" title="1">{
+                        slog.Error("Metric not found")
+                        _ = c.AbortWithError(http.StatusNotFound, errors.New("metric not found"))
+                        return
+                }</span>
+
+                <span class="cov8" title="1">metric := apimodels.Metrics{ID: mName, MType: mType}
+
+                switch mType </span>{
+                case constants.GaugeStr:<span class="cov8" title="1">
+                        floatValue, err := strconv.ParseFloat(mValue, 64)
+                        if err != nil </span><span class="cov0" title="0">{
+                                slog.Error("Invalid metric value, float64 required", `value`, html.EscapeString(mType))
+                                _ = c.AbortWithError(http.StatusBadRequest, errors.New("invalid metric value"))
+                                return
+                        }</span>
+                        <span class="cov8" title="1">metric.Value = &amp;floatValue</span>
+                case constants.CounterStr:<span class="cov8" title="1">
+                        intValue, err := strconv.Atoi(mValue)
+                        if err != nil </span><span class="cov8" title="1">{
+                                slog.Error("Invalid metric value, integer required", `value`, html.EscapeString(mType))
+                                _ = c.AbortWithError(http.StatusBadRequest, errors.New("invalid metric value"))
+                                return
+                        }</span>
+                        <span class="cov8" title="1">int64Value := int64(intValue)
+                        metric.Delta = &amp;int64Value</span>
+                default:<span class="cov0" title="0">
+                        slog.Error("Type is invalid", "type", html.EscapeString(mType))
+                        _ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf(
+                                `invalid type "%s", only "%s" and "%s" are supported`,
+                                html.EscapeString(mType),
+                                constants.GaugeStr,
+                                constants.CounterStr,
+                        ))
+                        return</span>
+                }
+
+                <span class="cov8" title="1">if err := s.SaveCommonModel(&amp;metric); err != nil </span><span class="cov0" title="0">{
+                        slog.Error("can't update metric", "error", err)
+                        _ = c.AbortWithError(http.StatusInternalServerError, errors.New("unexpected error"))
+                        return
+                }</span>
+
+                <span class="cov8" title="1">c.Next()
+                slog.Info("Processed OK")</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file32" style="display: none">package handlers
+
+import (
+        "bytes"
+        "fmt"
+        "io"
+        "log/slog"
+        "net/http"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
+        "github.com/gin-gonic/gin"
+)
+
+const (
+        IsHashPresent = "IsHashPresent"
+)
+
+// NewValidateHashHandler save metric batch to a storage
+func NewValidateHashHandler(key string) func(c *gin.Context) <span class="cov0" title="0">{
+        validateHashHandler := func(c *gin.Context) </span><span class="cov0" title="0">{
+                requestHash := c.GetHeader(constants.HashSHA256)
+
+                if requestHash == "" </span><span class="cov0" title="0">{
+                        c.Set(IsHashPresent, false)
+                        c.Next()
+                        return
+                }</span>
+
+                <span class="cov0" title="0">ByteBody, _ := io.ReadAll(c.Request.Body)
+                c.Request.Body = io.NopCloser(bytes.NewBuffer(ByteBody))
+                realHash := cryptofacade.Hash(ByteBody, []byte(key))
+
+                if realHash != requestHash </span><span class="cov0" title="0">{
+                        slog.Error("header value is invalid", "realHash", realHash, "requestHash", requestHash)
+                        _ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf("%s header value is invalid: %s", constants.HashSHA256, requestHash))
+                        return
+                }</span>
+
+                <span class="cov0" title="0">c.Set(IsHashPresent, true)
+                c.Next()</span>
+        }
+        <span class="cov0" title="0">return validateHashHandler</span>
+}
+</pre>
+		
+		<pre class="file" id="file33" style="display: none">package handlers
+
+import (
+        "errors"
+        "fmt"
+        "html"
+        "log/slog"
+        "net/http"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+        "github.com/gin-gonic/gin"
+)
+
+// NewViewStatsHandler view single stored metric
+//
+// #Deprecated: for old lesson
+func NewViewStatsHandler(ms Storage) func(c *gin.Context) <span class="cov8" title="1">{
+        // In our project we have a tradition to add single middleware to put metricstorage.Storage pointer in context.
+        // Let's use handler constructors for now
+        return func(c *gin.Context) </span><span class="cov8" title="1">{
+                mType := c.Param(URLParamType)
+                mName := c.Param(URLParamName)
+                mValue := ""
+                switch mType </span>{
+                case constants.GaugeStr:<span class="cov8" title="1">
+                        if h, err := ms.HasGauge(mName); err != nil || !h </span><span class="cov8" title="1">{
+                                if err != nil </span><span class="cov0" title="0">{
+                                        slog.Error("can't get gauge", "id", mName, "error", err)
+                                        http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+                                        return
+                                }</span>
+                                <span class="cov8" title="1">http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(mName)), http.StatusNotFound)
+                                return</span>
+                        }
+                        <span class="cov8" title="1">value, err := ms.GetGauge(mName)
+                        if err != nil </span><span class="cov0" title="0">{
+                                slog.Error("can't get gauge", "name", mName, "error", err)
+                                _ = c.AbortWithError(http.StatusInternalServerError, errors.New(`unexpected error`))
+                                return
+                        }</span>
+                        <span class="cov8" title="1">mValue = fmt.Sprint(value)</span>
+                case constants.CounterStr:<span class="cov8" title="1">
+                        if h, err := ms.HasCounter(mName); err != nil || !h </span><span class="cov8" title="1">{
+                                if err != nil </span><span class="cov0" title="0">{
+                                        slog.Error("can't get gauge", "id", mName, "error", err)
+                                        http.Error(c.Writer, `unexpected error`, http.StatusInternalServerError)
+                                        return
+                                }</span>
+                                <span class="cov8" title="1">http.Error(c.Writer, fmt.Sprintf(`metric "%s" not found`, html.EscapeString(mName)), http.StatusNotFound)
+                                return</span>
+                        }
+                        <span class="cov8" title="1">value, err := ms.GetCounter(mName)
+                        if err != nil </span><span class="cov0" title="0">{
+                                slog.Error("can't get counter", "name", mName, "error", err)
+                                _ = c.AbortWithError(http.StatusInternalServerError, errors.New(`unexpected error`))
+                                return
+                        }</span>
+                        <span class="cov8" title="1">mValue = fmt.Sprint(value)</span>
+                default:<span class="cov8" title="1">
+                        slog.Error("Invalid type", "type", mType)
+                        http.Error(c.Writer, fmt.Sprintf(
+                                "Invalid type, only %s and %s supported",
+                                constants.GaugeStr,
+                                constants.CounterStr,
+                        ), http.StatusBadRequest)
+                        return</span>
+                }
+
+                <span class="cov8" title="1">c.Header(`Content-Type`, `text/plain`)
+                _, _ = c.Writer.Write([]byte(mValue))
+                slog.Info("got value", "type", mType, "name", mName, "value", mValue)</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file34" style="display: none">package server
+
+import (
+        "fmt"
+
+        "github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
+        "github.com/gin-gonic/gin"
+)
+
+func NewRoutingEngine(ms handlers.Storage, db handlers.Pingable, retryer handlers.Retryer, key string) *gin.Engine <span class="cov8" title="1">{
+        ginCore := gin.New()
+        ginCore.RedirectTrailingSlash = false
+        ginCore.RedirectFixedPath = false
+        ginCore.Use(gin.Recovery())
+        // IRL just use ginCore.Use(slogGin.New(slog.Default())) from slogGin "github.com/samber/slog-gin"
+        // "We have it at home" logging. Uses .../loggingResponseWriter.go and .../slogHandler.go
+        ginCore.Use(handlers.SlogHandler)
+        if key != "" </span><span class="cov8" title="1">{
+                ginCore.Use(handlers.NewValidateHashHandler(key))
+                ginCore.Use(handlers.NewRespondWithHashHandler(key))
+        }</span>
+        // IRL just use ginCore.Use(gzip.Gzip(gzip.DefaultCompression)) from "github.com/gin-contrib/gzip"
+        // "We have it at home" compression. Uses .../compressWriter.go and .../gzipCompressionHandler.go
+        <span class="cov8" title="1">ginCore.Use(handlers.GzipCompressionHandler)
+
+        ginCore.GET("/", gin.WrapF(handlers.NewIndexHandler(ms)))
+        ginCore.GET("/ping", handlers.NewPingDBHandler(db))
+        ginCore.GET(fmt.Sprintf("/value/:%s/:%s", handlers.URLParamType, handlers.URLParamName), handlers.NewViewStatsHandler(ms))
+
+        valuePipeline := []gin.HandlerFunc{handlers.CheckMetricExistenceHandler(ms), handlers.MetricValueResponseHandler(ms)}
+        // Path with slash is for broken test in iteration 14
+        ginCore.POST("/value/", valuePipeline...)
+        ginCore.POST("/value", valuePipeline...)
+        ginCore.POST(fmt.Sprintf("/update/:%s/:%s/:%s", handlers.URLParamType, handlers.URLParamName, handlers.URLParamValue), handlers.NewUpdateMetricHandler(ms))
+        ginCore.POST("/update/", handlers.SaveMetricHandler(ms), handlers.MetricValueResponseHandler(ms))
+        ginCore.POST("/updates/", handlers.SaveMetricsHandler(ms, retryer))
+        return ginCore</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

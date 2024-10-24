@@ -27,5 +27,10 @@ func ExampleRetryer_Try() {
 
 	if trys, err := retryer.Try(ctv, do, isRetryable); err != nil {
 		fmt.Println("absolutely failed:", trys, "attempts made, ", err)
+	} else {
+		fmt.Println("success")
 	}
+
+	// Output:
+	// success
 }

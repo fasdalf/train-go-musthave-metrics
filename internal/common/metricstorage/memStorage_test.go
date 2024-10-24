@@ -1,9 +1,37 @@
 package metricstorage
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 )
+
+func ExampleMemStorage_GetGauge() {
+	ms := NewMemStorage()
+	ms.UpdateGauge("test_gauge", 123.4)
+	ms.UpdateGauge("test_gauge_2", 456.7)
+	// Optimistic usage
+	val, _ := ms.GetGauge("test_gauge")
+	fmt.Println(val)
+	// Expected usage
+	val, err := ms.GetGauge("test_gauge_2")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(val)
+	}
+	// Double-check before use or when value not needed
+	has, err := ms.HasGauge("test_gauge_3")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(has)
+	}
+	// Output:
+	// 123.4
+	// 456.7
+	// false
+}
 
 func BenchmarkMemStorageSingleUpdates(b *testing.B) {
 	count := 20

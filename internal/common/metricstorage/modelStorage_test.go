@@ -123,7 +123,6 @@ func TestModelStorageSaveCommonModelErrors(t *testing.T) {
 
 	var i64 int64
 	var f64 float64
-
 	i64 = 456
 	f64 = 456.789
 
