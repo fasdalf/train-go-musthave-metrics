@@ -51,7 +51,7 @@ github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memSt
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorage.go:38:			UpdateGauge			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorage.go:47:			GetCounter			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorage.go:53:			GetGauge			100.0%
-github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorage.go:59:			HasCounter			0.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorage.go:59:			HasCounter			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorage.go:66:			HasGauge			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorage.go:74:			ListGauges			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorage.go:85:			ListCounters			100.0%
@@ -102,4 +102,4 @@ github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/updateMetr
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/validateHashHandler.go:20:		NewValidateHashHandler		0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/viewMetric.go:17:				NewViewStatsHandler		67.6%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/httpServer.go:10:					NewRoutingEngine		100.0%
-total:														(statements)			28.5%
+total:														(statements)			29.0%

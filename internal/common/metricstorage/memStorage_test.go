@@ -6,6 +6,33 @@ import (
 	"testing"
 )
 
+func ExampleMemStorage_GetCounter() {
+	ms := NewMemStorage()
+	ms.UpdateCounter("test_counter", 123)
+	ms.UpdateCounter("test_counter_2", 456)
+	// Optimistic usage
+	val, _ := ms.GetCounter("test_counter")
+	fmt.Println(val)
+	// Expected usage
+	val, err := ms.GetCounter("test_counter_2")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(val)
+	}
+	// Double-check before use or when value not needed
+	has, err := ms.HasCounter("test_counter_3")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(has)
+	}
+	// Output:
+	// 123
+	// 456
+	// false
+}
+
 func ExampleMemStorage_GetGauge() {
 	ms := NewMemStorage()
 	ms.UpdateGauge("test_gauge", 123.4)

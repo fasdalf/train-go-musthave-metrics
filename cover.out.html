@@ -83,7 +83,7 @@
 				
 				<option value="file13">github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/dirtystorage.go (0.0%)</option>
 				
-				<option value="file14">github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorage.go (91.5%)</option>
+				<option value="file14">github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorage.go (100.0%)</option>
 				
 				<option value="file15">github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/memStorageMuted.go (0.0%)</option>
 				
@@ -1338,7 +1338,7 @@ func (s *MemStorage) GetGauge(key string) (float64, error) <span class="cov8" ti
         return s.gauges[key], nil
 }</span>
 
-func (s *MemStorage) HasCounter(key string) (bool, error) <span class="cov0" title="0">{
+func (s *MemStorage) HasCounter(key string) (bool, error) <span class="cov8" title="1">{
         s.countersRWM.RLock()
         defer s.countersRWM.RUnlock()
         _, ok := s.counters[key]
