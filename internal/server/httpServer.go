@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"github.com/gin-gonic/gin"
 )
