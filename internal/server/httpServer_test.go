@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -109,11 +110,13 @@ func TestViewMetricIntegrational(t *testing.T) {
 		plain      string
 	}
 	tests := []struct {
-		name   string
-		method string
-		url    string
-		body   []byte
-		want   want
+		name    string
+		key     string
+		method  string
+		url     string
+		headers map[string]string
+		body    []byte
+		want    want
 	}{
 		{
 			name:   "not found GET",
@@ -200,6 +203,24 @@ func TestViewMetricIntegrational(t *testing.T) {
 			body:   []byte(`{"type":"counter","id":"notIntegral"}`),
 			want:   want{statusCode: http.StatusNotFound},
 		},
+		{
+			name:    "with a key and correct hash",
+			key:     "key",
+			method:  http.MethodPost,
+			url:     "/value",
+			headers: map[string]string{constants.HashSHA256: "6b6579538332c383eb265a653e1ceaae302d36205be968c2ded5bcdcbf773c75f516eb"},
+			body:    []byte(`{"type":"counter","id":"Integral"}`),
+			want:    want{statusCode: http.StatusOK, json: `{"delta":10, "id":"Integral", "type":"counter"}`},
+		},
+		{
+			name:    "with a key and wrong hash",
+			key:     "key",
+			method:  http.MethodPost,
+			url:     "/value",
+			headers: map[string]string{constants.HashSHA256: "127.0.0.1"},
+			body:    []byte(`{"type":"counter","id":"Integral"}`),
+			want:    want{statusCode: http.StatusBadRequest},
+		},
 	}
 
 	ms := metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())
@@ -208,15 +229,17 @@ func TestViewMetricIntegrational(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			router := NewRoutingEngine(ms, nil, retryattempt.NewOneAttemptRetryer(), "")
+			router := NewRoutingEngine(ms, nil, retryattempt.NewOneAttemptRetryer(), tt.key)
 
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(tt.method, tt.url, bytes.NewBuffer(tt.body))
+			if len(tt.headers) > 0 {
+				for key, value := range tt.headers {
+					req.Header.Add(key, value)
+				}
+			}
 			router.ServeHTTP(w, req)
 
-			if tt.want.json != "" {
-				assert.JSONEq(t, tt.want.json, w.Body.String())
-			}
 			if tt.want.json != "" {
 				assert.JSONEq(t, tt.want.json, w.Body.String())
 			}

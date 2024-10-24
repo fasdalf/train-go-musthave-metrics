@@ -1,6 +1,7 @@
 package metricstorage
 
 import (
+	"context"
 	"strconv"
 	"testing"
 
@@ -50,4 +51,132 @@ func BenchmarkModelStorageSingleUpdates(b *testing.B) {
 		}
 		b.ReportMetric(float64(n)/f, "useless/op")
 	})
+}
+
+func TestModelStorageSaveCommonModelsSuccess(t *testing.T) {
+	ms := NewSavableModelStorage(NewMemStorage())
+
+	const (
+		counterId    = "YTGBDRTHGUJ"
+		counterDelta = 456
+		gaugeId      = "JYFVNHYUTRE"
+		gaugeValue   = 456.789
+	)
+
+	var i64 int64 = counterDelta
+	var f64 float64 = gaugeValue
+
+	metrics := []apimodels.Metrics{
+		{
+			ID:    counterId,
+			MType: constants.CounterStr,
+			Delta: &i64,
+			Value: nil,
+		},
+		{
+			ID:    gaugeId,
+			MType: constants.GaugeStr,
+			Delta: nil,
+			Value: &f64,
+		},
+	}
+	t.Run("SaveCommonModels", func(t *testing.T) {
+		err := ms.SaveCommonModels(context.Background(), metrics)
+		if err != nil {
+			t.Errorf("Unexpected error: %v", err)
+		}
+		counter, err := ms.GetCounter(counterId)
+		if err != nil {
+			t.Errorf("Unexpected error: %v", err)
+		}
+		if counter != counterDelta {
+			t.Errorf("Expected counter value %d, got %d", counterDelta, counter)
+		}
+		gauge, err := ms.GetGauge(gaugeId)
+		if err != nil {
+			t.Errorf("Unexpected error: %v", err)
+		}
+		if gauge != gaugeValue {
+			t.Errorf("Expected gauge value %f, got %f", gaugeValue, gauge)
+		}
+
+		names, err := ms.ListCounters()
+		if err != nil {
+			t.Errorf("Unexpected error: %v", err)
+		}
+		if len(names) != 1 || names[0] != counterId {
+			t.Errorf("counter not listed")
+		}
+		names, err = ms.ListGauges()
+		if err != nil {
+			t.Errorf("Unexpected error: %v", err)
+		}
+		if len(names) != 1 || names[0] != gaugeId {
+			t.Errorf("gauge not listed")
+		}
+
+	})
+}
+
+func TestModelStorageSaveCommonModelErrors(t *testing.T) {
+	ms := NewSavableModelStorage(NewMemStorage())
+
+	var i64 int64 = 456
+	var f64 float64 = 456.789
+
+	tests := []struct {
+		name    string
+		metrics apimodels.Metrics
+		wantErr bool
+	}{
+		{
+			name: "wrong type",
+			metrics: apimodels.Metrics{
+				ID:    "a",
+				MType: "wrong",
+				Delta: nil,
+				Value: nil,
+			},
+			wantErr: true,
+		},
+		{
+			name: "empty delta",
+			metrics: apimodels.Metrics{
+				ID:    "a",
+				MType: constants.CounterStr,
+				Delta: nil,
+				Value: nil,
+			},
+			wantErr: true,
+		},
+		{
+			name: "enmpty value",
+			metrics: apimodels.Metrics{
+				ID:    "a",
+				MType: constants.GaugeStr,
+				Delta: nil,
+				Value: nil,
+			},
+			wantErr: true,
+		},
+		{
+			name: "skip unused value",
+			metrics: apimodels.Metrics{
+				ID:    "a",
+				MType: constants.CounterStr,
+				Delta: &i64,
+				Value: &f64,
+			},
+			wantErr: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := ms.SaveCommonModel(&tt.metrics)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SaveCommonModel() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
 }
