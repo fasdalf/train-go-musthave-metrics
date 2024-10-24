@@ -57,9 +57,9 @@ func TestModelStorageSaveCommonModelsSuccess(t *testing.T) {
 	ms := NewSavableModelStorage(NewMemStorage())
 
 	const (
-		counterId    = "YTGBDRTHGUJ"
+		counterID    = "YTGBDRTHGUJ"
 		counterDelta = 456
-		gaugeId      = "JYFVNHYUTRE"
+		gaugeID      = "JYFVNHYUTRE"
 		gaugeValue   = 456.789
 	)
 
@@ -68,13 +68,13 @@ func TestModelStorageSaveCommonModelsSuccess(t *testing.T) {
 
 	metrics := []apimodels.Metrics{
 		{
-			ID:    counterId,
+			ID:    counterID,
 			MType: constants.CounterStr,
 			Delta: &i64,
 			Value: nil,
 		},
 		{
-			ID:    gaugeId,
+			ID:    gaugeID,
 			MType: constants.GaugeStr,
 			Delta: nil,
 			Value: &f64,
@@ -85,14 +85,14 @@ func TestModelStorageSaveCommonModelsSuccess(t *testing.T) {
 		if err != nil {
 			t.Errorf("Unexpected error: %v", err)
 		}
-		counter, err := ms.GetCounter(counterId)
+		counter, err := ms.GetCounter(counterID)
 		if err != nil {
 			t.Errorf("Unexpected error: %v", err)
 		}
 		if counter != counterDelta {
 			t.Errorf("Expected counter value %d, got %d", counterDelta, counter)
 		}
-		gauge, err := ms.GetGauge(gaugeId)
+		gauge, err := ms.GetGauge(gaugeID)
 		if err != nil {
 			t.Errorf("Unexpected error: %v", err)
 		}
@@ -104,14 +104,14 @@ func TestModelStorageSaveCommonModelsSuccess(t *testing.T) {
 		if err != nil {
 			t.Errorf("Unexpected error: %v", err)
 		}
-		if len(names) != 1 || names[0] != counterId {
+		if len(names) != 1 || names[0] != counterID {
 			t.Errorf("counter not listed")
 		}
 		names, err = ms.ListGauges()
 		if err != nil {
 			t.Errorf("Unexpected error: %v", err)
 		}
-		if len(names) != 1 || names[0] != gaugeId {
+		if len(names) != 1 || names[0] != gaugeID {
 			t.Errorf("gauge not listed")
 		}
 
@@ -121,8 +121,11 @@ func TestModelStorageSaveCommonModelsSuccess(t *testing.T) {
 func TestModelStorageSaveCommonModelErrors(t *testing.T) {
 	ms := NewSavableModelStorage(NewMemStorage())
 
-	var i64 int64 = 456
-	var f64 float64 = 456.789
+	var i64 int64
+	var f64 float64
+
+	i64 = 456
+	f64 = 456.789
 
 	tests := []struct {
 		name    string

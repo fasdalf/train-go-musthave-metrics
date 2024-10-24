@@ -2,10 +2,11 @@ package server
 
 import (
 	"bytes"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
