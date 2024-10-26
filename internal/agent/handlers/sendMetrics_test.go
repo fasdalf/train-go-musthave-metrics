@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"context"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
 )
 
 func TestSendMetricsLoop_EndToEnd(t *testing.T) {
