@@ -3,12 +3,13 @@ package handlers
 import (
 	"bytes"
 	"fmt"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
-	"github.com/gin-gonic/gin"
 	"io"
 	"log/slog"
 	"net/http"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
+	"github.com/gin-gonic/gin"
 )
 
 const (

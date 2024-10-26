@@ -1,12 +1,14 @@
+// Main storage wrapper for the server application
 package metricstorage
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"html"
+
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"html"
 )
 
 type basicBatch interface {
@@ -42,6 +44,7 @@ type basicUpdater interface {
 	UpdateGauge(key string, value float64) error
 }
 
+// saveCommonModel — common function for saving models
 func saveCommonModel(u basicUpdater, metric *apimodels.Metrics) (err error) {
 	switch metric.MType {
 	case constants.GaugeStr:

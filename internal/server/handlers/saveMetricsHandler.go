@@ -3,12 +3,13 @@ package handlers
 import (
 	"context"
 	"errors"
+	"log/slog"
+	"net/http"
+
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
-	"log/slog"
-	"net/http"
 )
 
 type Retryer interface {

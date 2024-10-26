@@ -3,12 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"github.com/gin-gonic/gin"
 	"html"
 	"log/slog"
 	"net/http"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+	"github.com/gin-gonic/gin"
 )
 
 // CheckMetricExistenceHandler checks metrics has value set

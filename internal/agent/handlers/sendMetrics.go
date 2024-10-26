@@ -14,10 +14,8 @@ import (
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 
-	resty "github.com/go-resty/resty/v2"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -27,14 +25,18 @@ type Retryer interface {
 	Try(ctx context.Context, do func() error, isRetryable func(err error) bool) (int, error)
 }
 
+type MetricsPoster interface {
+	Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) error
+}
+
 var ErrTransport = errors.New("resty error")
 
 // SendMetrics sends pre collected metrics to server
-func SendMetrics(ctx context.Context, s Storage, address string, r Retryer, key string, rateLimit int) {
+func SendMetrics(ctx context.Context, s Storage, address string, r Retryer, poster MetricsPoster, key string, rateLimit int) {
 	slog.Info("Sending metricUpdates")
 	address = fmt.Sprintf(URLTemplate, address)
 
-	w := newWorker(address, key)
+	w := newWorker(address, key, poster)
 	p := newProducer(ctx, s, w, rateLimit)
 	if _, err := r.Try(ctx, p, isRecoverable); err != nil {
 		slog.Info("SendMetrics error", "error", err)
@@ -51,7 +53,7 @@ func isRecoverable(err error) bool {
 
 type workerFunc = func(ctx context.Context, id int, mCh <-chan *apimodels.Metrics) error
 
-func newWorker(address string, key string) workerFunc {
+func newWorker(address string, key string, poster MetricsPoster) workerFunc {
 	return func(ctx context.Context, id int, mCh <-chan *apimodels.Metrics) error {
 		idlog := slog.With("workerFunc", "metricUpdates", "id", id)
 		metricUpdates := make([]*apimodels.Metrics, 0)
@@ -65,54 +67,17 @@ func newWorker(address string, key string) workerFunc {
 			metricUpdates = append(metricUpdates, m)
 		}
 
-		idlog.Info("recieved metricUpdates", "count", len(metricUpdates))
+		idlog.Info("received metricUpdates", "count", len(metricUpdates))
 		if len(metricUpdates) == 0 {
 			return nil
 		}
 
-		client := resty.New()
-		content, err := json.Marshal(metricUpdates)
+		body, err := compressMetrics(metricUpdates)
 		if err != nil {
-			idlog.Error("marshal metricUpdates error", "error", err)
-			return errors.Join(fmt.Errorf("encoding request: %w", err), ErrTransport)
+			idlog.Error("failed to prepare request body", "error", err)
+			return err
 		}
-		body := new(bytes.Buffer)
-		zb := gzip.NewWriter(body)
-		_, err = zb.Write(content)
-		if err != nil {
-			idlog.Error("gzip writer error", "error", err)
-			return fmt.Errorf("compressing request: %w", err)
-		}
-		_ = zb.Close()
-
-		req := client.R()
-		req.SetContext(ctx)
-		req.SetHeader("Content-Encoding", "gzip")
-		req.SetHeader("Accept-Encoding", "gzip")
-		req.SetHeader("Content-Type", "application/json")
-
-		if key != "" {
-			hash := cryptofacade.Hash(body.Bytes(), []byte(key))
-			req.SetHeader(constants.HashSHA256, hash)
-		}
-
-		req.SetBody(body)
-		resp, err := req.Post(address)
-		if err != nil {
-			idlog.Error("send request error", "error", err)
-			return fmt.Errorf("sending metrics: %w", err)
-		}
-
-		if resp != nil && resp.RawResponse.Body != nil {
-			_ = resp.RawResponse.Body.Close()
-		}
-
-		if resp != nil && resp.IsError() {
-			idlog.Error("response error", "error", resp.Error())
-			return fmt.Errorf("sending metrics https status error: %d", resp.StatusCode())
-		}
-		idlog.Info("sent metricUpdates", "count", len(metricUpdates))
-		return nil
+		return poster.Post(ctx, idlog, body, key, address)
 	}
 }
 
@@ -148,6 +113,23 @@ func newProducer(ctx context.Context, s Storage, w workerFunc, l int) func() err
 	}
 }
 
+// compressMetrics compresses the metrics using gzip.
+func compressMetrics(metricUpdates []*apimodels.Metrics) (*bytes.Buffer, error) {
+	content, err := json.Marshal(metricUpdates)
+	if err != nil {
+		return nil, errors.Join(fmt.Errorf("encoding request: %w", err), ErrTransport)
+	}
+	body := new(bytes.Buffer)
+	zb := gzip.NewWriter(body)
+	defer zb.Close()
+	_, err = zb.Write(content)
+	if err != nil {
+		return nil, fmt.Errorf("compressing request: %w", err)
+	}
+
+	return body, nil
+}
+
 func SendMetricsLoop(
 	ctx context.Context,
 	wg *sync.WaitGroup,
@@ -155,11 +137,12 @@ func SendMetricsLoop(
 	address string,
 	sendInterval time.Duration,
 	retryer handlers.Retryer,
+	poster MetricsPoster,
 	key string,
 	rateLimit int,
 ) {
 	cb := func() {
-		SendMetrics(ctx, storage, address, retryer, key, rateLimit)
+		SendMetrics(ctx, storage, address, retryer, poster, key, rateLimit)
 		slog.Info(`sender sleeping`, `delay`, sendInterval)
 	}
 	loop(cb, ctx, wg, sendInterval)

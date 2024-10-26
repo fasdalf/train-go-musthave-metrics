@@ -2,12 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
 	"reflect"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+	"github.com/gin-gonic/gin"
 )
 
 const (

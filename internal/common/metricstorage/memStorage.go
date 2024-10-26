@@ -70,6 +70,7 @@ func (s *MemStorage) HasGauge(key string) (bool, error) {
 	return ok, nil
 }
 
+// ListGauges lists all gauges keys.
 func (s *MemStorage) ListGauges() ([]string, error) {
 	s.gaugesRWM.RLock()
 	defer s.gaugesRWM.RUnlock()
@@ -80,6 +81,7 @@ func (s *MemStorage) ListGauges() ([]string, error) {
 	return keys, nil
 }
 
+// ListCounters lists all counters keys.
 func (s *MemStorage) ListCounters() ([]string, error) {
 	s.countersRWM.RLock()
 	defer s.countersRWM.RUnlock()

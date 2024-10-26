@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"log/slog"
+
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"github.com/gin-gonic/gin"
-	"log/slog"
 )
 
 // NewRespondWithHashHandler validate hash header and

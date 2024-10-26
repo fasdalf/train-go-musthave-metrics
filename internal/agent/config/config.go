@@ -3,10 +3,11 @@ package config
 import (
 	goflag "flag"
 	"fmt"
-	"github.com/caarlos0/env/v6"
-	flag "github.com/spf13/pflag"
 	"log/slog"
 	"os"
+
+	"github.com/caarlos0/env/v6"
+	flag "github.com/spf13/pflag"
 )
 
 const (
