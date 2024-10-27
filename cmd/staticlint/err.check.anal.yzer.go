@@ -59,12 +59,18 @@ func runErrCheckAnalyzer(pass *analysis.Pass) (interface{}, error) {
 			switch x := node.(type) {
 			case *ast.ExprStmt: // выражение
 				expr(x)
+			case *ast.GoStmt: // go myfunc()
+				if isReturnError(pass, x.Call) {
+					pass.Reportf(x.Pos(), "go statement with unchecked error")
+				}
+			case *ast.DeferStmt: // defer myfunc()
+				if isReturnError(pass, x.Call) {
+					pass.Reportf(x.Pos(), "defer with unchecked error")
+				}
 			case *ast.AssignStmt: // оператор присваивания
-				// справа одно выражение x,y := myfunc()
-				if len(x.Rhs) == 1 {
+				if len(x.Rhs) == 1 { // справа одно выражение x,y := myfunc()
 					tuplefunc(x)
-				} else {
-					// справа несколько выражений x,y := z,myfunc()
+				} else { // справа несколько выражений x,y := z,myfunc()
 					errfunc(x)
 				}
 			}

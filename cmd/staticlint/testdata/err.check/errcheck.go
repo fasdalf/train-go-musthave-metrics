@@ -14,6 +14,8 @@ func errCheckFunc() {
 	// описанную в комментарии want
 	mulfunc(5)           // want "expression returns unchecked error"
 	res, _ := mulfunc(5) // want "assignment with unchecked error"
+	go mulfunc(6)        // want "go statement with unchecked error"
+	defer mulfunc(6)     // want "defer with unchecked error"
 	fmt.Println(res)     // want "expression returns unchecked error"
 	os.Exit(0)
 }
