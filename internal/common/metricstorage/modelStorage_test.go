@@ -12,7 +12,8 @@ import (
 func BenchmarkModelStorageSingleUpdates(b *testing.B) {
 	count := 20
 
-	ms := NewSavableModelStorage(NewDirtyStorage(NewMemStorage()))
+	ds := NewDirtyStorage(NewMemStorage())
+	ms := NewSavableModelStorage(ds)
 	m := &apimodels.Metrics{}
 	for i := 0; i < count; i++ {
 		if i%2 == 0 {
@@ -30,6 +31,7 @@ func BenchmarkModelStorageSingleUpdates(b *testing.B) {
 	}
 	b.ResetTimer()
 	b.Run("single updates", func(b *testing.B) {
+		ds.Clear()
 		var n int
 		var f float64
 		for i := 0; i < b.N; i++ {
