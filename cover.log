@@ -1,11 +1,11 @@
-github.com/fasdalf/train-go-musthave-metrics/cmd/agent/main.go:19:						main				0.0%
-github.com/fasdalf/train-go-musthave-metrics/cmd/server/main.go:24:						main				0.0%
+github.com/fasdalf/train-go-musthave-metrics/cmd/agent/main.go:26:						main				0.0%
+github.com/fasdalf/train-go-musthave-metrics/cmd/server/main.go:32:						main				0.0%
 github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/err.check.anal.yzer.go:16:				runErrCheckAnalyzer		100.0%
-github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/err.check.anal.yzer.go:87:				isErrorType			100.0%
-github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/err.check.anal.yzer.go:95:				resultErrors			70.0%
-github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/err.check.anal.yzer.go:117:				isReturnError			100.0%
+github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/err.check.anal.yzer.go:93:				isErrorType			100.0%
+github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/err.check.anal.yzer.go:101:				resultErrors			70.0%
+github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/err.check.anal.yzer.go:123:				isReturnError			100.0%
 github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/main.go:14:						main				0.0%
-github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/os.exit.anal.yzer.go:14:				runOSExitAnalyzer		100.0%
+github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/os.exit.anal.yzer.go:15:				runOSExitAnalyzer		100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/collectGopsutilMetrics.go:12:		CollectGopsutilMetrics		0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/collectLoop.go:12:				loop				100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/collectLoop.go:27:				Collect				0.0%
@@ -74,6 +74,7 @@ github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/model
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/modelStorage.go:48:			saveCommonModel			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/modelStorage.go:74:			SaveCommonModel			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/modelStorage.go:79:			SaveCommonModels		75.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/common/printbuild/printbuild.go:20:			Print				100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt/retryattempt.go:14:			NewRetryer			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt/retryattempt.go:18:			NewOneAttemptRetryer		0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt/retryattempt.go:23:			Try				31.2%
@@ -104,4 +105,4 @@ github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/updateMetr
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/validateHashHandler.go:20:		NewValidateHashHandler		0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/viewMetric.go:17:				NewViewStatsHandler		67.6%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/httpServer.go:10:					NewRoutingEngine		100.0%
-total:														(statements)			33.6%
+total:														(statements)			33.9%

@@ -13,11 +13,26 @@ import (
 	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/config"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/printbuild"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
+)
+
+var (
+	buildVersion string
+	buildDate    string
+	buildCommit  string
 )
 
 func main() {
 	const pprofHTTPAddr = ":8092"
+
+	bd := &printbuild.Data{
+		BuildVersion: buildVersion,
+		BuildDate:    buildDate,
+		BuildCommit:  buildCommit,
+	}
+	bd.Print()
+
 	cfg := config.GetConfig()
 	collectInterval := time.Duration(cfg.PollInterval) * time.Second
 	sendInterval := time.Duration(cfg.ReportInterval) * time.Second
