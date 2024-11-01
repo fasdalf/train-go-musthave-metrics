@@ -58,12 +58,6 @@ func newWorker(address string, key string, poster MetricsPoster) workerFunc {
 		idlog := slog.With("workerFunc", "metricUpdates", "id", id)
 		metricUpdates := make([]*apimodels.Metrics, 0)
 		for m := range mCh {
-			select {
-			case <-ctx.Done():
-				idlog.Error("context ended", "error", ctx.Err())
-				return ctx.Err()
-			default:
-			}
 			metricUpdates = append(metricUpdates, m)
 		}
 

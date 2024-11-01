@@ -32,6 +32,12 @@ func TestUpdateMetricHandler(t *testing.T) {
 			want: want{statusCode: http.StatusNotFound, counters: 0, gauges: 0},
 		},
 		{
+			name:  "invalid type",
+			vType: "invalid", vName: "nonempty", vValue: "",
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
+			want: want{statusCode: http.StatusBadRequest, counters: 0, gauges: 0},
+		},
+		{
 			name:  "valid gauge",
 			vType: "gauge", vName: "some-metric", vValue: "10.001",
 			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
@@ -48,6 +54,21 @@ func TestUpdateMetricHandler(t *testing.T) {
 			vType: "counter", vName: "some-metric", vValue: "NaN",
 			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
 			want: want{statusCode: http.StatusBadRequest, counters: 0, gauges: 0},
+		},
+		{
+			name:  "NaN gauge",
+			vType: "gauge", vName: "some-metric", vValue: "not a number",
+			args: args{metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage())},
+			want: want{statusCode: http.StatusBadRequest, counters: 0, gauges: 0},
+		},
+		{
+			name:  "error on save",
+			vType: "gauge", vName: "some-metric", vValue: "10",
+			args: args{metricstorage.NewSavableModelStorage(&metricstorage.MockErrorStorage{
+				MemStorage: *metricstorage.NewMemStorage(),
+				WithError:  true,
+			})},
+			want: want{statusCode: http.StatusInternalServerError, counters: 0, gauges: 0},
 		},
 	}
 	for _, tt := range tests {

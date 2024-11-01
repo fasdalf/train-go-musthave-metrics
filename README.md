@@ -35,7 +35,7 @@ git fetch template && git checkout template/main .github
 `go install github.com/go-delve/delve/cmd/dlv@latest; go mod tidy; go mod vendor`
 `dlv debug ./cmd/server/main.go --headless=true --api-version=2  -- -k 1234 --filestoragepath new.json --restore`
 
-### coverage
+### profiling
 
 go tool pprof -http=":9090" -seconds=30 http://localhost:8093/debug/pprof/goroutine
 можно использовать опции focus и ignore — 

@@ -36,9 +36,9 @@ func NewIndexHandler(ms Storage) http.HandlerFunc {
 		}
 		gauges := ""
 		for _, key := range l {
-			v, err := ms.GetGauge(key)
-			if err != nil {
-				slog.Error("can't get gauge", "name", key, "error", err)
+			v, errStupidLinter := ms.GetGauge(key)
+			if errStupidLinter != nil {
+				slog.Error("can't get gauge", "name", key, "error", errStupidLinter)
 				http.Error(w, `unexpected error`, http.StatusInternalServerError)
 				return
 			}

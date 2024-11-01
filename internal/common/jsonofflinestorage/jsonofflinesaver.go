@@ -83,9 +83,9 @@ func (l *JSONFileStorage) save() error {
 		return fmt.Errorf("can't ListGauges: %w", err)
 	}
 	for _, key := range list {
-		g, err := l.storage.GetGauge(key)
-		if err != nil {
-			return fmt.Errorf("can't GetGauge: %w", err)
+		g, errStupidLinter := l.storage.GetGauge(key)
+		if errStupidLinter != nil {
+			return fmt.Errorf("can't GetGauge: %w", errStupidLinter)
 		}
 		err = encoder.Encode(apimodels.Metrics{
 			ID:    key,
@@ -103,9 +103,9 @@ func (l *JSONFileStorage) save() error {
 		return fmt.Errorf("can't ListCounters: %w", err)
 	}
 	for _, key := range list {
-		c, err := l.storage.GetCounter(key)
-		if err != nil {
-			return fmt.Errorf("can't GetCounter: %w", err)
+		c, errStupidLinter := l.storage.GetCounter(key)
+		if errStupidLinter != nil {
+			return fmt.Errorf("can't GetCounter: %w", errStupidLinter)
 		}
 		c64 := int64(c)
 		err = encoder.Encode(apimodels.Metrics{

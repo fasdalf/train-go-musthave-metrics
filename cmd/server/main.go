@@ -12,6 +12,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/printbuild"
+
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
@@ -21,8 +23,22 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
+var (
+	buildVersion string
+	buildDate    string
+	buildCommit  string
+)
+
 func main() {
 	const pprofHTTPAddr = ":8093"
+
+	bd := &printbuild.Data{
+		BuildVersion: buildVersion,
+		BuildDate:    buildDate,
+		BuildCommit:  buildCommit,
+	}
+	bd.Print()
+
 	ctx, ctxCancel := context.WithCancel(context.Background())
 	wg := &sync.WaitGroup{}
 	c := config.GetConfig()
