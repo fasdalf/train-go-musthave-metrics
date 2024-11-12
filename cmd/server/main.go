@@ -12,10 +12,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/printbuild"
-
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/printbuild"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/config"
@@ -87,7 +86,7 @@ func main() {
 	}
 
 	slog.Debug("initializing http router")
-	engine := server.NewRoutingEngine(metricStorage, db, retryer, c.HashKey)
+	engine := server.NewRoutingEngine(metricStorage, db, retryer, c.HashKey, c.RSAKey)
 	srv := &http.Server{
 		Addr:    c.Addr,
 		Handler: engine,

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"context"
+	"crypto/rsa"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +15,7 @@ import (
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/rsacrypt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 
 	"golang.org/x/sync/errgroup"
@@ -32,11 +34,11 @@ type MetricsPoster interface {
 var ErrTransport = errors.New("resty error")
 
 // SendMetrics sends pre collected metrics to server
-func SendMetrics(ctx context.Context, s Storage, address string, r Retryer, poster MetricsPoster, key string, rateLimit int) {
+func SendMetrics(ctx context.Context, s Storage, address string, r Retryer, poster MetricsPoster, key string, encryptionKey *rsa.PublicKey, rateLimit int) {
 	slog.Info("Sending metricUpdates")
 	address = fmt.Sprintf(URLTemplate, address)
 
-	w := newWorker(address, key, poster)
+	w := newWorker(address, key, encryptionKey, poster)
 	p := newProducer(ctx, s, w, rateLimit)
 	if _, err := r.Try(ctx, p, isRecoverable); err != nil {
 		slog.Info("SendMetrics error", "error", err)
@@ -53,7 +55,7 @@ func isRecoverable(err error) bool {
 
 type workerFunc = func(ctx context.Context, id int, mCh <-chan *apimodels.Metrics) error
 
-func newWorker(address string, key string, poster MetricsPoster) workerFunc {
+func newWorker(address string, key string, encryptionKey *rsa.PublicKey, poster MetricsPoster) workerFunc {
 	return func(ctx context.Context, id int, mCh <-chan *apimodels.Metrics) error {
 		idlog := slog.With("workerFunc", "metricUpdates", "id", id)
 		metricUpdates := make([]*apimodels.Metrics, 0)
@@ -66,7 +68,7 @@ func newWorker(address string, key string, poster MetricsPoster) workerFunc {
 			return nil
 		}
 
-		body, err := compressMetrics(metricUpdates)
+		body, err := compressMetrics(metricUpdates, encryptionKey)
 		if err != nil {
 			idlog.Error("failed to prepare request body", "error", err)
 			return err
@@ -108,7 +110,7 @@ func newProducer(ctx context.Context, s Storage, w workerFunc, l int) func() err
 }
 
 // compressMetrics compresses the metrics using gzip.
-func compressMetrics(metricUpdates []*apimodels.Metrics) (*bytes.Buffer, error) {
+func compressMetrics(metricUpdates []*apimodels.Metrics, encryptionKey *rsa.PublicKey) (*bytes.Buffer, error) {
 	content, err := json.Marshal(metricUpdates)
 	if err != nil {
 		return nil, errors.Join(fmt.Errorf("encoding request: %w", err), ErrTransport)
@@ -116,6 +118,12 @@ func compressMetrics(metricUpdates []*apimodels.Metrics) (*bytes.Buffer, error) 
 	body := new(bytes.Buffer)
 	zb := gzip.NewWriter(body)
 	defer zb.Close()
+	if encryptionKey != nil {
+		content, err = rsacrypt.EncryptWithPublicKey(content, encryptionKey)
+		if err != nil {
+			return nil, fmt.Errorf("encrypting request: %w", err)
+		}
+	}
 	_, err = zb.Write(content)
 	if err != nil {
 		return nil, fmt.Errorf("compressing request: %w", err)
@@ -133,10 +141,11 @@ func SendMetricsLoop(
 	retryer handlers.Retryer,
 	poster MetricsPoster,
 	key string,
+	encryptionKey *rsa.PublicKey,
 	rateLimit int,
 ) {
 	cb := func() {
-		SendMetrics(ctx, storage, address, retryer, poster, key, rateLimit)
+		SendMetrics(ctx, storage, address, retryer, poster, key, encryptionKey, rateLimit)
 		slog.Info(`sender sleeping`, `delay`, sendInterval)
 	}
 	loop(cb, ctx, wg, sendInterval)

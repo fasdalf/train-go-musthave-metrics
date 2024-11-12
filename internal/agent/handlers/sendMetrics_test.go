@@ -31,6 +31,7 @@ func TestSendMetricsLoop_EndToEnd(t *testing.T) {
 			retryattempt.NewOneAttemptRetryer(),
 			poster,
 			"",
+			nil,
 			10,
 		)
 
@@ -51,6 +52,7 @@ func TestSendMetricsLoop_EndToEnd(t *testing.T) {
 			retryattempt.NewRetryer([]time.Duration{1 * time.Millisecond, 2 * time.Millisecond, 3 * time.Millisecond}),
 			poster,
 			"",
+			nil,
 			10,
 		)
 
@@ -72,6 +74,7 @@ func TestSendMetricsLoop_EndToEnd(t *testing.T) {
 			retryattempt.NewRetryer([]time.Duration{1 * time.Millisecond, 200 * time.Millisecond, 300 * time.Millisecond}),
 			poster,
 			"",
+			nil,
 			1,
 		)
 
