@@ -22,6 +22,8 @@ github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/sendMetrics
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/sendMetrics.go:80:				newProducer			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/sendMetrics.go:113:			compressMetrics			64.3%
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/sendMetrics.go:135:			SendMetricsLoop			100.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/common/configfile/configfile.go:17:			ParseFile			100.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/common/configfile/configfile.go:27:			getConfigFileName		100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade/cryptofacade.go:8:			Hash				100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage/jsonofflinesaver.go:38:		NewJSONFileStorage		0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage/jsonofflinesaver.go:50:		Start				0.0%
@@ -130,4 +132,4 @@ github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/updateMetr
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/validateHashHandler.go:20:		NewValidateHashHandler		0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/viewMetric.go:17:				NewViewStatsHandler		67.6%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/httpServer.go:11:					NewRoutingEngine		100.0%
-total:														(statements)			51.9%
+total:														(statements)			52.4%
