@@ -1,5 +1,5 @@
-github.com/fasdalf/train-go-musthave-metrics/cmd/agent/main.go:26:						main				0.0%
-github.com/fasdalf/train-go-musthave-metrics/cmd/server/main.go:31:						main				0.0%
+github.com/fasdalf/train-go-musthave-metrics/cmd/agent/main.go:27:						main				0.0%
+github.com/fasdalf/train-go-musthave-metrics/cmd/server/main.go:32:						main				0.0%
 github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/errcheckanalyzer.go:16:				runErrCheckAnalyzer		100.0%
 github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/errcheckanalyzer.go:93:				isErrorType			100.0%
 github.com/fasdalf/train-go-musthave-metrics/cmd/staticlint/errcheckanalyzer.go:101:				resultErrors			70.0%

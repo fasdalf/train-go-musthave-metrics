@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/config"
@@ -49,7 +50,7 @@ func main() {
 	// for "net/http/pprof"
 	go http.ListenAndServe(pprofHTTPAddr, nil)
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 	<-quit
 	slog.Info("interrupt signal received")
 	signal.Stop(quit)

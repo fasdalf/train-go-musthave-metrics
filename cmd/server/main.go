@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
@@ -96,15 +97,15 @@ func main() {
 	go http.ListenAndServe(pprofHTTPAddr, nil)
 
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 
 	go func() {
 		<-quit
 		slog.Info("interrupt signal received")
 		signal.Stop(quit)
 		ctxCancel()
-		if err := srv.Close(); err != nil {
-			slog.Error("Server close error:", "error", err)
+		if err := srv.Shutdown(context.Background()); err != nil {
+			slog.Error("Server shutdown error:", "error", err)
 		}
 	}()
 
