@@ -1,13 +1,14 @@
 package server
 
 import (
+	"crypto/rsa"
 	"fmt"
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 	"github.com/gin-gonic/gin"
 )
 
-func NewRoutingEngine(ms handlers.Storage, db handlers.Pingable, retryer handlers.Retryer, key string) *gin.Engine {
+func NewRoutingEngine(ms handlers.Storage, db handlers.Pingable, retryer handlers.Retryer, key string, decryptionKey *rsa.PrivateKey) *gin.Engine {
 	ginCore := gin.New()
 	ginCore.RedirectTrailingSlash = false
 	ginCore.RedirectFixedPath = false
@@ -22,6 +23,9 @@ func NewRoutingEngine(ms handlers.Storage, db handlers.Pingable, retryer handler
 	// IRL just use ginCore.Use(gzip.Gzip(gzip.DefaultCompression)) from "github.com/gin-contrib/gzip"
 	// "We have it at home" compression. Uses .../compressWriter.go and .../gzipCompressionHandler.go
 	ginCore.Use(handlers.GzipCompressionHandler)
+	// IRL use regular TLS.
+	// "We have it at home" RSA.
+	ginCore.Use(handlers.NewDecryptBodyHandler(decryptionKey))
 
 	ginCore.GET("/", gin.WrapF(handlers.NewIndexHandler(ms)))
 	ginCore.GET("/ping", handlers.NewPingDBHandler(db))

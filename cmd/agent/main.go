@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/agent/config"
@@ -43,13 +44,13 @@ func main() {
 
 	wg := new(sync.WaitGroup)
 	wg.Add(3)
-	go handlers.SendMetricsLoop(ctx, wg, memStorage, address, sendInterval, retryer, handlers.NewNetHTTPPoster(), cfg.HashKey, cfg.RateLimit)
+	go handlers.SendMetricsLoop(ctx, wg, memStorage, address, sendInterval, retryer, handlers.NewNetHTTPPoster(), cfg.HashKey, cfg.RSAKey, cfg.RateLimit)
 	go handlers.Collect(handlers.CollectMetrics, ctx, wg, memStorage, collectInterval)
 	go handlers.Collect(handlers.CollectGopsutilMetrics, ctx, wg, memStorage, collectInterval)
 	// for "net/http/pprof"
 	go http.ListenAndServe(pprofHTTPAddr, nil)
 	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
 	<-quit
 	slog.Info("interrupt signal received")
 	signal.Stop(quit)

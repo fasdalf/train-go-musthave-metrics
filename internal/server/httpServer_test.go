@@ -89,7 +89,7 @@ func TestUpdateMetricIntegrational(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			router := NewRoutingEngine(tt.args.s, nil, retryattempt.NewOneAttemptRetryer(), "")
+			router := NewRoutingEngine(tt.args.s, nil, retryattempt.NewOneAttemptRetryer(), "", nil)
 
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(http.MethodPost, tt.url, bytes.NewBuffer(tt.body))
@@ -230,7 +230,7 @@ func TestViewMetricIntegrational(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			router := NewRoutingEngine(ms, nil, retryattempt.NewOneAttemptRetryer(), tt.key)
+			router := NewRoutingEngine(ms, nil, retryattempt.NewOneAttemptRetryer(), tt.key, nil)
 
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(tt.method, tt.url, bytes.NewBuffer(tt.body))
