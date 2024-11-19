@@ -89,7 +89,7 @@ func TestUpdateMetricIntegrational(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			router := NewRoutingEngine(tt.args.s, nil, retryattempt.NewOneAttemptRetryer(), "", nil)
+			router := NewRoutingEngine(tt.args.s, nil, retryattempt.NewOneAttemptRetryer(), "", nil, nil)
 
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(http.MethodPost, tt.url, bytes.NewBuffer(tt.body))
@@ -209,7 +209,7 @@ func TestViewMetricIntegrational(t *testing.T) {
 			key:     "key",
 			method:  http.MethodPost,
 			url:     "/value",
-			headers: map[string]string{constants.HashSHA256: "6b6579538332c383eb265a653e1ceaae302d36205be968c2ded5bcdcbf773c75f516eb"},
+			headers: map[string]string{constants.HeaderHashSHA256: "6b6579538332c383eb265a653e1ceaae302d36205be968c2ded5bcdcbf773c75f516eb"},
 			body:    []byte(`{"type":"counter","id":"Integral"}`),
 			want:    want{statusCode: http.StatusOK, json: `{"delta":10, "id":"Integral", "type":"counter"}`},
 		},
@@ -218,7 +218,7 @@ func TestViewMetricIntegrational(t *testing.T) {
 			key:     "key",
 			method:  http.MethodPost,
 			url:     "/value",
-			headers: map[string]string{constants.HashSHA256: "127.0.0.1"},
+			headers: map[string]string{constants.HeaderHashSHA256: "127.0.0.1"},
 			body:    []byte(`{"type":"counter","id":"Integral"}`),
 			want:    want{statusCode: http.StatusBadRequest},
 		},
@@ -230,7 +230,7 @@ func TestViewMetricIntegrational(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			router := NewRoutingEngine(ms, nil, retryattempt.NewOneAttemptRetryer(), tt.key, nil)
+			router := NewRoutingEngine(ms, nil, retryattempt.NewOneAttemptRetryer(), tt.key, nil, nil)
 
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(tt.method, tt.url, bytes.NewBuffer(tt.body))

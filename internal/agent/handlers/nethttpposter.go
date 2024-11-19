@@ -9,6 +9,7 @@ import (
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/localip"
 )
 
 type netHTTPPoster struct{}
@@ -23,10 +24,11 @@ func (p *netHTTPPoster) Post(ctx context.Context, idlog *slog.Logger, body *byte
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Content-Encoding", "gzip")
 	request.Header.Set("Accept-Encoding", "gzip")
+	request.Header.Set(constants.HeaderRealIP, localip.GetLocalIP().String())
 
 	if key != "" {
 		hash := cryptofacade.Hash(body.Bytes(), []byte(key))
-		request.Header.Set(constants.HashSHA256, hash)
+		request.Header.Set(constants.HeaderHashSHA256, hash)
 	}
 
 	resp, err := http.DefaultClient.Do(request)

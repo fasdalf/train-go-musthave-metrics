@@ -23,7 +23,7 @@ func (p *restyPoster) Post(ctx context.Context, idlog *slog.Logger, body *bytes.
 
 	if key != "" {
 		hash := cryptofacade.Hash(body.Bytes(), []byte(key))
-		req.SetHeader(constants.HashSHA256, hash)
+		req.SetHeader(constants.HeaderHashSHA256, hash)
 	}
 
 	req.SetBody(body)

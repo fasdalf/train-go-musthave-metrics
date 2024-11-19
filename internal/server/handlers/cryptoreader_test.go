@@ -12,6 +12,7 @@ import (
 func TestCryptoReaderClosedStreams(t *testing.T) {
 	privK, pubK := rsacrypt.GenerateKeyPair(2048)
 	_, err := newCryptoReader(&mockreaders.ErrReader{}, privK)
+	_ = (&mockreaders.ErrReader{}).Close()
 	if err == nil {
 		t.Errorf("Expected an error on empty reader, got nil")
 	}

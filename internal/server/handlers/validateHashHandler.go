@@ -16,10 +16,10 @@ const (
 	IsHashPresent = "IsHashPresent"
 )
 
-// NewValidateHashHandler save metric batch to a storage
+// NewValidateHashHandler validate request hash
 func NewValidateHashHandler(key string) func(c *gin.Context) {
 	validateHashHandler := func(c *gin.Context) {
-		requestHash := c.GetHeader(constants.HashSHA256)
+		requestHash := c.GetHeader(constants.HeaderHashSHA256)
 
 		if requestHash == "" {
 			c.Set(IsHashPresent, false)
@@ -33,7 +33,7 @@ func NewValidateHashHandler(key string) func(c *gin.Context) {
 
 		if realHash != requestHash {
 			slog.Error("header value is invalid", "realHash", realHash, "requestHash", requestHash)
-			_ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf("%s header value is invalid: %s", constants.HashSHA256, requestHash))
+			_ = c.AbortWithError(http.StatusBadRequest, fmt.Errorf("%s header value is invalid: %s", constants.HeaderHashSHA256, requestHash))
 			return
 		}
 

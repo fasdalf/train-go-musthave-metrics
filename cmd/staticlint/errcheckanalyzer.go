@@ -98,12 +98,13 @@ func isErrorType(t types.Type) bool {
 
 // resultErrors возвращает булев массив со значениями true,
 // если тип i-го возвращаемого значения соответствует ошибке.
-func resultErrors(pass *analysis.Pass, call *ast.CallExpr) []bool {
+func resultErrors(pass *analysis.Pass, call *ast.CallExpr) (r []bool) {
+	r = []bool{false}
 	switch t := pass.TypesInfo.Types[call].Type.(type) {
 	case *types.Named: // возвращается значение
-		return []bool{isErrorType(t)}
+		r = []bool{isErrorType(t)}
 	case *types.Pointer: // возвращается указатель
-		return []bool{isErrorType(t)}
+		r = []bool{isErrorType(t)}
 	case *types.Tuple: // возвращается несколько значений
 		s := make([]bool, t.Len())
 		for i := 0; i < t.Len(); i++ {
@@ -114,9 +115,9 @@ func resultErrors(pass *analysis.Pass, call *ast.CallExpr) []bool {
 				s[i] = isErrorType(mt)
 			}
 		}
-		return s
+		r = s
 	}
-	return []bool{false}
+	return
 }
 
 // isReturnError возвращает true, если среди возвращаемых значений есть ошибка.
