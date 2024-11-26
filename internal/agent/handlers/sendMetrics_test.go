@@ -10,11 +10,9 @@ import (
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/rsacrypt"
 )
 
 func TestSendMetricsLoop_EndToEnd(t *testing.T) {
-	_, pub := rsacrypt.GenerateKeyPair(512*2 + 256)
 	ms := metricstorage.NewMemStorageMuted()
 	ms.UpdateCounter("testCounter", 10)
 	ms.UpdateGauge("testGauge", 10.01)
@@ -28,12 +26,9 @@ func TestSendMetricsLoop_EndToEnd(t *testing.T) {
 			ctx,
 			wg,
 			ms,
-			"",
 			2*time.Millisecond,
 			retryattempt.NewOneAttemptRetryer(),
 			poster,
-			"",
-			pub,
 			10,
 		)
 
@@ -49,12 +44,9 @@ func TestSendMetricsLoop_EndToEnd(t *testing.T) {
 			ctx,
 			wg,
 			ms,
-			"",
 			2*time.Millisecond,
 			retryattempt.NewRetryer([]time.Duration{1 * time.Millisecond, 2 * time.Millisecond, 3 * time.Millisecond}),
 			poster,
-			"",
-			nil,
 			10,
 		)
 
@@ -71,12 +63,9 @@ func TestSendMetricsLoop_EndToEnd(t *testing.T) {
 			ctx,
 			wg,
 			ms,
-			"",
 			2*time.Millisecond,
 			retryattempt.NewRetryer([]time.Duration{1 * time.Millisecond, 200 * time.Millisecond, 300 * time.Millisecond}),
 			poster,
-			"",
-			nil,
 			1,
 		)
 

@@ -73,11 +73,11 @@
 				
 				<option value="file8">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/mockposter.go (100.0%)</option>
 				
-				<option value="file9">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/nethttpposter.go (0.0%)</option>
+				<option value="file9">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/nethttpposter.go (73.2%)</option>
 				
-				<option value="file10">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/restyposter.go (0.0%)</option>
+				<option value="file10">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/restyposter.go (76.0%)</option>
 				
-				<option value="file11">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/sendMetrics.go (90.9%)</option>
+				<option value="file11">github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/sendMetrics.go (100.0%)</option>
 				
 				<option value="file12">github.com/fasdalf/train-go-musthave-metrics/internal/common/configfile/configfile.go (100.0%)</option>
 				
@@ -198,14 +198,14 @@ func main() <span class="cov0" title="0">{
         cfg := config.GetConfig()
         collectInterval := time.Duration(cfg.PollInterval) * time.Second
         sendInterval := time.Duration(cfg.ReportInterval) * time.Second
-        address := cfg.Addr
         memStorage := metricstorage.NewMemStorageMuted()
         retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
         ctx, cancel := context.WithCancel(context.Background())
+        poster := handlers.NewNetHTTPPoster(cfg.Addr, cfg.HashKey, cfg.RSAKey)
 
         wg := new(sync.WaitGroup)
         wg.Add(3)
-        go handlers.SendMetricsLoop(ctx, wg, memStorage, address, sendInterval, retryer, handlers.NewNetHTTPPoster(), cfg.HashKey, cfg.RSAKey, cfg.RateLimit)
+        go handlers.SendMetricsLoop(ctx, wg, memStorage, sendInterval, retryer, poster, cfg.RateLimit)
         go handlers.Collect(handlers.CollectMetrics, ctx, wg, memStorage, collectInterval)
         go handlers.Collect(handlers.CollectGopsutilMetrics, ctx, wg, memStorage, collectInterval)
         // for "net/http/pprof"
@@ -709,8 +709,8 @@ func getAttr(obj interface{}, fieldName string) reflect.Value {
 		<pre class="file" id="file8" style="display: none">package handlers
 
 import (
-        "bytes"
         "context"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
         "log/slog"
 )
 
@@ -720,7 +720,7 @@ type mockPoster struct {
         Results  []error
 }
 
-func (p *mockPoster) Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) (err error) <span class="cov8" title="1">{
+func (p *mockPoster) Post(ctx context.Context, idlog *slog.Logger, metrics []*apimodels.Metrics) (err error) <span class="cov8" title="1">{
         i := len(p.Results) - p.Attempts
 
         if i &gt;= 0 &amp;&amp; i &lt; len(p.Results) </span><span class="cov8" title="1">{
@@ -742,8 +742,14 @@ func NewMockPoster(attempts int, cancel context.CancelFunc, results []error) *mo
 
 import (
         "bytes"
+        "compress/gzip"
         "context"
+        "crypto/rsa"
+        "encoding/json"
+        "errors"
         "fmt"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/rsacrypt"
         "log/slog"
         "net/http"
 
@@ -752,53 +758,94 @@ import (
         "github.com/fasdalf/train-go-musthave-metrics/internal/common/localip"
 )
 
-type netHTTPPoster struct{}
+const URLTemplate = "http://%s/updates/"
 
-func (p *netHTTPPoster) Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) error <span class="cov0" title="0">{
-        request, err := http.NewRequest(http.MethodPost, address, body)
+type netHTTPPoster struct {
+        address       string
+        key           string
+        encryptionKey *rsa.PublicKey
+}
+
+func (p *netHTTPPoster) Post(ctx context.Context, idlog *slog.Logger, metrics []*apimodels.Metrics) error <span class="cov8" title="1">{
+        body, err := compressMetrics(metrics, p.encryptionKey)
+        if err != nil </span><span class="cov0" title="0">{
+                idlog.Error("failed to prepare request body", "error", err)
+                return err
+        }</span>
+
+        <span class="cov8" title="1">request, err := http.NewRequestWithContext(ctx, http.MethodPost, p.address, body)
         if err != nil </span><span class="cov0" title="0">{
                 idlog.Error("init request error", "error", err)
                 return fmt.Errorf("sending metrics: %w", err)
         }</span>
 
-        <span class="cov0" title="0">request.Header.Set("Content-Type", "application/json")
+        <span class="cov8" title="1">request.Header.Set("Content-Type", "application/json")
         request.Header.Set("Content-Encoding", "gzip")
         request.Header.Set("Accept-Encoding", "gzip")
         request.Header.Set(constants.HeaderRealIP, localip.GetLocalIP().String())
 
-        if key != "" </span><span class="cov0" title="0">{
-                hash := cryptofacade.Hash(body.Bytes(), []byte(key))
+        if p.key != "" </span><span class="cov8" title="1">{
+                hash := cryptofacade.Hash(body.Bytes(), []byte(p.key))
                 request.Header.Set(constants.HeaderHashSHA256, hash)
         }</span>
 
-        <span class="cov0" title="0">resp, err := http.DefaultClient.Do(request)
+        <span class="cov8" title="1">resp, err := http.DefaultClient.Do(request)
         if err != nil </span><span class="cov0" title="0">{
                 idlog.Error("send request error", "error", err)
                 return fmt.Errorf("sending metrics: %w", err)
         }</span>
 
-        <span class="cov0" title="0">if resp != nil &amp;&amp; resp.Body != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if resp != nil &amp;&amp; resp.Body != nil </span><span class="cov8" title="1">{
                 defer resp.Body.Close()
         }</span>
 
-        <span class="cov0" title="0">if resp != nil &amp;&amp; resp.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if resp != nil &amp;&amp; resp.StatusCode != http.StatusOK </span><span class="cov0" title="0">{
                 idlog.Error("response error", "error", resp.StatusCode)
                 return fmt.Errorf("sending metrics https status error: %d", resp.StatusCode)
         }</span>
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
-func NewNetHTTPPoster() *netHTTPPoster <span class="cov0" title="0">{
-        return &amp;netHTTPPoster{}
+// compressMetrics compresses the metrics using gzip.
+func compressMetrics(metricUpdates []*apimodels.Metrics, encryptionKey *rsa.PublicKey) (*bytes.Buffer, error) <span class="cov8" title="1">{
+        content, err := json.Marshal(metricUpdates)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, errors.Join(fmt.Errorf("encoding request: %w", err), ErrTransport)
+        }</span>
+        <span class="cov8" title="1">body := new(bytes.Buffer)
+        zb := gzip.NewWriter(body)
+        defer zb.Close()
+        if encryptionKey != nil </span><span class="cov8" title="1">{
+                content, err = rsacrypt.EncryptWithPublicKey(content, encryptionKey)
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, fmt.Errorf("encrypting request: %w", err)
+                }</span>
+        }
+        <span class="cov8" title="1">_, err = zb.Write(content)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("compressing request: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return body, nil</span>
+}
+
+func NewNetHTTPPoster(address string, key string, encryptionKey *rsa.PublicKey) *netHTTPPoster <span class="cov8" title="1">{
+        address = fmt.Sprintf(URLTemplate, address)
+        return &amp;netHTTPPoster{
+                address:       address,
+                key:           key,
+                encryptionKey: encryptionKey,
+        }
 }</span>
 </pre>
 		
 		<pre class="file" id="file10" style="display: none">package handlers
 
 import (
-        "bytes"
         "context"
+        "crypto/rsa"
         "fmt"
+        "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
         "log/slog"
 
         "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
@@ -806,54 +853,57 @@ import (
         "github.com/go-resty/resty/v2"
 )
 
-type restyPoster struct{}
+type restyPoster struct {
+        netHTTPPoster
+}
 
-func (p *restyPoster) Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) error <span class="cov0" title="0">{
-        client := resty.New()
+func (p *restyPoster) Post(ctx context.Context, idlog *slog.Logger, metrics []*apimodels.Metrics) error <span class="cov8" title="1">{
+        body, err := compressMetrics(metrics, p.encryptionKey)
+        if err != nil </span><span class="cov0" title="0">{
+                idlog.Error("failed to prepare request body", "error", err)
+                return err
+        }</span>
+
+        <span class="cov8" title="1">client := resty.New()
         req := client.R()
         req.SetContext(ctx)
         req.SetHeader("Content-Encoding", "gzip")
         req.SetHeader("Accept-Encoding", "gzip")
         req.SetHeader("Content-Type", "application/json")
 
-        if key != "" </span><span class="cov0" title="0">{
-                hash := cryptofacade.Hash(body.Bytes(), []byte(key))
+        if p.key != "" </span><span class="cov8" title="1">{
+                hash := cryptofacade.Hash(body.Bytes(), []byte(p.key))
                 req.SetHeader(constants.HeaderHashSHA256, hash)
         }</span>
 
-        <span class="cov0" title="0">req.SetBody(body)
-        resp, err := req.Post(address)
+        <span class="cov8" title="1">req.SetBody(body)
+        resp, err := req.Post(p.address)
         if err != nil </span><span class="cov0" title="0">{
                 idlog.Error("send request error", "error", err)
                 return fmt.Errorf("sending metrics: %w", err)
         }</span>
 
-        <span class="cov0" title="0">if resp != nil &amp;&amp; resp.RawResponse.Body != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if resp != nil &amp;&amp; resp.RawResponse.Body != nil </span><span class="cov8" title="1">{
                 _ = resp.RawResponse.Body.Close()
         }</span>
 
-        <span class="cov0" title="0">if resp != nil &amp;&amp; resp.IsError() </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if resp != nil &amp;&amp; resp.IsError() </span><span class="cov0" title="0">{
                 idlog.Error("response error", "error", resp.Error())
                 return fmt.Errorf("sending metrics https status error: %d", resp.StatusCode())
         }</span>
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov8" title="1">return nil</span>
 }
 
-func NewRestyPoster() *restyPoster <span class="cov0" title="0">{
-        return &amp;restyPoster{}
+func NewRestyPoster(address string, key string, encryptionKey *rsa.PublicKey) *restyPoster <span class="cov8" title="1">{
+        return &amp;restyPoster{*NewNetHTTPPoster(address, key, encryptionKey)}
 }</span>
 </pre>
 		
 		<pre class="file" id="file11" style="display: none">package handlers
 
 import (
-        "bytes"
-        "compress/gzip"
         "context"
-        "crypto/rsa"
-        "encoding/json"
         "errors"
-        "fmt"
         "log/slog"
         "net"
         "sync"
@@ -861,30 +911,26 @@ import (
 
         "github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
         "github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-        "github.com/fasdalf/train-go-musthave-metrics/internal/common/rsacrypt"
         "github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
 
         "golang.org/x/sync/errgroup"
 )
-
-const URLTemplate = "http://%s/updates/"
 
 type Retryer interface {
         Try(ctx context.Context, do func() error, isRetryable func(err error) bool) (int, error)
 }
 
 type MetricsPoster interface {
-        Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) error
+        Post(ctx context.Context, idlog *slog.Logger, metrics []*apimodels.Metrics) error
 }
 
 var ErrTransport = errors.New("resty error")
 
 // SendMetrics sends pre collected metrics to server
-func SendMetrics(ctx context.Context, s Storage, address string, r Retryer, poster MetricsPoster, key string, encryptionKey *rsa.PublicKey, rateLimit int) <span class="cov8" title="1">{
+func SendMetrics(ctx context.Context, s Storage, r Retryer, poster MetricsPoster, rateLimit int) <span class="cov8" title="1">{
         slog.Info("Sending metricUpdates")
-        address = fmt.Sprintf(URLTemplate, address)
 
-        w := newWorker(address, key, encryptionKey, poster)
+        w := newWorker(poster)
         p := newProducer(ctx, s, w, rateLimit)
         if _, err := r.Try(ctx, p, isRecoverable); err != nil </span><span class="cov8" title="1">{
                 slog.Info("SendMetrics error", "error", err)
@@ -901,7 +947,7 @@ func isRecoverable(err error) bool <span class="cov8" title="1">{
 
 type workerFunc = func(ctx context.Context, id int, mCh &lt;-chan *apimodels.Metrics) error
 
-func newWorker(address string, key string, encryptionKey *rsa.PublicKey, poster MetricsPoster) workerFunc <span class="cov8" title="1">{
+func newWorker(poster MetricsPoster) workerFunc <span class="cov8" title="1">{
         return func(ctx context.Context, id int, mCh &lt;-chan *apimodels.Metrics) error </span><span class="cov8" title="1">{
                 idlog := slog.With("workerFunc", "metricUpdates", "id", id)
                 metricUpdates := make([]*apimodels.Metrics, 0)
@@ -914,12 +960,7 @@ func newWorker(address string, key string, encryptionKey *rsa.PublicKey, poster 
                         return nil
                 }</span>
 
-                <span class="cov8" title="1">body, err := compressMetrics(metricUpdates, encryptionKey)
-                if err != nil </span><span class="cov0" title="0">{
-                        idlog.Error("failed to prepare request body", "error", err)
-                        return err
-                }</span>
-                <span class="cov8" title="1">return poster.Post(ctx, idlog, body, key, address)</span>
+                <span class="cov8" title="1">return poster.Post(ctx, idlog, metricUpdates)</span>
         }
 }
 
@@ -955,43 +996,17 @@ func newProducer(ctx context.Context, s Storage, w workerFunc, l int) func() err
         }
 }
 
-// compressMetrics compresses the metrics using gzip.
-func compressMetrics(metricUpdates []*apimodels.Metrics, encryptionKey *rsa.PublicKey) (*bytes.Buffer, error) <span class="cov8" title="1">{
-        content, err := json.Marshal(metricUpdates)
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, errors.Join(fmt.Errorf("encoding request: %w", err), ErrTransport)
-        }</span>
-        <span class="cov8" title="1">body := new(bytes.Buffer)
-        zb := gzip.NewWriter(body)
-        defer zb.Close()
-        if encryptionKey != nil </span><span class="cov8" title="1">{
-                content, err = rsacrypt.EncryptWithPublicKey(content, encryptionKey)
-                if err != nil </span><span class="cov0" title="0">{
-                        return nil, fmt.Errorf("encrypting request: %w", err)
-                }</span>
-        }
-        <span class="cov8" title="1">_, err = zb.Write(content)
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, fmt.Errorf("compressing request: %w", err)
-        }</span>
-
-        <span class="cov8" title="1">return body, nil</span>
-}
-
 func SendMetricsLoop(
         ctx context.Context,
         wg *sync.WaitGroup,
         storage Storage,
-        address string,
         sendInterval time.Duration,
         retryer handlers.Retryer,
         poster MetricsPoster,
-        key string,
-        encryptionKey *rsa.PublicKey,
         rateLimit int,
 ) <span class="cov8" title="1">{
         cb := func() </span><span class="cov8" title="1">{
-                SendMetrics(ctx, storage, address, retryer, poster, key, encryptionKey, rateLimit)
+                SendMetrics(ctx, storage, retryer, poster, rateLimit)
                 slog.Info(`sender sleeping`, `delay`, sendInterval)
         }</span>
         <span class="cov8" title="1">loop(cb, ctx, wg, sendInterval)</span>
