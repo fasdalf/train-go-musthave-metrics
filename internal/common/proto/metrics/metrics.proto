@@ -1,0 +1,29 @@
+syntax = "proto3";
+// I could use `import "google/protobuf/empty.proto";` but there wa trouble with import
+
+package metrics;
+
+option go_package = "internal/proto/metrics";
+
+message Metric {
+  string  id = 1;
+  enum MetricType {
+    UNDEFINED = 0;
+    COUNTER = 1;
+    GAUGE = 2;
+  }
+  MetricType type = 2;
+  int64 delta = 3;
+  double value  = 4;
+}
+message UpdateMetricsRequest {
+  repeated Metric metrics = 1;
+}
+
+message UpdateMetricsResponse {
+}
+
+service Metrics {
+  rpc UpdateMetrics (UpdateMetricsRequest) returns (UpdateMetricsResponse);
+}
+
