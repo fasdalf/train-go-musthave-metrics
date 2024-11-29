@@ -14,8 +14,8 @@ import (
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/rsacrypt"
 )
 
-func TestNetHTTPPosterCompressMetrics(t *testing.T) {
-	// TODO: add more test cases
+func TestNetHTTPPoster_Post_Success(t *testing.T) {
+	// TODO: ##@@ add more test cases or ignore impossible errors
 	wantStatus := http.StatusOK
 	_, pub := rsacrypt.GenerateKeyPair(2048)
 

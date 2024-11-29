@@ -24,6 +24,7 @@ const (
 
 type Config struct {
 	Addr                     string          `env:"ADDRESS" json:"address"`
+	GRPCAddr                 string          `env:"GRPC_ADDRESS" json:"grpc_address"`
 	StorageFileName          string          `env:"FILE_STORAGE_PATH" json:"store_file"`
 	StorageFileStoreInterval int             `env:"STORE_INTERVAL" json:"store_interval"`
 	StorageFileRestore       bool            `env:"RESTORE" json:"restore"`
@@ -50,6 +51,7 @@ func init() {
 
 	// Flags
 	flag.StringVarP(&config.Addr, "address", "a", config.Addr, "The address to listen on for HTTP requests")
+	flag.StringVarP(&config.GRPCAddr, "grpcaddress", "g", config.GRPCAddr, "The address to listen on for GRPC requests. If not provided disables GRPC.")
 	flag.StringVarP(&config.StorageFileName, "filestoragepath", "f", config.StorageFileName, "A path and file name to store JSON data. Leave empty to disable file storage.")
 	flag.IntVarP(&config.StorageFileStoreInterval, "storeinterval", "i", config.StorageFileStoreInterval, "Interval in seconds to dump metrics to JSON file. \"0\" is on every change.")
 	flag.BoolVarP(&config.StorageFileRestore, "restore", "r", config.StorageFileRestore, "Metrics restore from file on startup.")

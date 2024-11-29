@@ -22,6 +22,7 @@ const (
 
 type Config struct {
 	Addr           string         `env:"ADDRESS" json:"address"`
+	Protocol       string         `env:"PROTOCOL" json:"protocol"`
 	PollInterval   int            `env:"POLL_INTERVAL" json:"poll_interval"`
 	ReportInterval int            `env:"REPORT_INTERVAL" json:"report_interval"`
 	HashKey        string         `env:"KEY" json:"key"`
@@ -49,6 +50,7 @@ func init() {
 
 	// Flags
 	flag.StringVarP(&config.Addr, "address", "a", config.Addr, "The address to listen on for HTTP requests.")
+	flag.StringVarP(&config.Protocol, "protocol", "g", config.Protocol, "Protocol to use instead of HTTP. Now supported: grpc.")
 	flag.IntVarP(&config.PollInterval, "pollinterval", "p", config.PollInterval, "Metrics poll interval in seconds.")
 	flag.IntVarP(&config.ReportInterval, "reportInterval", "r", config.ReportInterval, "Report to server interval in seconds.")
 	flag.StringVarP(&config.HashKey, "key", "k", config.HashKey, "Key for signature Hash header.  If not provided, will not sign the request.")

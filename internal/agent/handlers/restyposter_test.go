@@ -14,8 +14,8 @@ import (
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/rsacrypt"
 )
 
-func TestRestyPosterCompressMetrics(t *testing.T) {
-	// TODO: add more test cases
+func TestRestyPoster_Post_Success(t *testing.T) {
+	// TODO: ##@@ add more test cases
 	wantStatus := http.StatusOK
 	_, pub := rsacrypt.GenerateKeyPair(2048)
 

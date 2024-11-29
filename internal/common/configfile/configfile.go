@@ -14,6 +14,11 @@ const (
 	configFlagFull = "config"
 )
 
+func init() {
+	var s string
+	flag.StringVarP(&s, configFlagFull, configFlag, "", "Path to config file. Not required.")
+}
+
 func ParseFile(config any) {
 	fn := getConfigFileName()
 	if fn == "" {

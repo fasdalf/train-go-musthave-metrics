@@ -16,3 +16,13 @@ func GetLocalIP() (r net.IP) {
 
 	return
 }
+
+// GetFreePort asks the kernel for a free open port that is ready to use.
+func GetFreePort() (port int, err error) {
+	var l net.Listener
+	if l, err = net.Listen("tcp", "localhost:0"); err == nil {
+		defer l.Close()
+		port = l.Addr().(*net.TCPAddr).Port
+	}
+	return
+}

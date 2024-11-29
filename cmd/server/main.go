@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"log/slog"
+	"net"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -13,14 +14,17 @@ import (
 	"syscall"
 	"time"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"google.golang.org/grpc"
+
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/printbuild"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/config"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers"
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 var (
@@ -93,6 +97,25 @@ func main() {
 		Handler: engine,
 	}
 
+	// TODO: ##@@ extract to come package and cover with tests
+	var srvGRPC *grpc.Server
+	if c.GRPCAddr != "" {
+		srvGRPC = grpcserver.NewGrpcServer(metricStorage, db, retryer, c.HashKey, c.RSAKey, c.TrustedSubnet)
+		listen, err := net.Listen("tcp", c.GRPCAddr)
+		if err != nil {
+			slog.Error("can not listen GRPC port", "error", err)
+			panic(err)
+		}
+		go func() {
+			slog.Info("starting grpc server", "address", c.GRPCAddr)
+			if err := srvGRPC.Serve(listen); err != nil {
+				slog.Error("GRPC server not started or stopped with error", "error", err)
+				panic(err)
+			}
+			slog.Info("GRPC server finished OK")
+		}()
+	}
+
 	// for "net/http/pprof"
 	go http.ListenAndServe(pprofHTTPAddr, nil)
 
@@ -103,20 +126,23 @@ func main() {
 		<-quit
 		slog.Info("interrupt signal received")
 		signal.Stop(quit)
-		ctxCancel()
+		if srvGRPC != nil {
+			srvGRPC.GracefulStop()
+		}
 		if err := srv.Shutdown(context.Background()); err != nil {
 			slog.Error("Server shutdown error:", "error", err)
 		}
+		ctxCancel()
 	}()
 
 	slog.Info("starting http server", "address", c.Addr)
 	if err := srv.ListenAndServe(); err != nil {
 		if errors.Is(err, http.ErrServerClosed) {
-			slog.Info("Server closed by interrupt signal")
+			slog.Info("http server closed by interrupt signal")
 			slog.Info("wait for bg processes")
 			wg.Wait()
 		} else {
-			slog.Error("server not started or stopped with error", "error", err)
+			slog.Error("http server not started or stopped with error", "error", err)
 			panic(err)
 		}
 	}
