@@ -35,8 +35,8 @@ github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage/
 github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage/jsonofflinesaver.go:126:		restore				0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/jsonofflinestorage/jsonofflinesaver.go:162:		saveToFile			0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/localip/localip.go:8:					GetLocalIP			100.0%
-github.com/fasdalf/train-go-musthave-metrics/internal/common/localip/localip.go:21:					ValidateIPStringInSubnet	100.0%
-github.com/fasdalf/train-go-musthave-metrics/internal/common/localip/localip.go:36:					GetFreePort			100.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/common/localip/localip.go:22:					ValidateIPStringInSubnet	100.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/common/localip/localip.go:37:					GetFreePort			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/dbStorage.go:24:				NewDBStorage			0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/dbStorage.go:38:				Bootstrap			0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage/dbStorage.go:86:				updateCounterSQL		0.0%
@@ -110,8 +110,8 @@ github.com/fasdalf/train-go-musthave-metrics/internal/common/rsacrypt/rsacrypt.g
 github.com/fasdalf/train-go-musthave-metrics/internal/common/rsacrypt/rsacrypt.go:139:					DecryptOAEP			83.3%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/controller/updatemetrics.go:16:			UpdateMetrics			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/grpc.go:16:					NewGrpcServer			100.0%
-github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/interceptors/private.go:8:			getFirstMd			100.0%
-github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/interceptors/sloginterceptor.go:10:		NewSlogInterceptor		100.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/interceptors/private.go:10:			getFirstMd			100.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/interceptors/sloginterceptor.go:12:		NewSlogInterceptor		100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/interceptors/validateipinterceptor.go:16:	NewValidateIPInterceptor	100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/checkMetricExistenceHandler.go:17:		CheckMetricExistenceHandler	100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/compressWriter.go:17:				newCompressWriter		0.0%

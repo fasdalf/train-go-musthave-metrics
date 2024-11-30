@@ -2,9 +2,11 @@ package interceptors
 
 import (
 	"context"
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
-	"google.golang.org/grpc"
 	"log/slog"
+
+	"google.golang.org/grpc"
+
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 )
 
 func NewSlogInterceptor() grpc.UnaryServerInterceptor {

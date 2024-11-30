@@ -2,12 +2,14 @@ package interceptors
 
 import (
 	"context"
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"net"
 	"reflect"
 	"testing"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 )
 
 func TestNewValidateIPInterceptor(t *testing.T) {

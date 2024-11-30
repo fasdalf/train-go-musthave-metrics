@@ -2,9 +2,10 @@ package interceptors
 
 import (
 	"context"
-	"google.golang.org/grpc"
 	"reflect"
 	"testing"
+
+	"google.golang.org/grpc"
 )
 
 func TestNewSlogInterceptor(t *testing.T) {

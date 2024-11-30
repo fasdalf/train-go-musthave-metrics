@@ -1419,6 +1419,7 @@ func GetLocalIP() (r net.IP) <span class="cov8" title="1">{
         <span class="cov8" title="1">return</span>
 }
 
+// ValidateIPStringInSubnet validates that an ip is valid and belongs given subnet
 func ValidateIPStringInSubnet(addr string, subnet *net.IPNet) error <span class="cov8" title="1">{
         ip := net.ParseIP(addr)
         if ip == nil </span><span class="cov8" title="1">{
@@ -2401,17 +2402,14 @@ func NewGrpcServer(ms hh.Storage, db hh.Pingable, retryer hh.Retryer, key string
                 // IRL use github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/realip
                 // or at least peer.FromContext(ctx).Addr
                 grpc.ChainUnaryInterceptor(interceptors.NewValidateIPInterceptor(tr)),
-                //// Logger interceptor
-                //grpc.ChainUnaryInterceptor(grpc_logrus.UnaryServerInterceptor(logger)),
-                //// Middlewares interceptor
-                //grpc.ChainUnaryInterceptor(middleware.ChainUnaryServer(grpcPublicMiddlewares, logger.Logger)),
+                // TODO: ##@@ add hash, gzip, rsa interceptors
         }
 
         s := grpc.NewServer(options...)
+        // TODO: ##@@ add retryer
         mServer := &amp;gc.MetricsServer{
                 Storage: ms,
         }
-        // TODO: ##@@ add retryer, hash, gzip, rsa, trusted subnet interceptors
         pb.RegisterMetricsServer(s, mServer)
 
         return s
@@ -2422,9 +2420,11 @@ func NewGrpcServer(ms hh.Storage, db hh.Pingable, retryer hh.Retryer, key string
 
 import (
         "context"
+
         "google.golang.org/grpc/metadata"
 )
 
+// getFirstMd silently gets first metadata value as string
 func getFirstMd(ctx context.Context, key string) (s string) <span class="cov8" title="1">{
         values := metadata.ValueFromIncomingContext(ctx, key)
         if len(values) &gt; 0 </span><span class="cov8" title="1">{
@@ -2438,9 +2438,11 @@ func getFirstMd(ctx context.Context, key string) (s string) <span class="cov8" t
 
 import (
         "context"
-        "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
-        "google.golang.org/grpc"
         "log/slog"
+
+        "google.golang.org/grpc"
+
+        "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 )
 
 func NewSlogInterceptor() grpc.UnaryServerInterceptor <span class="cov8" title="1">{
