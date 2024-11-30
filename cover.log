@@ -11,8 +11,8 @@ github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/collectLoop
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/collectLoop.go:27:					Collect				0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/collectMetrics.go:11:				CollectMetrics			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/grpcposter.go:24:					Post				100.0%
-github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/grpcposter.go:60:					NewGRPCPoster			100.0%
-github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/grpcposter.go:68:					newClient			100.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/grpcposter.go:59:					NewGRPCPoster			100.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/grpcposter.go:67:					newClient			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/mockposter.go:16:					Post				100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/mockposter.go:29:					NewMockPoster			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/agent/handlers/nethttpposter.go:30:				Post				68.0%
@@ -110,8 +110,9 @@ github.com/fasdalf/train-go-musthave-metrics/internal/common/rsacrypt/rsacrypt.g
 github.com/fasdalf/train-go-musthave-metrics/internal/common/rsacrypt/rsacrypt.go:139:					DecryptOAEP			83.3%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/controller/updatemetrics.go:16:			UpdateMetrics			100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/grpc.go:16:					NewGrpcServer			100.0%
-github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/interceptors/private.go:8:			getFirstMd			0.0%
-github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/interceptors/validateipinterceptor.go:16:	NewValidateIPInterceptor	42.9%
+github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/interceptors/private.go:8:			getFirstMd			100.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/interceptors/sloginterceptor.go:10:		NewSlogInterceptor		100.0%
+github.com/fasdalf/train-go-musthave-metrics/internal/server/grpcserver/interceptors/validateipinterceptor.go:16:	NewValidateIPInterceptor	100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/checkMetricExistenceHandler.go:17:		CheckMetricExistenceHandler	100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/compressWriter.go:17:				newCompressWriter		0.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/compressWriter.go:24:				Write				0.0%
@@ -144,4 +145,4 @@ github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/validateHa
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/validateiphandler.go:17:				NewValidateIPHandler		100.0%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/handlers/viewMetric.go:17:					NewViewStatsHandler		67.6%
 github.com/fasdalf/train-go-musthave-metrics/internal/server/httpServer.go:12:						NewRoutingEngine		100.0%
-total:															(statements)			58.1%
+total:															(statements)			59.0%

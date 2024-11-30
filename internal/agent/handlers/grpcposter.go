@@ -7,9 +7,11 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/localip"
 	pb "github.com/fasdalf/train-go-musthave-metrics/internal/common/proto/metrics"
 )
 
@@ -38,7 +40,12 @@ func (p *grpcPoster) Post(ctx context.Context, idlog *slog.Logger, metrics []*ap
 		mSlice[i] = mv
 	}
 	mu := pb.UpdateMetricsRequest{Metrics: mSlice}
-	// TODO: ##@@ add new metadata to ctx
+
+	mdMap := map[string]string{
+		constants.HeaderRealIP: localip.GetLocalIP().String(),
+	}
+	// TODO: ##@@ add hash metadata to ctx
+	ctx = metadata.NewOutgoingContext(ctx, metadata.New(mdMap))
 
 	client, closeClient := p.newClient()
 	defer closeClient()

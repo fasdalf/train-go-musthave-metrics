@@ -1,6 +1,7 @@
 package localip
 
 import (
+	"fmt"
 	"net"
 )
 
@@ -15,6 +16,21 @@ func GetLocalIP() (r net.IP) {
 	}
 
 	return
+}
+
+// ValidateIPStringInSubnet validates that an ip is valid and belongs given subnet
+func ValidateIPStringInSubnet(addr string, subnet *net.IPNet) error {
+	ip := net.ParseIP(addr)
+	if ip == nil {
+		return fmt.Errorf("\"%s\" is not a valid IP address", addr)
+	}
+	if subnet == nil {
+		return fmt.Errorf("empty subnet")
+	}
+	if !subnet.Contains(ip) {
+		return fmt.Errorf("IP address \"%s\" is not in subnet \"%s\"", addr, subnet.String())
+	}
+	return nil
 }
 
 // GetFreePort asks the kernel for a free open port that is ready to use.
