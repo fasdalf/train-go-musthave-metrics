@@ -7,6 +7,7 @@ import (
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	pb "github.com/fasdalf/train-go-musthave-metrics/internal/common/proto/metrics"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
 )
 
 func TestMetricsServer_UpdateMetrics(t *testing.T) {
@@ -61,10 +62,10 @@ func TestMetricsServer_UpdateMetrics(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := &MetricsServer{
-				UnimplementedMetricsServer: pb.UnimplementedMetricsServer{},
-				Storage:                    metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage()),
-			}
+			s := NewMetricsServer(
+				metricstorage.NewSavableModelStorage(metricstorage.NewMemStorage()),
+				retryattempt.NewOneAttemptRetryer(),
+			)
 			got, err := s.UpdateMetrics(tt.args.ctx, tt.args.r)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("UpdateMetrics() error = %v, wantErr %v", err, tt.wantErr)

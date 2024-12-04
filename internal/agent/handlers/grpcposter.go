@@ -7,11 +7,13 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/localip"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/proto/hasher"
 	pb "github.com/fasdalf/train-go-musthave-metrics/internal/common/proto/metrics"
 )
 
@@ -44,12 +46,15 @@ func (p *grpcPoster) Post(ctx context.Context, idlog *slog.Logger, metrics []*ap
 	mdMap := map[string]string{
 		constants.HeaderRealIP: localip.GetLocalIP().String(),
 	}
-	// TODO: ##@@ add hash metadata to ctx
+	if p.key != "" {
+		mdMap[constants.HeaderHashSHA256] = hasher.Hash(&mu, []byte(p.key))
+	}
 	ctx = metadata.NewOutgoingContext(ctx, metadata.New(mdMap))
 
 	client, closeClient := p.newClient()
 	defer closeClient()
-	if _, err := client.UpdateMetrics(ctx, &mu); err != nil {
+	// TODO: ##@@ add gzip+rsa home-made compressor (or interceptor)
+	if _, err := client.UpdateMetrics(ctx, &mu, grpc.UseCompressor(gzip.Name)); err != nil {
 		idlog.Error("failed to invoke grpc", "error", err)
 		return err
 	}

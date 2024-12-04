@@ -3,10 +3,13 @@ package handlers
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/metricstorage"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/retryattempt"
@@ -73,4 +76,31 @@ func TestSendMetricsLoop_EndToEnd(t *testing.T) {
 			t.Errorf("expected poster to have unused attempts, got %d", poster.Attempts)
 		}
 	})
+}
+
+func Test_isRecoverable(t *testing.T) {
+	type args struct {
+		err error
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			"recoverable",
+			args{net.UnknownNetworkError("mock")},
+			true,
+		},
+		{
+			"not recoverable",
+			args{fmt.Errorf("mock")},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, isRecoverable(tt.args.err), "isRecoverable(%v)", tt.args.err)
+		})
+	}
 }

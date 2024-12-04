@@ -15,4 +15,13 @@ type MetricsServer struct {
 	// для совместимости с будущими версиями
 	pb.UnimplementedMetricsServer
 	Storage hh.Storage
+	Retryer hh.Retryer
+}
+
+func NewMetricsServer(Storage hh.Storage, Retryer hh.Retryer) *MetricsServer {
+	return &MetricsServer{
+		UnimplementedMetricsServer: pb.UnimplementedMetricsServer{},
+		Storage:                    Storage,
+		Retryer:                    Retryer,
+	}
 }

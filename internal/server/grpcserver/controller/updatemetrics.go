@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/catchable"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	pb "github.com/fasdalf/train-go-musthave-metrics/internal/common/proto/metrics"
 )
@@ -30,9 +31,9 @@ func (s *MetricsServer) UpdateMetrics(ctx context.Context, r *pb.UpdateMetricsRe
 			}
 			updates[i] = u
 		}
-		// todo: ##@@ add retryer
-		err := s.Storage.SaveCommonModels(ctx, updates)
-		if err != nil {
+
+		cb := func() error { return s.Storage.SaveCommonModels(ctx, updates) }
+		if _, err := s.Retryer.Try(ctx, cb, catchable.IsPgConnectionError); err != nil {
 			slog.Error("can't save metrics on grpc", "error", err)
 			return nil, status.Errorf(codes.Internal, "some error, see logs")
 		}

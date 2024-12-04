@@ -6,10 +6,10 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/catchable"
 )
 
 type Retryer interface {
@@ -27,7 +27,7 @@ func SaveMetricsHandler(s Storage, retryer Retryer) func(c *gin.Context) {
 			return
 		}
 
-		if _, err := retryer.Try(c, func() error { return s.SaveCommonModels(c, metrics) }, isPgConnectionError); err != nil {
+		if _, err := retryer.Try(c, func() error { return s.SaveCommonModels(c, metrics) }, catchable.IsPgConnectionError); err != nil {
 			slog.Error("can't save metrics", "error", err)
 			_ = c.AbortWithError(http.StatusBadRequest, errors.New("can't save metrics"))
 			return
@@ -36,12 +36,4 @@ func SaveMetricsHandler(s Storage, retryer Retryer) func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"savedCount": len(metrics)})
 		c.Next()
 	}
-}
-
-func isPgConnectionError(err error) bool {
-	var pgErr *pgconn.PgError
-	if errors.As(err, &pgErr); pgErr != nil && pgerrcode.IsConnectionException(pgErr.Code) {
-		return true
-	}
-	return false
 }
