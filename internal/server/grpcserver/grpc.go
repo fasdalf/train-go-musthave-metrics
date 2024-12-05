@@ -21,6 +21,7 @@ func NewGrpcServer(ms hh.Storage, db hh.Pingable, retryer hh.Retryer, key string
 		// IRL use github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/realip
 		// or at least peer.FromContext(ctx).Addr
 		grpc.ChainUnaryInterceptor(interceptors.NewValidateIPInterceptor(tr)),
+		grpc.ChainUnaryInterceptor(interceptors.NewDecryptBodyInterceptor(decryptionKey)),
 		grpc.ChainUnaryInterceptor(interceptors.NewValidateHashInterceptor(key)),
 		grpc.ChainUnaryInterceptor(interceptors.NewRespondWithHashInterceptor(key)),
 		// TODO: ##@@ add gzip+rsa home-made compressor and validate metadata for "grpc-accept-encoding": ["gziprsa"]

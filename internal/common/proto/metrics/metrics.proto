@@ -18,6 +18,7 @@ message Metric {
 }
 message UpdateMetricsRequest {
   repeated Metric metrics = 1;
+  bytes raw = 2;
 }
 
 message UpdateMetricsResponse {

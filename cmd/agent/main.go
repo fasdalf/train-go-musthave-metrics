@@ -41,7 +41,7 @@ func main() {
 	memStorage := metricstorage.NewMemStorageMuted()
 	retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
 	ctx, cancel := context.WithCancel(context.Background())
-	// TODO: ##@@ extract to come package and cover with tests
+	// TODO: ##@@ extract to some package and cover with tests
 	var poster handlers.MetricsPoster
 	switch strings.ToLower(cfg.Protocol) {
 	case "grpc":

@@ -97,7 +97,7 @@ func main() {
 		Handler: engine,
 	}
 
-	// TODO: ##@@ extract to come package and cover with tests
+	// TODO: ##@@ extract to some package and cover with tests
 	var srvGRPC *grpc.Server
 	if c.GRPCAddr != "" {
 		srvGRPC = grpcserver.NewGrpcServer(metricStorage, db, retryer, c.HashKey, c.RSAKey, c.TrustedSubnet)

@@ -53,8 +53,7 @@ func (p *grpcPoster) Post(ctx context.Context, idlog *slog.Logger, metrics []*ap
 
 	client, closeClient := p.newClient()
 	defer closeClient()
-	// TODO: ##@@ add gzip+rsa home-made compressor (or interceptor)
-	if _, err := client.UpdateMetrics(ctx, &mu, grpc.UseCompressor(gzip.Name)); err != nil {
+	if _, err := client.UpdateMetrics(ctx, &mu); err != nil {
 		idlog.Error("failed to invoke grpc", "error", err)
 		return err
 	}
@@ -71,9 +70,13 @@ func NewGRPCPoster(address string, key string, encryptionKey *rsa.PublicKey) *gr
 
 func (p *grpcPoster) newClient() (pb.MetricsClient, func() error) {
 	// It never returns error here.
-	conn, _ := grpc.NewClient(p.address, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	// TODO: ##@@ add new comporessors to conn
-	// IRL use built in TLS transport and no compression
+	conn, _ := grpc.NewClient(
+		p.address,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithUnaryInterceptor(newGrpcPosterRSAInterceptor(p.encryptionKey)),
+		grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)),
+	)
+	// IRL use built in TLS transport and signature instead of raw bytes field
 	client := pb.NewMetricsClient(conn)
 	return client, conn.Close
 }

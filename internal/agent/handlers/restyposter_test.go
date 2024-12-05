@@ -15,7 +15,6 @@ import (
 )
 
 func TestRestyPoster_Post_Success(t *testing.T) {
-	// TODO: ##@@ add more test cases
 	wantStatus := http.StatusOK
 	_, pub := rsacrypt.GenerateKeyPair(2048)
 

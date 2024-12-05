@@ -17,7 +17,6 @@ func main() {
 		"S1001": true,
 	}
 	mychecks := []*analysis.Analyzer{
-		// ##@@
 		//ErrCheckAnalyzer,
 		printf.Analyzer,
 		shadow.Analyzer,
