@@ -7,6 +7,7 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -37,14 +38,21 @@ func main() {
 	cfg := config.GetConfig()
 	collectInterval := time.Duration(cfg.PollInterval) * time.Second
 	sendInterval := time.Duration(cfg.ReportInterval) * time.Second
-	address := cfg.Addr
 	memStorage := metricstorage.NewMemStorageMuted()
 	retryer := retryattempt.NewRetryer([]time.Duration{1 * time.Second, 3 * time.Second, 5 * time.Second})
 	ctx, cancel := context.WithCancel(context.Background())
+	// TODO: ##@@ extract to some package and cover with tests
+	var poster handlers.MetricsPoster
+	switch strings.ToLower(cfg.Protocol) {
+	case "grpc":
+		poster = handlers.NewGRPCPoster(cfg.Addr, cfg.HashKey, cfg.RSAKey)
+	default:
+		poster = handlers.NewNetHTTPPoster(cfg.Addr, cfg.HashKey, cfg.RSAKey)
+	}
 
 	wg := new(sync.WaitGroup)
 	wg.Add(3)
-	go handlers.SendMetricsLoop(ctx, wg, memStorage, address, sendInterval, retryer, handlers.NewNetHTTPPoster(), cfg.HashKey, cfg.RSAKey, cfg.RateLimit)
+	go handlers.SendMetricsLoop(ctx, wg, memStorage, sendInterval, retryer, poster, cfg.RateLimit)
 	go handlers.Collect(handlers.CollectMetrics, ctx, wg, memStorage, collectInterval)
 	go handlers.Collect(handlers.CollectGopsutilMetrics, ctx, wg, memStorage, collectInterval)
 	// for "net/http/pprof"

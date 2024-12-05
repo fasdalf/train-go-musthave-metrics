@@ -1,7 +1,8 @@
 package constants
 
 const (
-	CounterStr = "counter"
-	GaugeStr   = "gauge"
-	HashSHA256 = "HashSHA256"
+	CounterStr       = "counter"
+	GaugeStr         = "gauge"
+	HeaderHashSHA256 = "HeaderHashSHA256"
+	HeaderRealIP     = "X-Real-IP"
 )

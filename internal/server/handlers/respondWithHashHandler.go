@@ -21,8 +21,8 @@ func NewRespondWithHashHandler(key string) func(c *gin.Context) {
 		c.Next()
 
 		hash := newWriter.GetHash(key)
-		slog.Info("setting header", "header", constants.HashSHA256, "value", hash)
-		c.Header(constants.HashSHA256, hash)
+		slog.Info("setting header", "header", constants.HeaderHashSHA256, "value", hash)
+		c.Header(constants.HeaderHashSHA256, hash)
 		if _, err := newWriter.WriteReally(); err != nil {
 			slog.Error("error writing response", "error", err)
 		}

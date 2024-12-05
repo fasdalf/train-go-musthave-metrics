@@ -8,6 +8,14 @@ import (
 func mulfunc(i int) (int, error) {
 	return i * 2, nil
 }
+func mulfuncP(i int) (*int, error) {
+	ii := i * 2
+	return &ii, nil
+}
+func funcP(i int) *int {
+	ii := i * 2
+	return &ii
+}
 
 func errCheckFunc() {
 	// формулируем ожидания: анализатор должен находить ошибку,
@@ -32,6 +40,8 @@ func TestFunc() {
 	}
 
 	(func() {})()
-	i = *(func() *int { j := 5; return &j })()
+	ii, _ := mulfuncP(i) // want "assignment with unchecked error"
+	ii = funcP(*ii)
+	i = *ii
 	i, _ = i+1, myfunc() // want "assignment with unchecked error"
 }

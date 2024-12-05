@@ -1,19 +1,29 @@
 package handlers
 
 import (
-	"bytes"
 	"context"
+	"crypto/rsa"
 	"fmt"
 	"log/slog"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/constants"
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/cryptofacade"
 	"github.com/go-resty/resty/v2"
 )
 
-type restyPoster struct{}
+type restyPoster struct {
+	netHTTPPoster
+}
 
-func (p *restyPoster) Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) error {
+func (p *restyPoster) Post(ctx context.Context, idlog *slog.Logger, metrics []*apimodels.Metrics) error {
+	body, err := compressMetrics(metrics, p.encryptionKey)
+	if err != nil {
+		idlog.Error("failed to prepare request body", "error", err)
+		return err
+	}
+
 	client := resty.New()
 	req := client.R()
 	req.SetContext(ctx)
@@ -21,13 +31,13 @@ func (p *restyPoster) Post(ctx context.Context, idlog *slog.Logger, body *bytes.
 	req.SetHeader("Accept-Encoding", "gzip")
 	req.SetHeader("Content-Type", "application/json")
 
-	if key != "" {
-		hash := cryptofacade.Hash(body.Bytes(), []byte(key))
-		req.SetHeader(constants.HashSHA256, hash)
+	if p.key != "" {
+		hash := cryptofacade.Hash(body.Bytes(), []byte(p.key))
+		req.SetHeader(constants.HeaderHashSHA256, hash)
 	}
 
 	req.SetBody(body)
-	resp, err := req.Post(address)
+	resp, err := req.Post(p.address)
 	if err != nil {
 		idlog.Error("send request error", "error", err)
 		return fmt.Errorf("sending metrics: %w", err)
@@ -44,6 +54,6 @@ func (p *restyPoster) Post(ctx context.Context, idlog *slog.Logger, body *bytes.
 	return nil
 }
 
-func NewRestyPoster() *restyPoster {
-	return &restyPoster{}
+func NewRestyPoster(address string, key string, encryptionKey *rsa.PublicKey) *restyPoster {
+	return &restyPoster{*NewNetHTTPPoster(address, key, encryptionKey)}
 }

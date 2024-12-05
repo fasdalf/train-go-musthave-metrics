@@ -5,6 +5,7 @@ import (
 	goflag "flag"
 	"fmt"
 	"log/slog"
+	"net"
 	"os"
 
 	"github.com/fasdalf/train-go-musthave-metrics/internal/common/configfile"
@@ -23,6 +24,7 @@ const (
 
 type Config struct {
 	Addr                     string          `env:"ADDRESS" json:"address"`
+	GRPCAddr                 string          `env:"GRPC_ADDRESS" json:"grpc_address"`
 	StorageFileName          string          `env:"FILE_STORAGE_PATH" json:"store_file"`
 	StorageFileStoreInterval int             `env:"STORE_INTERVAL" json:"store_interval"`
 	StorageFileRestore       bool            `env:"RESTORE" json:"restore"`
@@ -30,17 +32,14 @@ type Config struct {
 	HashKey                  string          `env:"KEY" json:"key"`
 	RSAKeyFile               string          `env:"CRYPTO_KEY" json:"crypto_key"`
 	RSAKey                   *rsa.PrivateKey `env:"-" json:"-"`
+	TrustedSubnetCIDR        string          `env:"TRUSTED_SUBNET" json:"trusted_subnet"`
+	TrustedSubnet            *net.IPNet      `env:"-" json:"-"`
 }
 
 var config *Config = &Config{
 	Addr:                     defaultAddress,
-	StorageFileName:          "",
 	StorageFileStoreInterval: defaultStorageFileStoreInterval,
 	StorageFileRestore:       defaultStorageFileRestore,
-	StorageDBDSN:             "",
-	HashKey:                  "",
-	RSAKeyFile:               "",
-	RSAKey:                   nil,
 }
 
 func GetConfig() Config {
@@ -52,12 +51,14 @@ func init() {
 
 	// Flags
 	flag.StringVarP(&config.Addr, "address", "a", config.Addr, "The address to listen on for HTTP requests")
+	flag.StringVarP(&config.GRPCAddr, "grpcaddress", "g", config.GRPCAddr, "The address to listen on for GRPC requests. If not provided disables GRPC.")
 	flag.StringVarP(&config.StorageFileName, "filestoragepath", "f", config.StorageFileName, "A path and file name to store JSON data. Leave empty to disable file storage.")
 	flag.IntVarP(&config.StorageFileStoreInterval, "storeinterval", "i", config.StorageFileStoreInterval, "Interval in seconds to dump metrics to JSON file. \"0\" is on every change.")
 	flag.BoolVarP(&config.StorageFileRestore, "restore", "r", config.StorageFileRestore, "Metrics restore from file on startup.")
 	flag.StringVarP(&config.StorageDBDSN, "databasedsn", "d", config.StorageDBDSN, "Postgres PGX DSN to use DB storage. Disabled when empty.")
 	flag.StringVarP(&config.HashKey, "key", "k", config.HashKey, "Key for signature Hash header.  If not provided, will not sign the request.")
 	flag.StringVarP(&config.RSAKeyFile, "cryptokey", "b", config.RSAKeyFile, "Private key for body decryption. If not provided, will not decrypt the request.")
+	flag.StringVarP(&config.TrustedSubnetCIDR, "trustedsubnet", "t", config.TrustedSubnetCIDR, "Trusted agents subnet CIDR. If not provided all requests are accepted.")
 	flag.CommandLine.AddGoFlagSet(goflag.CommandLine)
 	flag.Parse()
 	// pflag handles --help itself.
@@ -69,6 +70,12 @@ func init() {
 	if config.RSAKeyFile != "" {
 		var err error
 		if config.RSAKey, err = rsacrypt.FileToPrivateKey(config.RSAKeyFile); err != nil {
+			panic(err)
+		}
+	}
+	if config.TrustedSubnetCIDR != "" {
+		var err error
+		if _, config.TrustedSubnet, err = net.ParseCIDR(config.TrustedSubnetCIDR); err != nil {
 			panic(err)
 		}
 	}

@@ -32,3 +32,4 @@ vendor/
 /docker-compose.override.yml
 /.env
 /deploy/data/logs/*
+/cmd/staticlint/staticlint

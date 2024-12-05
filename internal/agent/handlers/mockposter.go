@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"bytes"
 	"context"
 	"log/slog"
+
+	"github.com/fasdalf/train-go-musthave-metrics/internal/common/apimodels"
 )
 
 type mockPoster struct {
@@ -12,7 +13,7 @@ type mockPoster struct {
 	Results  []error
 }
 
-func (p *mockPoster) Post(ctx context.Context, idlog *slog.Logger, body *bytes.Buffer, key string, address string) (err error) {
+func (p *mockPoster) Post(ctx context.Context, idlog *slog.Logger, metrics []*apimodels.Metrics) (err error) {
 	i := len(p.Results) - p.Attempts
 
 	if i >= 0 && i < len(p.Results) {
